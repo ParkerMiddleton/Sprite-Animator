@@ -10,10 +10,12 @@ CONFIG += c++17
 
 SOURCES += \
     main.cpp \
-    mainwindow.cpp
+    mainwindow.cpp \
+    scribblearea.cpp
 
 HEADERS += \
-    mainwindow.h
+    mainwindow.h \
+    scribblearea.h
 
 FORMS += \
     mainwindow.ui
@@ -23,4 +25,5 @@ qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
-RESOURCES +=
+RESOURCES += \
+    res.qrc

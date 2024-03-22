@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/Images">
+        <file>transparent.jpg</file>
+        <file>harambe.jpg</file>
+    </qresource>
+</RCC>
