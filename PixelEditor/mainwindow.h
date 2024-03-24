@@ -2,9 +2,6 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include <QColorDialog>
-#include <QColor>
-#include <QPalette>
 #include <QDebug>
 #include <QInputDialog>
 #include <QFileDialog>
@@ -14,7 +11,6 @@
 #include <QColorDialog>
 #include <QColor>
 #include <QPalette>
-#include <QDebug>
 
 
 QT_BEGIN_NAMESPACE

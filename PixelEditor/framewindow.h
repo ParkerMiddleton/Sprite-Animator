@@ -5,6 +5,7 @@
 #include <QLabel>
 #include <QPaintDevice>
 #include <QPixmap>
+#include <QMouseEvent>
 
 class FrameWindow : public QLabel
 {
@@ -13,7 +14,11 @@ class FrameWindow : public QLabel
 
 
 private:
+    QPixmap *pixmap;
+    QColor color;
+    int pressed;
 
+    void draw(QMouseEvent *e);
 
 public:
     FrameWindow(QWidget *parent = 0);
@@ -21,10 +26,10 @@ public:
 
 
 protected:
-    // void paintEvent(QPaintEvent *e) override;
-    // void mousePressEvent(QMouseEvent *event) override;
-    // void mouseReleaseEvent(QMouseEvent *event) override;
-    // void mouseMoveEvent(QMouseEvent *event)override;
+    void paintEvent(QPaintEvent *e) override;
+    void mousePressEvent(QMouseEvent *e) override;
+    void mouseReleaseEvent(QMouseEvent *e) override;
+    void mouseMoveEvent(QMouseEvent *e)override;
     // void resizeEvent(QResizeEvent *event)override;
 
 

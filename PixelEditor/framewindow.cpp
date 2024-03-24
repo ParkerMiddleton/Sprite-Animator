@@ -6,7 +6,7 @@
 
 //Constructor
 FrameWindow::FrameWindow(QWidget *parent) :
-    QLabel(parent)
+    QLabel(parent), pressed(0)
 {
 
     /*
@@ -28,13 +28,13 @@ FrameWindow::FrameWindow(QWidget *parent) :
     int frameHeight= 500;
 
     // Fill the label with an array of transparent pixels
-    QPixmap pixmap (frameWidth, frameHeight); // random values here are of the gridlayout's height and width
+    pixmap = new QPixmap(frameWidth, frameHeight); // random values here are of the gridlayout's height and width
 
     //Fill the map with transparent pixels
-    pixmap.fill(Qt::transparent);
+    pixmap->fill(Qt::transparent);
 
     //Tells the QPainter object that this is the object we are drawing.
-    QPainter painter (&pixmap);
+    QPainter painter (pixmap);
 
     //Draw thie pixels
     int checkerSize = 10;
@@ -55,15 +55,16 @@ FrameWindow::FrameWindow(QWidget *parent) :
     The code above pixmap.fill(Qt::Transparent) makes every pixel in the label container transparent.
     */
 
-    qDebug() << pixmap.height();
-    qDebug() << pixmap.width();
+
+    qDebug() << pixmap->height();
+    qDebug() << pixmap->width();
 
     // End painting
     painter.end();
     // Set the pixmap as the label's pixmap
-    setPixmap(pixmap);
+    setPixmap(*pixmap);
 
-
+    color = Qt::black;
 
 
 
@@ -80,9 +81,34 @@ FrameWindow::~FrameWindow(){
 }
 
 //Paint event
-// void FrameWindow::paintEvent(QPaintEvent *e){
-//     QPainter p(this);
-//     QRect rect = e->rect();
-//     p.drawImage(rect, )
-// }
+void FrameWindow::paintEvent(QPaintEvent *e){
+    QPainter p(this);
+    p.drawPixmap(0,0,pixmap->scaled(240,240));
+    p.drawPixmap(0,0,*pixmap);
+
+}
+
+void FrameWindow::mousePressEvent(QMouseEvent *e) {
+    if (e->button() == Qt::RightButton)
+        color = color == Qt::black ? Qt::white : Qt::black;
+    else {
+        pressed = 1;
+        draw(e);
+    }
+}
+
+void FrameWindow::mouseReleaseEvent(QMouseEvent *){pressed = 0;}
+
+void FrameWindow::mouseMoveEvent(QMouseEvent *e) { draw(e); }
+
+void FrameWindow::draw(QMouseEvent *e) {
+    if (pressed) {
+        QPainter painter(pixmap);
+        painter.setPen(color);
+        int x = e->pos().x() / 12;
+        int y = e->pos().y() / 12;
+        painter.drawPoint(x, y);
+        repaint();
+    }
+}
 
