@@ -8,6 +8,7 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+
     //Window title
     setWindowTitle("Segmentation Fault Pixel Editor");
     //Color Palette Button Image
@@ -30,14 +31,25 @@ MainWindow::MainWindow(QWidget *parent)
     ui->EraserButton->setIconSize(eraserImageSize);
 
     //VIEW -----> MODEL
-    connect(ui->ColorPaletteButton,QPushButton::clicked,this,MainWindow::on_colorPicker_clicked);
+    connect(ui->ColorPaletteButton,&QPushButton::clicked,this,&MainWindow::on_colorPicker_clicked);
+    connect(&colorDialog, &QColorDialog::colorSelected, this, &MainWindow::handleColorSelected);
+
 
 }
+
+void MainWindow::handleColorSelected(const QColor &color) {
+    qDebug() << color;
+    emit colorChanged(color);
+}
+
+
 void MainWindow::on_colorPicker_clicked()
 {
-    QColor ColorValue = QColorDialog::getColor(Qt::black, this, tr("Select Color"));
-    qDebug() << ColorValue;
-    current = ColorValue;
+    QColorDialog::getColor(Qt::black, this, tr("Select Color"));
+    // inform brush class of color change
+
+    //qDebug() << selectedColor;
+    //currentColor = selectedColor;
 }
 
 MainWindow::~MainWindow()

@@ -29,10 +29,15 @@ public:
 
 private slots:
     void on_colorPicker_clicked();
+    void handleColorSelected(const QColor &color);
+
+signals:
+    void colorChanged(const QColor &color);
 
 private:
     Ui::MainWindow *ui;
     QPainter brush;
-    QColor current;
+    QColor currentColor;
+    QColorDialog colorDialog;
 };
 #endif // MAINWINDOW_H

@@ -24,6 +24,8 @@ public:
     FrameWindow(QWidget *parent = 0);
     ~FrameWindow();
 
+public slots:
+    void setDrawingColor(const QColor &newColor);
 
 protected:
     void paintEvent(QPaintEvent *e) override;

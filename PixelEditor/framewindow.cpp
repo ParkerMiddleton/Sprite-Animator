@@ -3,11 +3,13 @@
 #include <QPainter>
 #include <QDebug>
 #include <QSizePolicy>
+#include "mainwindow.h"
 
 //Constructor
 FrameWindow::FrameWindow(QWidget *parent) :
     QLabel(parent), pressed(0)
 {
+    connect(qobject_cast<MainWindow*>(parent), &MainWindow::colorChanged, this, &FrameWindow::setDrawingColor);
 
     /*
     Known Issue: We want the label contained within the gridLayout object to match the height and width
@@ -36,7 +38,7 @@ FrameWindow::FrameWindow(QWidget *parent) :
     //Tells the QPainter object that this is the object we are drawing.
     QPainter painter (pixmap);
 
-    //Draw thie pixels
+    //Draw the pixels
     int checkerSize = 10;
     for (int y = 0; y < frameHeight; y += checkerSize) { // height
         for (int x = 0; x < frameWidth; x += checkerSize) { // width
@@ -65,6 +67,8 @@ FrameWindow::FrameWindow(QWidget *parent) :
     setPixmap(*pixmap);
 
     color = Qt::black;
+
+
 
 
 
@@ -115,5 +119,9 @@ void FrameWindow::draw(QMouseEvent *e) {
         painter.drawPoint(x, y);
         repaint();
     }
+}
+
+void FrameWindow::setDrawingColor(const QColor &newColor) {
+    color = newColor;
 }
 
