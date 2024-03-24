@@ -83,7 +83,9 @@ FrameWindow::~FrameWindow(){
 //Paint event
 void FrameWindow::paintEvent(QPaintEvent *e){
     QPainter p(this);
-    p.drawPixmap(0,0,pixmap->scaled(240,240));
+    //The following line will copy all actions
+    //of the user on a different position of the canvas
+    //p.drawPixmap(0,0,pixmap->scaled(240,240));
     p.drawPixmap(0,0,*pixmap);
 
 }
@@ -104,9 +106,12 @@ void FrameWindow::mouseMoveEvent(QMouseEvent *e) { draw(e); }
 void FrameWindow::draw(QMouseEvent *e) {
     if (pressed) {
         QPainter painter(pixmap);
-        painter.setPen(color);
-        int x = e->pos().x() / 12;
-        int y = e->pos().y() / 12;
+
+        QPen defaultPen(color,10);
+
+        painter.setPen(defaultPen);
+        int x = e->pos().x();
+        int y = e->pos().y();
         painter.drawPoint(x, y);
         repaint();
     }
