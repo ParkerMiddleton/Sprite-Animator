@@ -11,6 +11,10 @@
 #include <QMessageBox>
 #include <QImageWriter>
 #include <QPainter>
+#include <QColorDialog>
+#include <QColor>
+#include <QPalette>
+#include <QDebug>
 
 
 QT_BEGIN_NAMESPACE
@@ -27,8 +31,12 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
+private slots:
+    void on_colorPicker_clicked();
+
 private:
     Ui::MainWindow *ui;
     QPainter brush;
+    QColor current;
 };
 #endif // MAINWINDOW_H

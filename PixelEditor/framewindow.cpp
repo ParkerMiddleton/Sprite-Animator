@@ -73,10 +73,7 @@ FrameWindow::FrameWindow(QWidget *parent) :
     // // setMask(pixmap.mask());
     // QColor color = Qt::black;
 
-
-
 }
-
 //Destructor
 FrameWindow::~FrameWindow(){
 

@@ -10,6 +10,12 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
     //Window title
     setWindowTitle("Segmentation Fault Pixel Editor");
+    //Color Palette Button Image
+    QPixmap palettePixmap(":/Images/artistpaletteicon.jpg");
+    QSize palettePixmapSize(50,50);
+    ui->ColorPaletteButton->setIcon(palettePixmap);
+    ui->ColorPaletteButton->setIconSize(palettePixmapSize);
+
 
     //Pencil Button Image
     QPixmap pencilPixmap(":/Images/pencil.png");
@@ -23,6 +29,15 @@ MainWindow::MainWindow(QWidget *parent)
     ui->EraserButton->setIcon(eraserPixmap);
     ui->EraserButton->setIconSize(eraserImageSize);
 
+    //VIEW -----> MODEL
+    connect(ui->ColorPaletteButton,QPushButton::clicked,this,MainWindow::on_colorPicker_clicked);
+
+}
+void MainWindow::on_colorPicker_clicked()
+{
+    QColor ColorValue = QColorDialog::getColor(Qt::black, this, tr("Select Color"));
+    qDebug() << ColorValue;
+    current = ColorValue;
 }
 
 MainWindow::~MainWindow()
