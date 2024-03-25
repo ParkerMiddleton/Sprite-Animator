@@ -38,6 +38,6 @@ private:
     Ui::MainWindow *ui;
     QPainter brush;
     QColor currentColor;
-    QColorDialog colorDialog;
+    QColorDialog *colorDialog;
 };
 #endif // MAINWINDOW_H

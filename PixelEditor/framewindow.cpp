@@ -9,7 +9,7 @@
 FrameWindow::FrameWindow(QWidget *parent) :
     QLabel(parent), pressed(0)
 {
-    connect(qobject_cast<MainWindow*>(parent), &MainWindow::colorChanged, this, &FrameWindow::setDrawingColor);
+    connect(dynamic_cast<MainWindow*>(parent), &MainWindow::colorChanged, this, &FrameWindow::setDrawingColor);
 
     /*
     Known Issue: We want the label contained within the gridLayout object to match the height and width
@@ -43,7 +43,7 @@ FrameWindow::FrameWindow(QWidget *parent) :
     for (int y = 0; y < frameHeight; y += checkerSize) { // height
         for (int x = 0; x < frameWidth; x += checkerSize) { // width
             if ((x / checkerSize + y / checkerSize) % 2 == 0) {
-                painter.fillRect(x, y, checkerSize, checkerSize, Qt::lightGray);
+                //painter.fillRect(x, y, checkerSize, checkerSize, Qt::lightGray);
             }
         }
     }
@@ -56,7 +56,6 @@ FrameWindow::FrameWindow(QWidget *parent) :
     Another Note: The checkered background doesn't mean that thats explicitly where workable pixels are.
     The code above pixmap.fill(Qt::Transparent) makes every pixel in the label container transparent.
     */
-
 
     qDebug() << pixmap->height();
     qDebug() << pixmap->width();
@@ -95,12 +94,9 @@ void FrameWindow::paintEvent(QPaintEvent *e){
 }
 
 void FrameWindow::mousePressEvent(QMouseEvent *e) {
-    if (e->button() == Qt::RightButton)
-        color = color == Qt::black ? Qt::white : Qt::black;
-    else {
-        pressed = 1;
-        draw(e);
-    }
+
+    pressed = 1;
+    draw(e);
 }
 
 void FrameWindow::mouseReleaseEvent(QMouseEvent *){pressed = 0;}
@@ -108,20 +104,55 @@ void FrameWindow::mouseReleaseEvent(QMouseEvent *){pressed = 0;}
 void FrameWindow::mouseMoveEvent(QMouseEvent *e) { draw(e); }
 
 void FrameWindow::draw(QMouseEvent *e) {
-    if (pressed) {
+    if (pressed && pencilEnabled && !eraserEnabled) {
         QPainter painter(pixmap);
-
-        QPen defaultPen(color,10);
+        int pixelSize = 10;
+        int offSet = pixelSize / 2;
+        QPen defaultPen(color,pixelSize);
 
         painter.setPen(defaultPen);
         int x = e->pos().x();
         int y = e->pos().y();
-        painter.drawPoint(x, y);
+
+        painter.drawPoint(x - (x % pixelSize) + offSet, y - (y % pixelSize) + offSet);
+        repaint();
+    }
+    // eraser
+    else if(pressed && !pencilEnabled && eraserEnabled) {
+        QPainter painter(pixmap);
+        int pixelSize = 10;
+        int offSet = pixelSize / 2;
+        // draw with transparent color
+        //QPen defaultPen(Qt::transparent,pixelSize);
+
+        //painter.setPen(defaultPen);
+        int x = e->pos().x();
+        int y = e->pos().y();
+
+        painter.eraseRect(x - (x % pixelSize) + offSet, y - (y % pixelSize) + offSet,10 , 10);
         repaint();
     }
 }
 
 void FrameWindow::setDrawingColor(const QColor &newColor) {
+    //qDebug() << newColor;
     color = newColor;
 }
 
+void FrameWindow::setBrushEnabled(){
+    if(pencilEnabled){
+        pencilEnabled = false;
+    }else{
+        pencilEnabled = true;
+        eraserEnabled = false;
+    }
+}
+
+void FrameWindow::setEraserEnabled(){
+    if(eraserEnabled){
+        eraserEnabled = false;
+    }else{
+        eraserEnabled = true;
+        pencilEnabled = false;
+    }
+}

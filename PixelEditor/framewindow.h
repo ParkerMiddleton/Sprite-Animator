@@ -17,15 +17,22 @@ private:
     QPixmap *pixmap;
     QColor color;
     int pressed;
+    bool pencilEnabled;
+    bool eraserEnabled; // actually disables and enables
 
     void draw(QMouseEvent *e);
 
 public:
-    FrameWindow(QWidget *parent = 0);
+    explicit FrameWindow(QWidget *parent = 0);
     ~FrameWindow();
 
 public slots:
     void setDrawingColor(const QColor &newColor);
+    void setBrushEnabled();
+    void setEraserEnabled();
+
+signals:
+    void informViewOfPencilEnabled(bool);
 
 protected:
     void paintEvent(QPaintEvent *e) override;

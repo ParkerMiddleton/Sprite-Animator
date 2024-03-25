@@ -9,6 +9,9 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
+    FrameWindow *fw = ui->label;
+    colorDialog = new QColorDialog();
+
     //Window title
     setWindowTitle("Segmentation Fault Pixel Editor");
     //Color Palette Button Image
@@ -32,24 +35,39 @@ MainWindow::MainWindow(QWidget *parent)
 
     //VIEW -----> MODEL
     connect(ui->ColorPaletteButton,&QPushButton::clicked,this,&MainWindow::on_colorPicker_clicked);
-    connect(&colorDialog, &QColorDialog::colorSelected, this, &MainWindow::handleColorSelected);
+    connect(this->colorDialog, &QColorDialog::colorSelected, this, &MainWindow::handleColorSelected);
 
+    connect(this, &MainWindow::colorChanged, fw, &FrameWindow::setDrawingColor);
 
+    // enable and disable brush
+    connect(ui->PencilButton,
+            &QPushButton::clicked,
+            fw,
+            &FrameWindow::setBrushEnabled);
+    // enable and disable eraser
+    connect(ui->EraserButton,
+            &QPushButton::clicked,
+            fw,
+            &FrameWindow::setEraserEnabled);
+
+    /**Model to View**/
+    connect(fw,
+            &FrameWindow::informViewOfPencilEnabled,
+            ui->PencilButton,
+            &QPushButton::setEnabled);
 }
 
 void MainWindow::handleColorSelected(const QColor &color) {
-    qDebug() << color;
-    emit colorChanged(color);
+    //qDebug() << color;
+    //emit colorChanged(color);
 }
-
 
 void MainWindow::on_colorPicker_clicked()
 {
-    QColorDialog::getColor(Qt::black, this, tr("Select Color"));
-    // inform brush class of color change
-
-    //qDebug() << selectedColor;
-    //currentColor = selectedColor;
+    // The colorSelected signal will now be connected to the handleColorSelected slot.
+    QColor selectedColor = QColorDialog::getColor(Qt::black, this, tr("Select Color"));
+    emit colorChanged(selectedColor);
+    currentColor = selectedColor;
 }
 
 MainWindow::~MainWindow()
