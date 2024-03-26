@@ -33,6 +33,7 @@ public slots:
 
 signals:
     void informViewOfPencilEnabled(bool);
+    void sendPixmapData(QPixmap *p);
 
 protected:
     void paintEvent(QPaintEvent *e) override;
@@ -40,9 +41,6 @@ protected:
     void mouseReleaseEvent(QMouseEvent *e) override;
     void mouseMoveEvent(QMouseEvent *e)override;
     // void resizeEvent(QResizeEvent *event)override;
-
-
-
 };
 
 

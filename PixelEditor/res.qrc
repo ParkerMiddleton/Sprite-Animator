@@ -5,5 +5,8 @@
         <file>pencil.png</file>
         <file>eraser.png</file>
         <file>artistpaletteicon.jpg</file>
+        <file>pal.png</file>
+        <file>pal2.png</file>
+        <file>transparent.png</file>
     </qresource>
 </RCC>

@@ -1,5 +1,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include "previewwindow.h"
 #include <QPainter>
 //#include "framewindow.h"
 
@@ -9,17 +10,18 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
-    FrameWindow *fw = ui->label;
+    FrameWindow *fw = ui->canvas;
+    PreviewWindow *pw = ui->previewLabel;
     colorDialog = new QColorDialog();
 
     //Window title
-    setWindowTitle("Segmentation Fault Pixel Editor");
+    setWindowTitle("Seg Fault Sprite Editor");
+
     //Color Palette Button Image
-    QPixmap palettePixmap(":/Images/artistpaletteicon.jpg");
+    QPixmap palettePixmap(":/Images/pal2.png");
     QSize palettePixmapSize(50,50);
     ui->ColorPaletteButton->setIcon(palettePixmap);
     ui->ColorPaletteButton->setIconSize(palettePixmapSize);
-
 
     //Pencil Button Image
     QPixmap pencilPixmap(":/Images/pencil.png");
@@ -33,34 +35,46 @@ MainWindow::MainWindow(QWidget *parent)
     ui->EraserButton->setIcon(eraserPixmap);
     ui->EraserButton->setIconSize(eraserImageSize);
 
-    //VIEW -----> MODEL
-    connect(ui->ColorPaletteButton,&QPushButton::clicked,this,&MainWindow::on_colorPicker_clicked);
-    connect(this->colorDialog, &QColorDialog::colorSelected, this, &MainWindow::handleColorSelected);
+    //VIEW -----> VIEW
+    //On color palette button clicked, chose a color
+    connect(ui->ColorPaletteButton,
+            &QPushButton::clicked,
+            this,
+            &MainWindow::on_colorPicker_clicked);
 
-    connect(this, &MainWindow::colorChanged, fw, &FrameWindow::setDrawingColor);
+
+    // Send chosen color to the frame window to be used
+    connect(this,
+            &MainWindow::colorChanged,
+            fw,
+            &FrameWindow::setDrawingColor);
 
     // enable and disable brush
     connect(ui->PencilButton,
             &QPushButton::clicked,
             fw,
             &FrameWindow::setBrushEnabled);
+
     // enable and disable eraser
     connect(ui->EraserButton,
             &QPushButton::clicked,
             fw,
             &FrameWindow::setEraserEnabled);
 
-    /**Model to View**/
+    // frame window tells main that penicl button is to be disabled or enabled.
     connect(fw,
             &FrameWindow::informViewOfPencilEnabled,
             ui->PencilButton,
             &QPushButton::setEnabled);
+
+
+    //Send pixmap data to the preview window to mirror drawing.
+    connect(fw,
+            &FrameWindow::sendPixmapData,
+            pw,
+            &PreviewWindow::recievePixmapData);
 }
 
-void MainWindow::handleColorSelected(const QColor &color) {
-    //qDebug() << color;
-    //emit colorChanged(color);
-}
 
 void MainWindow::on_colorPicker_clicked()
 {
@@ -74,4 +88,3 @@ MainWindow::~MainWindow()
 {
     delete ui;
 }
-

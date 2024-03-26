@@ -27,9 +27,8 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
-private slots:
+public slots:
     void on_colorPicker_clicked();
-    void handleColorSelected(const QColor &color);
 
 signals:
     void colorChanged(const QColor &color);

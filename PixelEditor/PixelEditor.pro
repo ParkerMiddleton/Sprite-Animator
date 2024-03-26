@@ -12,12 +12,14 @@ SOURCES += \
     brush.cpp \
     framewindow.cpp \
     main.cpp \
-    mainwindow.cpp
+    mainwindow.cpp \
+    previewwindow.cpp
 
 HEADERS += \
     brush.h \
     framewindow.h \
-    mainwindow.h
+    mainwindow.h \
+    previewwindow.h
 
 FORMS += \
     mainwindow.ui
