@@ -85,8 +85,9 @@ public:
     void saveSprite();
     /**
      * @brief loadSprite Loads sprite from a json.
+     * @param filePath
      */
-    void loadSprite();
+    void loadSprite(QString filePath);
     /**
      * @brief getImage From the current frame, retrieve a merged image of all its layers.
      * @return

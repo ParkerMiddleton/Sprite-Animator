@@ -762,7 +762,7 @@ text-align: center;</string>
      <x>0</x>
      <y>0</y>
      <width>968</width>
-     <height>21</height>
+     <height>25</height>
     </rect>
    </property>
    <property name="styleSheet">
@@ -773,6 +773,8 @@ color: rgb(2, 2, 2);</string>
     <property name="title">
      <string>File</string>
     </property>
+    <addaction name="actionLoad"/>
+    <addaction name="actionSave"/>
    </widget>
    <widget class="QMenu" name="menuEdit">
     <property name="title">
@@ -789,6 +791,16 @@ color: rgb(2, 2, 2);</string>
    <addaction name="menuHelp"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
+  <action name="actionLoad">
+   <property name="text">
+    <string>Load </string>
+   </property>
+  </action>
+  <action name="actionSave">
+   <property name="text">
+    <string>Save</string>
+   </property>
+  </action>
  </widget>
  <customwidgets>
   <customwidget>

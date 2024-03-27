@@ -1,5 +1,5 @@
 #include "sprite.h"
-
+#include "serializer.h"
 Layer::Layer(int width, int height) {
     pixels.resize(height * width);
 }
@@ -67,7 +67,7 @@ void Sprite::addLayerToCurrentFrame(){
     frames[frameIndex].addLayer();
 }
 void Sprite::saveSprite(){
-
+    Serializer::serialize(*this);
 }
 
 void Sprite::loadSprite(){

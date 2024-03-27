@@ -13,6 +13,7 @@ SOURCES += \
     main.cpp \
     mainwindow.cpp \
     previewwindow.cpp \
+    serializer.cpp \
     sprite.cpp
 
 HEADERS += \
@@ -20,6 +21,7 @@ HEADERS += \
     framewindow.h \
     mainwindow.h \
     previewwindow.h \
+    serializer.h \
     sprite.h
 
 FORMS += \
