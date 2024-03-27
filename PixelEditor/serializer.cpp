@@ -5,7 +5,7 @@ void Serializer::serialize(Sprite &sprite)
 {
 
 }
-Sprite Serializer::deserialize(QString filePath)
+void Serializer::deserialize(QString filePath, Sprite& sprite)
 {
 
 }
