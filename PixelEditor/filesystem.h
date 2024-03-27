@@ -18,7 +18,7 @@ public:
 	bool deserializeSprite(Sprite &sprite, const QString &spriteFilePath = "");
 
 private:
-	QString currentSpritePath;
+	QString currentSpriteFilePath;
 
 };
 

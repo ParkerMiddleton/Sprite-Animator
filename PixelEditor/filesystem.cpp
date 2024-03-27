@@ -5,7 +5,7 @@
 #include <QJsonObject>
 
 FileSystem::FileSystem()
-	: currentSpritePath("")
+	: currentSpriteFilePath("")
 {
 
 }
@@ -20,7 +20,7 @@ bool FileSystem::serializeSprite(Sprite *spriteAddress, const QString &spriteNam
 		return false;
 	}
 
-	currentSpritePath = spriteFilePath;
+	currentSpriteFilePath = spriteFilePath;
 
 	QByteArray jsonData = jsonFile.readAll();
 	QJsonDocument jsonDoc(QJsonDocument::fromJson(jsonData));
@@ -37,15 +37,15 @@ bool FileSystem::deserializeSprite(Sprite &sprite, const QString &spriteFilePath
 {
 	if (spriteFilePath.isEmpty())
 	{
-		if (currentSpritePath.isEmpty())
+		if (currentSpriteFilePath.isEmpty())
 			return false;
 	}
 	else
 	{
-		currentSpritePath = spriteFilePath;
+		currentSpriteFilePath = spriteFilePath;
 	}
 
-	QFile jsonFile(currentSpritePath + sprite.getName());
+	QFile jsonFile(currentSpriteFilePath + sprite.getName());
 
 	if (jsonFile.open(QIODevice::WriteOnly))
 	{
