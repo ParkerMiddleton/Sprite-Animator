@@ -1,5 +1,4 @@
 QT       += core gui
-
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 CONFIG += c++17
@@ -13,13 +12,15 @@ SOURCES += \
     framewindow.cpp \
     main.cpp \
     mainwindow.cpp \
-    previewwindow.cpp
+    previewwindow.cpp \
+    sprite.cpp
 
 HEADERS += \
     brush.h \
     framewindow.h \
     mainwindow.h \
-    previewwindow.h
+    previewwindow.h \
+    sprite.h
 
 FORMS += \
     mainwindow.ui
