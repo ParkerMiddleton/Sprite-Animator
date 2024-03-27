@@ -12,7 +12,8 @@ MainWindow::MainWindow(QWidget *parent)
 
     FrameWindow *fw = ui->canvas;
     PreviewWindow *pw = ui->previewLabel;
-    colorDialog = new QColorDialog();
+    FrameTimeline *ft = ui->frameTimeline;
+     colorDialog = new QColorDialog();
 
     //Window title
     setWindowTitle("Seg Fault Sprite Editor");
@@ -73,6 +74,12 @@ MainWindow::MainWindow(QWidget *parent)
             &FrameWindow::sendPixmapData,
             pw,
             &PreviewWindow::recievePixmapData);
+
+    //adds a frame to the timeline
+    connect(ui->addFrameButton,
+            &QPushButton::clicked,
+            ft,
+            &FrameTimeline::addFrame);
 }
 
 

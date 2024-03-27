@@ -626,16 +626,28 @@ border: none;</string>
       <string>&gt;</string>
      </property>
     </widget>
-    <widget class="QWidget" name="gridLayoutWidget_5">
+    <widget class="FrameTimeline" name="frameTimeline">
      <property name="geometry">
       <rect>
-       <x>100</x>
-       <y>10</y>
-       <width>601</width>
-       <height>71</height>
+       <x>90</x>
+       <y>0</y>
+       <width>611</width>
+       <height>80</height>
       </rect>
      </property>
-     <layout class="QGridLayout" name="frameTimelineGrid"/>
+     <property name="widgetResizable">
+      <bool>true</bool>
+     </property>
+     <widget class="QWidget" name="frameTimelineContents">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>607</width>
+        <height>76</height>
+       </rect>
+      </property>
+     </widget>
     </widget>
    </widget>
    <widget class="QFrame" name="positionFrame">
@@ -762,7 +774,7 @@ text-align: center;</string>
      <x>0</x>
      <y>0</y>
      <width>968</width>
-     <height>21</height>
+     <height>17</height>
     </rect>
    </property>
    <property name="styleSheet">
@@ -800,6 +812,12 @@ color: rgb(2, 2, 2);</string>
    <class>PreviewWindow</class>
    <extends>QLabel</extends>
    <header location="global">previewwindow.h</header>
+  </customwidget>
+  <customwidget>
+   <class>FrameTimeline</class>
+   <extends>QScrollArea</extends>
+   <header location="global">frametimeline.h</header>
+   <container>1</container>
   </customwidget>
  </customwidgets>
  <resources/>

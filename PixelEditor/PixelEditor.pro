@@ -9,6 +9,8 @@ CONFIG += c++17
 
 SOURCES += \
     brush.cpp \
+    frameicon.cpp \
+    frametimeline.cpp \
     framewindow.cpp \
     main.cpp \
     mainwindow.cpp \
@@ -17,6 +19,8 @@ SOURCES += \
 
 HEADERS += \
     brush.h \
+    frameicon.h \
+    frametimeline.h \
     framewindow.h \
     mainwindow.h \
     previewwindow.h \
