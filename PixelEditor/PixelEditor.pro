@@ -14,7 +14,7 @@ SOURCES += \
     mainwindow.cpp \
     previewwindow.cpp \
     serializer.cpp \
-    sprite.cpp
+    spritemodel.cpp
 
 HEADERS += \
     brush.h \
@@ -22,7 +22,7 @@ HEADERS += \
     mainwindow.h \
     previewwindow.h \
     serializer.h \
-    sprite.h
+    spritemodel.h
 
 FORMS += \
     mainwindow.ui

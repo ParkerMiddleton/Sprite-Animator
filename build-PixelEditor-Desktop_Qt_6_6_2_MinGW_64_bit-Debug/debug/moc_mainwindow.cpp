@@ -43,16 +43,22 @@ constexpr auto qt_meta_stringdata_CLASSMainWindowENDCLASS = QtMocHelpers::string
     "colorChanged",
     "",
     "color",
-    "on_colorPicker_clicked"
+    "on_colorPicker_clicked",
+    "on_actionOpenSprite_triggered",
+    "on_actionSaveSprite_triggered",
+    "on_actionSaveSpriteAs_triggered"
 );
 #else  // !QT_MOC_HAS_STRING_DATA
 struct qt_meta_stringdata_CLASSMainWindowENDCLASS_t {
-    uint offsetsAndSizes[10];
+    uint offsetsAndSizes[16];
     char stringdata0[11];
     char stringdata1[13];
     char stringdata2[1];
     char stringdata3[6];
     char stringdata4[23];
+    char stringdata5[30];
+    char stringdata6[30];
+    char stringdata7[32];
 };
 #define QT_MOC_LITERAL(ofs, len) \
     uint(sizeof(qt_meta_stringdata_CLASSMainWindowENDCLASS_t::offsetsAndSizes) + ofs), len 
@@ -62,13 +68,19 @@ Q_CONSTINIT static const qt_meta_stringdata_CLASSMainWindowENDCLASS_t qt_meta_st
         QT_MOC_LITERAL(11, 12),  // "colorChanged"
         QT_MOC_LITERAL(24, 0),  // ""
         QT_MOC_LITERAL(25, 5),  // "color"
-        QT_MOC_LITERAL(31, 22)   // "on_colorPicker_clicked"
+        QT_MOC_LITERAL(31, 22),  // "on_colorPicker_clicked"
+        QT_MOC_LITERAL(54, 29),  // "on_actionOpenSprite_triggered"
+        QT_MOC_LITERAL(84, 29),  // "on_actionSaveSprite_triggered"
+        QT_MOC_LITERAL(114, 31)   // "on_actionSaveSpriteAs_triggered"
     },
     "MainWindow",
     "colorChanged",
     "",
     "color",
-    "on_colorPicker_clicked"
+    "on_colorPicker_clicked",
+    "on_actionOpenSprite_triggered",
+    "on_actionSaveSprite_triggered",
+    "on_actionSaveSpriteAs_triggered"
 };
 #undef QT_MOC_LITERAL
 #endif // !QT_MOC_HAS_STRING_DATA
@@ -80,7 +92,7 @@ Q_CONSTINIT static const uint qt_meta_data_CLASSMainWindowENDCLASS[] = {
       12,       // revision
        0,       // classname
        0,    0, // classinfo
-       2,   14, // methods
+       5,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -88,15 +100,21 @@ Q_CONSTINIT static const uint qt_meta_data_CLASSMainWindowENDCLASS[] = {
        1,       // signalCount
 
  // signals: name, argc, parameters, tag, flags, initial metatype offsets
-       1,    1,   26,    2, 0x06,    1 /* Public */,
+       1,    1,   44,    2, 0x06,    1 /* Public */,
 
  // slots: name, argc, parameters, tag, flags, initial metatype offsets
-       4,    0,   29,    2, 0x0a,    3 /* Public */,
+       4,    0,   47,    2, 0x0a,    3 /* Public */,
+       5,    0,   48,    2, 0x08,    4 /* Private */,
+       6,    0,   49,    2, 0x08,    5 /* Private */,
+       7,    0,   50,    2, 0x08,    6 /* Private */,
 
  // signals: parameters
     QMetaType::Void, QMetaType::QColor,    3,
 
  // slots: parameters
+    QMetaType::Void,
+    QMetaType::Void,
+    QMetaType::Void,
     QMetaType::Void,
 
        0        // eod
@@ -115,6 +133,12 @@ Q_CONSTINIT const QMetaObject MainWindow::staticMetaObject = { {
         QtPrivate::TypeAndForceComplete<void, std::false_type>,
         QtPrivate::TypeAndForceComplete<const QColor &, std::false_type>,
         // method 'on_colorPicker_clicked'
+        QtPrivate::TypeAndForceComplete<void, std::false_type>,
+        // method 'on_actionOpenSprite_triggered'
+        QtPrivate::TypeAndForceComplete<void, std::false_type>,
+        // method 'on_actionSaveSprite_triggered'
+        QtPrivate::TypeAndForceComplete<void, std::false_type>,
+        // method 'on_actionSaveSpriteAs_triggered'
         QtPrivate::TypeAndForceComplete<void, std::false_type>
     >,
     nullptr
@@ -128,6 +152,9 @@ void MainWindow::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, 
         switch (_id) {
         case 0: _t->colorChanged((*reinterpret_cast< std::add_pointer_t<QColor>>(_a[1]))); break;
         case 1: _t->on_colorPicker_clicked(); break;
+        case 2: _t->on_actionOpenSprite_triggered(); break;
+        case 3: _t->on_actionSaveSprite_triggered(); break;
+        case 4: _t->on_actionSaveSpriteAs_triggered(); break;
         default: ;
         }
     } else if (_c == QMetaObject::IndexOfMethod) {
@@ -161,13 +188,13 @@ int MainWindow::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 2)
+        if (_id < 5)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 2;
+        _id -= 5;
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 2)
+        if (_id < 5)
             *reinterpret_cast<QMetaType *>(_a[0]) = QMetaType();
-        _id -= 2;
+        _id -= 5;
     }
     return _id;
 }

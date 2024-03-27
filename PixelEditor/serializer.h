@@ -5,13 +5,18 @@
 #ifndef SERIALIZER_H
 #define SERIALIZER_H
 #include <QString>
+
+// Forward Declaration
 class Sprite;
+
 class Serializer
 {
 public:
-    Serializer();
+	Serializer() = default;
+
     static void serialize(Sprite& sprite);
     static void  deserialize(QString filePath, Sprite& sprite);
+
 };
 
 #endif // SERIALIZER_H

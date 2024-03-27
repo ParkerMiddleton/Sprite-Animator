@@ -32,6 +32,9 @@ QT_BEGIN_NAMESPACE
 class Ui_MainWindow
 {
 public:
+    QAction *actionOpenSprite;
+    QAction *actionSaveSprite;
+    QAction *actionSaveSpriteAs;
     QWidget *centralwidget;
     QWidget *gridLayoutWidget;
     QGridLayout *editWindowGrid;
@@ -93,6 +96,13 @@ public:
         MainWindow->resize(968, 652);
         MainWindow->setStyleSheet(QString::fromUtf8("color:white;\n"
 "background-color:rgb(37, 37, 37)"));
+        actionOpenSprite = new QAction(MainWindow);
+        actionOpenSprite->setObjectName("actionOpenSprite");
+        actionOpenSprite->setMenuRole(QAction::TextHeuristicRole);
+        actionSaveSprite = new QAction(MainWindow);
+        actionSaveSprite->setObjectName("actionSaveSprite");
+        actionSaveSpriteAs = new QAction(MainWindow);
+        actionSaveSpriteAs->setObjectName("actionSaveSpriteAs");
         centralwidget = new QWidget(MainWindow);
         centralwidget->setObjectName("centralwidget");
         gridLayoutWidget = new QWidget(centralwidget);
@@ -374,6 +384,10 @@ public:
         menubar->addAction(menuFile->menuAction());
         menubar->addAction(menuEdit->menuAction());
         menubar->addAction(menuHelp->menuAction());
+        menuFile->addAction(actionOpenSprite);
+        menuFile->addSeparator();
+        menuFile->addAction(actionSaveSprite);
+        menuFile->addAction(actionSaveSpriteAs);
 
         retranslateUi(MainWindow);
 
@@ -383,6 +397,9 @@ public:
     void retranslateUi(QMainWindow *MainWindow)
     {
         MainWindow->setWindowTitle(QCoreApplication::translate("MainWindow", "MainWindow", nullptr));
+        actionOpenSprite->setText(QCoreApplication::translate("MainWindow", "Open", nullptr));
+        actionSaveSprite->setText(QCoreApplication::translate("MainWindow", "Save", nullptr));
+        actionSaveSpriteAs->setText(QCoreApplication::translate("MainWindow", "Save as...", nullptr));
         canvas->setText(QString());
         ToolsGroupBox->setTitle(QCoreApplication::translate("MainWindow", "Tools", nullptr));
         EraserButton->setText(QString());

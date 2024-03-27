@@ -3,6 +3,7 @@ release/framewindow.o
 release/main.o
 release/mainwindow.o
 release/previewwindow.o
+release/serializer.o
 release/sprite.o
 release/qrc_res.o
 release/moc_brush.o

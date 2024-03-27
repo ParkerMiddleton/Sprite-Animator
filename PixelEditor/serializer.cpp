@@ -1,11 +1,14 @@
 #include "serializer.h"
 
-Serializer::Serializer() {}
-void Serializer::serialize(Sprite &sprite)
-{
+#include "spritemodel.h"
+
+#include <QJsonObject>
+#include <QJsonDocument>
+
+void Serializer::serialize(Sprite &sprite) {
 
 }
-Sprite Serializer::deserialize(QString filePath)
-{
+
+void Serializer::deserialize(QString filePath, Sprite& sprite) {
 
 }
