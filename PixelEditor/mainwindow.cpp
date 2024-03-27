@@ -2,7 +2,7 @@
 #include "ui_mainwindow.h"
 #include "previewwindow.h"
 #include <QPainter>
-//#include "framewindow.h"
+
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -12,6 +12,8 @@ MainWindow::MainWindow(QWidget *parent)
 
     FrameWindow *fw = ui->canvas;
     PreviewWindow *pw = ui->previewLabel;
+    FrameTimeline *ft = ui->frameTimeline;
+
     colorDialog = new QColorDialog();
 
     //Window title
@@ -34,6 +36,11 @@ MainWindow::MainWindow(QWidget *parent)
     QSize eraserImageSize(40,40);
     ui->EraserButton->setIcon(eraserPixmap);
     ui->EraserButton->setIconSize(eraserImageSize);
+
+
+
+
+
 
     //VIEW -----> VIEW
     //On color palette button clicked, chose a color
@@ -73,13 +80,37 @@ MainWindow::MainWindow(QWidget *parent)
             &FrameWindow::sendPixmapData,
             pw,
             &PreviewWindow::recievePixmapData);
+
+    //tell the FrameWindowClass that the addFrame button was clicked
+    connect(ui->addFrameButton,
+            &QPushButton::clicked,
+            ft,
+            &FrameTimeline::addFrame);
+
+    //tell the FrameTimeline that the deleteFrame button was clicked
+    connect(ui->deleteFrameButton,
+            &QPushButton::clicked,
+            ft,
+            &FrameTimeline::removeFrame);
+
+    //tell the FrameTimeline that the active frame would like to move left on the timeline
+    connect(ui->moveFrameLeftButton,
+           &QPushButton::clicked,
+           ft,
+            &FrameTimeline::moveLeft);
+
+    //tell the FrameTimeline that the active frame would like to move right on the timeline
+    connect(ui->moveFrameRightButton,
+           &QPushButton::clicked,
+           ft,
+            &FrameTimeline::moveRight);
 }
 
 
 void MainWindow::on_colorPicker_clicked()
 {
     // The colorSelected signal will now be connected to the handleColorSelected slot.
-    QColor selectedColor = QColorDialog::getColor(Qt::black, this, tr("Select Color"));
+    QColor selectedColor = QColorDialog::getColor(currentColor, this, tr("Select Color"));
     emit colorChanged(selectedColor);
     currentColor = selectedColor;
 }
@@ -88,3 +119,6 @@ MainWindow::~MainWindow()
 {
     delete ui;
 }
+
+
+

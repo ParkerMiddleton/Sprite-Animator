@@ -18,11 +18,16 @@ private:
     QPixmap *currentPixmap;
 
 public:
-    explicit PreviewWindow(QWidget *parent = 0);
+    explicit PreviewWindow(QWidget *parent = nullptr);
 
 
 
 public slots:
+
+    ///
+    /// \brief recievePixmapData
+    /// \param sentPixmap
+    ///
     void recievePixmapData(QPixmap *sentPixmap);
 
 

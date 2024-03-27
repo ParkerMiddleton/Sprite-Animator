@@ -24,7 +24,7 @@ void Frame::setLayerIndex(int input){
 
 void Frame::mergeLayers(){
     Layer tempLayer(width, height);
-    for(Layer l:layers){
+    for(Layer i :layers){
 
     }
 }

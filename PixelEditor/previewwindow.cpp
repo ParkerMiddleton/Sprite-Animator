@@ -7,8 +7,6 @@ PreviewWindow::PreviewWindow(QWidget *parent)
     if(currentPixmap != nullptr){
         setPixmap(*currentPixmap);
     }
-
-
 }
 
 //Slot: Get data from the canvas

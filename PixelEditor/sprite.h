@@ -2,7 +2,7 @@
 #define SPRITE_H
 
 #include <QColor>
-#include <vector>
+#include <QVector>
 #include <QList>
 
 class Layer {

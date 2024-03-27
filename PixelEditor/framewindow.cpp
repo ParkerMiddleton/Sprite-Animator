@@ -10,7 +10,7 @@
 FrameWindow::FrameWindow(QWidget *parent) :
     QLabel(parent), pressed(0)
 {
-    connect(dynamic_cast<MainWindow*>(parent), &MainWindow::colorChanged, this, &FrameWindow::setDrawingColor);
+    //connect(dynamic_cast<MainWindow*>(parent), &MainWindow::colorChanged, this, &FrameWindow::setDrawingColor);
 
     /*
     Known Issue: We want the label contained within the gridLayout object to match the height and width
@@ -20,6 +20,8 @@ FrameWindow::FrameWindow(QWidget *parent) :
 
     int frameWidth = 750;
     int frameHeight= 500;
+
+
 
     pixmap = new QPixmap(frameWidth, frameHeight);
 
