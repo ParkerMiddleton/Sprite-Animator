@@ -9,19 +9,19 @@ CONFIG += c++17
 
 SOURCES += \
     brush.cpp \
+    filesystem.cpp \
     framewindow.cpp \
     main.cpp \
     mainwindow.cpp \
     previewwindow.cpp \
-    serializer.cpp \
     spritemodel.cpp
 
 HEADERS += \
     brush.h \
+    filesystem.h \
     framewindow.h \
     mainwindow.h \
     previewwindow.h \
-    serializer.h \
     spritemodel.h
 
 FORMS += \

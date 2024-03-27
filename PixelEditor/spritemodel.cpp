@@ -1,61 +1,67 @@
 #include "spritemodel.h"
 
-#include "serializer.h"
-
 #include <QJsonObject>
 #include <QJsonArray>
 
 //++========================+
 // LAYER CLASS DEFINITION
 
-Layer::Layer(uint width, uint height)
-	: width(width)
-	, height(height)
+Layer::Layer(Sprite *parentSprite)
+	: parentSprite(parentSprite)
 {
-	pixels = new uchar[width * height * 4];
+	pixels.resize(this->parentSprite->getWidth() * this->parentSprite->getHeight());
 }
 
-Layer::~Layer()
+void Layer::setPixel(int x, int y, QColor color, int brushSize)
 {
-	if (pixels) delete[] pixels;
+	pixels[x + y * parentSprite->getWidth()] = color;
 }
 
-void Layer::setPixel(uint x, uint y, QColor color)
+Layer Layer::fromJson(const QJsonObject &json, Sprite *parentSprite)
 {
-	uint pxy = x + y * width;
+	Layer layer(parentSprite);
 
-	if (pxy < (width * height))
+	if (const QJsonValue &jsonVal = json["pixels"]; jsonVal.isArray())
 	{
-		pxy *= 4;
-		pixels[pxy + 0] = color.red();
-		pixels[pxy + 1] = color.green();
-		pixels[pxy + 2] = color.blue();
-		pixels[pxy + 3] = color.alpha();
-	}
-}
+		const QJsonArray &jsonPixels = jsonVal.toArray();
 
-Layer Layer::fromJson(const QJsonObject &json)
-{
-	Layer layer;
+		int pixelIndex = 0;
+		for (const QJsonValue &jsonPixelVal : jsonPixels)
+		{
+			const QJsonObject &pixelJson = jsonPixelVal.toObject();
+
+			if (const QJsonValue &red = pixelJson["r"]; red.isDouble())
+				layer.pixels[pixelIndex].setRed(red.toInt());
+			if (const QJsonValue &green = pixelJson["g"]; green.isDouble())
+				layer.pixels[pixelIndex].setGreen(green.toInt());
+			if (const QJsonValue &blue = pixelJson["b"]; blue.isDouble())
+				layer.pixels[pixelIndex].setBlue(blue.toInt());
+			if (const QJsonValue &alpha = pixelJson["a"]; alpha.isDouble())
+				layer.pixels[pixelIndex].setAlpha(alpha.toInt());
+
+			pixelIndex++;
+		}
+	}
+
+	return layer;
 }
 
 QJsonObject Layer::toJson() const
 {
 	QJsonObject json;
-	QJsonArray pixelsArray;
+	QJsonArray jsonPixels;
 
-	for (uint index = 0; index < (width * height); index++)
+	for (const QColor &pixel : pixels)
 	{
 		QJsonObject pixelJson;
-		int pxy = index * 4;
-		pixelJson["r"] = pixels[pxy + 0];
-		pixelJson["g"] = pixels[pxy + 1];
-		pixelJson["b"] = pixels[pxy + 2];
-		pixelJson["a"] = pixels[pxy + 3];
-		pixelsArray.append(pixelJson);
+		pixelJson["r"] = pixel.red();
+		pixelJson["g"] = pixel.green();
+		pixelJson["b"] = pixel.blue();
+		pixelJson["a"] = pixel.alpha();
+		jsonPixels.append(pixelJson);
 	}
 
-	json["pixels"] = pixelsArray;
+	json["pixels"] = jsonPixels;
 
 	return json;
 }
@@ -63,56 +69,69 @@ QJsonObject Layer::toJson() const
 //++========================+
 // FRAME CLASS DEFINITION
 
-Frame::Frame(int width, int height)
-	: mergedLayer(width, height)
-	, width(width)
-	, height(height)
+Frame::Frame(Sprite *parentSprite)
+	: parentSprite(parentSprite)
 {
-	addLayer();
+	this->addLayer();
 }
 
 void Frame::addLayer()
 {
-	Layer newLayer(width, height);
-	layers.push_back(newLayer);
+	layers.push_back(Layer(parentSprite));
 }
 
 void Frame::removeLayer()
 {
-	layers.remove(layerIndex);
+	layers.remove(currentLayerIndex);
 }
 
-void Frame::setLayerIndex(int input)
+void Frame::selectLayer(int layerIndex)
 {
-	layerIndex = input;
+	currentLayerIndex = layerIndex;
 }
 
 void Frame::mergeLayers()
 {
-	Layer tempLayer(width, height);
+	Layer tempLayer(parentSprite);
 
-	for(Layer l:layers)
+	for (Layer l:layers)
 	{
 
 	}
 }
 
-QList<QColor> Frame::getMergedLayer()
+QList<QColor> Frame::getImage()
 {
-	return mergedLayer.pixels;
+	return mergedLayer->pixels;
+}
+
+Frame Frame::fromJson(const QJsonObject &json, Sprite *parentSprite)
+{
+	Frame frame(parentSprite);
+
+	if (const QJsonValue &jsonVal = json["layers"]; jsonVal.isArray())
+	{
+		const QJsonArray &jsonLayers = jsonVal.toArray();
+		frame.layers.reserve(jsonLayers.size());
+
+		for (const QJsonValue &jsonLayerVal : jsonLayers)
+			frame.layers.append(Layer::fromJson(jsonLayerVal.toObject(), parentSprite));
+	}
+
+	return frame;
 }
 
 QJsonObject Frame::toJson() const
 {
 	QJsonObject json;
-	QJsonArray layersArray;
+	QJsonArray jsonLayers;
 
 	for (const Layer &layer : layers)
 	{
-		layersArray.append(layer.toJson());
+		jsonLayers.append(layer.toJson());
 	}
 
-	json["layers"] = layersArray;
+	json["layers"] = jsonLayers;
 
 	return json;
 }
@@ -121,79 +140,103 @@ QJsonObject Frame::toJson() const
 // SPRITE CLASS DEFINITION
 
 Sprite::Sprite(int width, int height)
-	: width(height)
+	: width(width)
 	, height(height)
-{
-
-}
-
-void Sprite::setPixel(int x, int y, int BrushSize)
-{
-
-}
-
-void Sprite::erasePixel(int x, int y, int BrushSize)
 {
 
 }
 
 void Sprite::addFrame()
 {
-	frames.push_back(Frame(width, height));
+	frames.push_back(Frame(this));
 }
 
-void Sprite::nextFrame()
+void Sprite::moveFrameForward()
 {
-	frameIndex++;
+	// List manipulation.
 }
 
-void Sprite::previousFrame()
+void Sprite::moveFrameBackward()
 {
-	frameIndex--;
+	// List manipulation.
 }
 
-void Sprite::deleteFrame()
+void Sprite::removeFrame()
 {
-	frames.removeAt(frameIndex);
+	frames.removeAt(currentFrameIndex);
 }
 
-void Sprite::selectLayer(int layerIndex)
+void Sprite::selectFrame(int frameIndex)
 {
-	frames[frameIndex].setLayerIndex(layerIndex);
+	currentFrameIndex = frameIndex;
 }
 
-void Sprite::addLayerToCurrentFrame()
+QString Sprite::getName()
 {
-	frames[frameIndex].addLayer();
+	return name;
 }
 
-void Sprite::saveSprite()
+int Sprite::getWidth()
 {
-	//Serializer::serialize(*this);
+	return width;
 }
 
-void Sprite::loadSprite(QString filePath)
+int Sprite::getHeight()
 {
-	//Serializer::deserialize(filePath, *this);
+	return height;
 }
 
-QList<QColor> Sprite::getFrameImage()
+Sprite* Sprite::fromJson(const QJsonObject &json)
 {
-	return frames[frameIndex].getMergedLayer();
+	Sprite *sprite = nullptr;
+
+	const QJsonValue &jsonName = json["name"];
+	const QJsonValue &jsonWidth = json["width"];
+	const QJsonValue &jsonHeight = json["height"];
+
+	if (jsonName.isString() &&
+		jsonWidth.isDouble() &&
+		jsonHeight.isDouble())
+	{
+		sprite = new Sprite();
+
+		sprite->name = jsonName.toString();
+		sprite->width = jsonWidth.toInt();
+		sprite->height = jsonHeight.toInt();
+
+		if (const QJsonValue jsonFramesVal = json["frams"]; jsonFramesVal.isArray())
+		{
+			const QJsonArray &jsonFrames = jsonFramesVal.toArray();
+			sprite->frames.reserve(jsonFrames.size());
+
+			for (const QJsonValue &jsonFrameVal : jsonFrames)
+				sprite->frames.append(Frame::fromJson(jsonFrameVal.toObject(), sprite));
+		}
+	}
+
+	return sprite;
 }
 
 QJsonObject Sprite::toJson() const
 {
 	QJsonObject json;
 	json["name"] = name;
-	QJsonArray layersArray;
+	json["width"] = width;
+	json["height"] = height;
+
+	QJsonArray jsonFrames;
 
 	for (const Frame &frame : frames)
 	{
-		layersArray.append(frame.toJson());
+		jsonFrames.append(frame.toJson());
 	}
 
-	json["frames"] = layersArray;
+	json["frames"] = jsonFrames;
 
 	return json;
+}
+
+Sprite::Sprite()
+{
+
 }

@@ -10,126 +10,77 @@ class Sprite;
 class Layer
 {
 public:
-	uchar *pixels;
-	uint width, height;
+	QList<QColor> pixels;
 
-	Layer(uint width, uint height);
-	~Layer();
+	Layer(Sprite *parentSprite);
 
-	void setPixel(uint x, uint y, QColor color);
+	void setPixel(int x, int y, QColor color, int brushSize);
 
-	static Layer fromJson(const QJsonObject &json);
+	static Layer fromJson(const QJsonObject &json, Sprite *parentSprite);
 	QJsonObject toJson() const;
+
+private:
+	Sprite *parentSprite;
 
 };
 
 class Frame
 {
 public:
-    Frame(int width, int height);
+	Frame(Sprite *parentSprite);
 
-    /**
-     * @brief addLayer Adds a new Layer to the frame.
-     */
-    void addLayer();
+	void addLayer();
+	void removeLayer();
 
-    void removeLayer();
+	void selectLayer(int layerIndex);
+	void mergeLayers();
 
-    /**
-     * @brief mergeLayers merges all Layers into final image
-     */
-    void mergeLayers();
+	QList<QColor> getImage();
 
-    void setLayerIndex(int);
-
-    QList<QColor> getMergedLayer();
-
-	static Frame fromJson(const QJsonObject &json);
+	static Frame fromJson(const QJsonObject &json, Sprite *parentSprite);
 	QJsonObject toJson() const;
 
 private:
-    QList<Layer> layers;
-    Layer mergedLayer;
-    int layerIndex;
-    int width;
-    int height;
+	Sprite *parentSprite;
+
+	QList<Layer> layers;
+	int currentLayerIndex;
+
+	Layer *mergedLayer;
 
 };
 
 class Sprite
 {
 public:
-    Sprite(int width, int height);
+	Sprite(int width, int height);
 
-    /**
-     * @brief draw Draws a pixel on the current layer of current frame.
-     * @param x, location x
-     * @param y, location y
-     * @param BrushSize, length of the square to be drawn.
-     */
+	void addFrame();
 
-    void setPixel(int x, int y, int BrushSize);
-    /**
-     * @brief erase Erases a pixel on the current layer of the current frame.
-     * @param x
-     * @param y
-     * @param size
-     */
+	void moveFrameForward();
+	void moveFrameBackward();
+	void removeFrame();
 
-    void erasePixel(int x, int y, int size);
-    /**
-     * @brief addFrame Adds a new frame to the sprite.
-     */
+	void selectFrame(int frameIndex);
 
-    void addFrame();
-    /**
-     * @brief nextFrame Cycles to the next frame.
-	 */
+	QString getName();
+	int getWidth();
+	int getHeight();
 
-    void nextFrame();
-    /**
-     * @brief previousFrame Cycles to the previous frame.
-     */
-    void previousFrame();
-    /**
-     * @brief deleteFrame Deletes the current frame.
-     */
-    void deleteFrame();
-    /**
-     * @brief selectLayer selects a layer from the current Frame
-     * @param layerIndex
-     */
-    void selectLayer(int layerIndex);
-    /**
-     * @brief addLayerToCurrentFrame
-     */
-    void addLayerToCurrentFrame();
-    /**
-     * @brief saveSprite Writes sprite to a json.
-     */
-    void saveSprite();
-    /**
-     * @brief loadSprite Loads sprite from a json.
-     * @param filePath
-     */
-    void loadSprite(QString filePath);
-    /**
-     * @brief getImage From the current frame, retrieve a merged image of all its layers.
-     * @return
-     */
-    QList<QColor> getFrameImage();
-
-	static Sprite fromJson(const QJsonObject &json);
+	static Sprite* fromJson(const QJsonObject &json);
 	QJsonObject toJson() const;
 
 private:
-    QList<Frame> frames;
 	int width;
 	int height;
-	int frameIndex;
-	int fps;
 	QString name;
 
+	QList<Frame> frames;
+	int currentFrameIndex;
+
+	int fps;
+
+	Sprite(); // JSON constructor. Might become obsolete later.
 };
 
 #endif // SPRITEMODEL_H
