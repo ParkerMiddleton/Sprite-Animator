@@ -12,6 +12,8 @@ SOURCES += \
     frameicon.cpp \
     frametimeline.cpp \
     framewindow.cpp \
+    layericon.cpp \
+    layerplacementeditor.cpp \
     main.cpp \
     mainwindow.cpp \
     previewwindow.cpp \
@@ -22,6 +24,8 @@ HEADERS += \
     frameicon.h \
     frametimeline.h \
     framewindow.h \
+    layericon.h \
+    layerplacementeditor.h \
     mainwindow.h \
     previewwindow.h \
     sprite.h

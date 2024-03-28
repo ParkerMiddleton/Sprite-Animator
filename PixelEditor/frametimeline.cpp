@@ -8,6 +8,7 @@ FrameTimeline::FrameTimeline(QWidget *parent)
     framesInUse = new QVector<FrameIcon*>();
     qDebug() <<  parent->frameSize();
     layout= new QHBoxLayout();
+    layout->setAlignment(Qt::AlignLeft);
     this->setLayout(layout);
     addFrame();
 }

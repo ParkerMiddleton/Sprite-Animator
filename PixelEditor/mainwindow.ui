@@ -249,19 +249,6 @@ color: rgb(255, 255, 255);</string>
       <string>Eraser Size</string>
      </property>
     </widget>
-    <widget class="QLabel" name="currentColorDisplay">
-     <property name="geometry">
-      <rect>
-       <x>10</x>
-       <y>200</y>
-       <width>61</width>
-       <height>61</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string/>
-     </property>
-    </widget>
     <widget class="QLabel" name="currentColorText">
      <property name="geometry">
       <rect>
@@ -485,7 +472,7 @@ border: none;</string>
       <string>Remove Layer</string>
      </property>
     </widget>
-    <widget class="QWidget" name="gridLayoutWidget_4">
+    <widget class="LayerPlacementEditor" name="layerPlacer">
      <property name="geometry">
       <rect>
        <x>10</x>
@@ -494,7 +481,19 @@ border: none;</string>
        <height>51</height>
       </rect>
      </property>
-     <layout class="QGridLayout" name="layersGrid"/>
+     <property name="widgetResizable">
+      <bool>true</bool>
+     </property>
+     <widget class="QWidget" name="layerPlacementContents">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>197</width>
+        <height>47</height>
+       </rect>
+      </property>
+     </widget>
     </widget>
    </widget>
    <widget class="QLabel" name="layersText">
@@ -774,7 +773,7 @@ text-align: center;</string>
      <x>0</x>
      <y>0</y>
      <width>968</width>
-     <height>17</height>
+     <height>21</height>
     </rect>
    </property>
    <property name="styleSheet">
@@ -817,6 +816,12 @@ color: rgb(2, 2, 2);</string>
    <class>FrameTimeline</class>
    <extends>QScrollArea</extends>
    <header location="global">frametimeline.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>LayerPlacementEditor</class>
+   <extends>QScrollArea</extends>
+   <header location="global">layerplacementeditor.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

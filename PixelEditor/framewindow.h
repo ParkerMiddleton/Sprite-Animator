@@ -7,6 +7,7 @@
 #include <QPixmap>
 #include <QMouseEvent>
 
+
 class FrameWindow : public QLabel
 {
 
