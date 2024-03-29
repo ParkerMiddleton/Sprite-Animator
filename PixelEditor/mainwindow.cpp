@@ -38,6 +38,11 @@ MainWindow::MainWindow(QWidget *parent)
 	ui->EraserButton->setIcon(eraserPixmap);
 	ui->EraserButton->setIconSize(eraserImageSize);
 
+	connect(this,
+			&MainWindow::saveSpriteRequested,
+			fw,
+			&FrameWindow::saveSprite);
+
 	//VIEW -----> VIEW
 	//On color palette button clicked, chose a color
 	connect(ui->ColorPaletteButton,
@@ -83,6 +88,7 @@ void MainWindow::on_colorPicker_clicked()
 {
 	// The colorSelected signal will now be connected to the handleColorSelected slot.
 	QColor selectedColor = QColorDialog::getColor(Qt::black, this, tr("Select Color"));
+	QTextStream(stdout) << "Color changed\n";
 	emit colorChanged(selectedColor);
 	currentColor = selectedColor;
 }
@@ -97,15 +103,13 @@ void MainWindow::on_actionOpenSprite_triggered()
 	QString filename = QFileDialog::getOpenFileName(this, tr("Open"), "", tr("Sprite (*.ssp)"));
 }
 
-
 void MainWindow::on_actionSaveSprite_triggered()
 {
 	QString filename = QFileDialog::getSaveFileName(this, tr("Save"), "", tr("Sprite (*.ssp)"));
+	emit saveSpriteRequested(filename);
 }
-
 
 void MainWindow::on_actionSaveSpriteAs_triggered()
 {
 	QString filename = QFileDialog::getSaveFileName(this, tr("Save as"), "", tr("Sprite (*.ssp)"));
 }
-

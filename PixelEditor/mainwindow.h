@@ -33,6 +33,9 @@ public slots:
 signals:
 	void colorChanged(const QColor &color);
 
+	void saveSpriteRequested(const QString &string);
+	void openSpriteRequested(const QString &string);
+
 private slots:
 	void on_actionOpenSprite_triggered();
 
