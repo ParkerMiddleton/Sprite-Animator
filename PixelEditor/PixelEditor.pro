@@ -9,7 +9,11 @@ CONFIG += c++17
 
 SOURCES += \
     brush.cpp \
+    frameicon.cpp \
+    frametimeline.cpp \
     framewindow.cpp \
+    layericon.cpp \
+    layerplacementeditor.cpp \
     main.cpp \
     mainwindow.cpp \
     previewwindow.cpp \
@@ -17,7 +21,11 @@ SOURCES += \
 
 HEADERS += \
     brush.h \
+    frameicon.h \
+    frametimeline.h \
     framewindow.h \
+    layericon.h \
+    layerplacementeditor.h \
     mainwindow.h \
     previewwindow.h \
     sprite.h

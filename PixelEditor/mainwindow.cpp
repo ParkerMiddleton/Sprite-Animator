@@ -1,7 +1,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include "previewwindow.h"
 #include <QPainter>
+
 //#include "framewindow.h"
 
 MainWindow::MainWindow(QWidget *parent)
@@ -12,7 +12,10 @@ MainWindow::MainWindow(QWidget *parent)
 
     FrameWindow *fw = ui->canvas;
     PreviewWindow *pw = ui->previewLabel;
-    colorDialog = new QColorDialog();
+    FrameTimeline *ft = ui->frameTimeline;
+    LayerPlacementEditor *lpe = ui->layerPlacer;
+
+     colorDialog = new QColorDialog();
 
     //Window title
     setWindowTitle("Seg Fault Sprite Editor");
@@ -73,6 +76,30 @@ MainWindow::MainWindow(QWidget *parent)
             &FrameWindow::sendPixmapData,
             pw,
             &PreviewWindow::recievePixmapData);
+
+    //adds a frame to the timeline
+    connect(ui->addFrameButton,
+            &QPushButton::clicked,
+            ft,
+            &FrameTimeline::addFrame);
+
+    //delete a frame to the timeline
+    connect(ui->deleteFrameButton,
+            &QPushButton::clicked,
+            ft,
+            &FrameTimeline::removeFrame);
+
+    // adds a layer to a specified frame
+    connect(ui->addLayer,
+            &QPushButton::clicked,
+            lpe,
+            &LayerPlacementEditor::addLayer);
+
+    //delete a layer from the end of a frame
+    connect(ui->addLayer,
+            &QPushButton::clicked,
+            lpe,
+            &LayerPlacementEditor::removeLayer);
 }
 
 
