@@ -47,7 +47,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->ColorPaletteButton,
             &QPushButton::clicked,
             this,
-            &MainWindow::on_colorPicker_clicked);
+            &MainWindow::colorPickerClicked);
 
 
     // Send chosen color to the frame window to be used
@@ -99,15 +99,54 @@ MainWindow::MainWindow(QWidget *parent)
            ft,
             &FrameTimeline::moveLeft);
 
+<<<<<<< Updated upstream
     //tell the FrameTimeline that the active frame would like to move right on the timeline
     connect(ui->moveFrameRightButton,
            &QPushButton::clicked,
            ft,
             &FrameTimeline::moveRight);
+=======
+    //delete a layer from the end of a frame
+    connect(ui->addLayer,
+            &QPushButton::clicked,
+            lpe,
+            &LayerPlacementEditor::removeLayer);
+
+    connect(ui->addFrameButton,
+            &QPushButton::clicked,
+            fw,
+            &FrameWindow::newFrame);
+
+    connect(ui->moveFrameLeftButton,
+            &QPushButton::clicked,
+            fw,
+            &FrameWindow::loadPreviousFrame);
+
+    // grab the current active frame
+    // get the object assocaited to that index,
+
+
+        connect(ft,
+            &FrameTimeline::sendIconID,
+            fw,
+            &FrameWindow::displayActiveFrame);
+
+    connect(ui->playAnimationButton,
+                &QPushButton::clicked,
+                fw,
+                &FrameWindow::sendSprite);
+
+
+    // //makes the button appear enabled
+    // connect(fw,
+    //         &FrameWindow::highlightPencil,
+    //         ui->PencilButton,
+    //         &QPushButton::setFlat);
+>>>>>>> Stashed changes
 }
 
 
-void MainWindow::on_colorPicker_clicked()
+void MainWindow::colorPickerClicked()
 {
     // The colorSelected signal will now be connected to the handleColorSelected slot.
     QColor selectedColor = QColorDialog::getColor(currentColor, this, tr("Select Color"));

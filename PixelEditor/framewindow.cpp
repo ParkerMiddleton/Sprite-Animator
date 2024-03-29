@@ -3,63 +3,54 @@
 #include <QPainter>
 #include <QDebug>
 #include <QSizePolicy>
-#include "mainwindow.h"
 //#include "previewwindow.h"
+#include "sprite.h"
 
 //Constructor
 FrameWindow::FrameWindow(QWidget *parent) :
     QLabel(parent), pressed(0)
 {
+<<<<<<< Updated upstream
     //connect(dynamic_cast<MainWindow*>(parent), &MainWindow::colorChanged, this, &FrameWindow::setDrawingColor);
+=======
+    eraserEnabled = false;
+    pencilEnabled = true;
+    frameWidth = 750 / 10;
+    frameHeight= 500 / 10;
+    sprite = new Sprite(frameWidth, frameHeight);
+    spriteName = "sprite_" + QString::number(sprites.size());
+    sprites.insert(spriteName, sprite);
+>>>>>>> Stashed changes
 
-    /*
-    Known Issue: We want the label contained within the gridLayout object to match the height and width
-    of its parent container. As of now, this isnt working properly. Hard coded pixmap sizes are used below,
-    but we should be able to use this->height() and this->width() respectively.
-    */
+    // test loop to fill sprite
+    //for (int var = 0; var < 100; ++var) {
+    //sprite->setPixel(var, var, 0, Qt::blue);
+    //}
 
+<<<<<<< Updated upstream
     int frameWidth = 750;
     int frameHeight= 500;
 
 
 
     pixmap = new QPixmap(frameWidth, frameHeight);
+=======
+    pixmap = new QPixmap(750, 500);
+>>>>>>> Stashed changes
 
     pixmap->fill(Qt::transparent);
-    // // Fill the label with an array of transparent pixels
-    // pixmap = new QPixmap(frameWidth, frameHeight); // random values here are of the gridlayout's height and width
 
-    // //Fill the map with transparent pixels
-    // pixmap->fill(Qt::transparent);
-
-    // //Tells the QPainter object that this is the object we are drawing.
-    // QPainter painter (pixmap);
-
-    // //Draw the pixels
-    // int checkerSize = 10;
-    // for (int y = 0; y < frameHeight; y += checkerSize) { // height
-    //     for (int x = 0; x < frameWidth; x += checkerSize) { // width
-    //         if ((x / checkerSize + y / checkerSize) % 2 == 0) {
-    //             painter.fillRect(x, y, checkerSize, checkerSize, Qt::lightGray);
-    //         }else{
-    //             painter.fillRect(x, y, checkerSize, checkerSize, QColor::fromRgb(255, 255, 255,255));
-    //         }
-    //     }
-    // }
-    // // End painting
-    // painter.end();
-
-    // Set the pixmap as the label's pixmap
-    setPixmap(*pixmap);
-
-    // Set the default color
-    color = Qt::black;
+    // drawing background using sprite
+    //loadFrame();
 }
+
+
 //Destructor
 FrameWindow::~FrameWindow(){
     if(pixmap){
         delete pixmap;
     }
+    delete sprite;
 }
 
 //Paint event
@@ -67,7 +58,10 @@ void FrameWindow::paintEvent(QPaintEvent *){
     QPainter p(this);
     p.drawPixmap(0,0,*pixmap);
 
+    // make sure this doesnt get emitted when a bool playbuttonclicked is true.
+    //otherwise... horrible, undefined behavior.
     emit sendPixmapData(pixmap);
+
 
 }
 
@@ -81,69 +75,91 @@ void FrameWindow::mouseReleaseEvent(QMouseEvent *){pressed = 0;}
 
 void FrameWindow::mouseMoveEvent(QMouseEvent *e) { draw(e); }
 
-void FrameWindow::draw(QMouseEvent *e) {
-    if (pressed && pencilEnabled && !eraserEnabled) {
-        QPainter painter(pixmap);
+void FrameWindow::loadFrame() {
+    setPixmap(*pixmap);
+    QPainter painter(pixmap);
+    int x = 0;
+    int y = 0;
+    for(QColor q : sprite->getFrameImage()){
+        // only draw pixels that are needed
+        QPen defaultPen(q,10);
         int pixelSize = 10;
         int offSet = pixelSize / 2;
-        QPen defaultPen(color,pixelSize);
-
         painter.setPen(defaultPen);
-        int x = e->pos().x();
-        int y = e->pos().y();
-
-        painter.drawPoint(x - (x % pixelSize) + offSet, y - (y % pixelSize) + offSet);
-        repaint();
+        painter.drawPoint(x * 10 - (x * 10 % pixelSize) + 1 + offSet, y * 10 - (y * 10 % pixelSize) + offSet);
+        x++;
+        if(x == frameWidth)
+        {
+            x = 0;
+            y++;
+        }
     }
-    // eraser
-    else if(pressed && !pencilEnabled && eraserEnabled) {
-        int x = e->pos().x();
-        int y = e->pos().y();
-
-        QPainter painter(pixmap);
-        int pixelSize = 10;
-        int offSet = pixelSize / 2;
-        QColor backGroundColor;
-
-        QPen defaultPen(color,pixelSize);
-        defaultPen.setColor(QColor::fromRgb(0,0,0,0));
-
-        painter.setPen(defaultPen);
-
-
-
-        /// Tommy's idea here, please dont delete
-
-      //   if((x / 10) % 2 == 0){
-      //       if((y/10) % 2 == 0){
-      //           backGroundColor = Qt::lightGray;
-      //       }
-      //       else{
-      //           backGroundColor = QColor::fromRgb(255, 255, 255);
-      //       }
-      //   }
-      //   else{
-      //       if((y/10) % 2 == 0){
-      //           backGroundColor = QColor::fromRgb(255, 255, 255);
-      //       }
-      //       else{
-      //           backGroundColor = Qt::lightGray;
-      //       }
-      //   }
-
-      //   QPen defaultPen(backGroundColor,pixelSize);
-      //   painter.setPen(defaultPen);
-        // draw with transparent color
-        //QPen defaultPen(Qt::transparent,pixelSize);
-
-        //painter.setPen(defaultPen);
-
-
-        painter.eraseRect(x - (x % pixelSize) + offSet, y - (y % pixelSize) + offSet,10,10);
-        update();
-    }
+    repaint();
 }
 
+void FrameWindow::drawFrame(int x, int y, int spriteX, int spriteY) {
+    setPixmap(*pixmap);
+    QPainter painter(pixmap);
+    QList<QColor> tempList = sprite->getFrameImage();
+    int pixelSize = 10;
+    int offSet = (pixelSize / 2);
+    QPen defaultPen(tempList[spriteX + (frameWidth * spriteY)],10);
+    painter.setPen(defaultPen);
+    painter.drawPoint(x - (x % pixelSize) + offSet + 1, y - (y % pixelSize) + offSet);
+    repaint();
+}
+
+void FrameWindow::erase(int x, int y) {
+    int pixelSize = 10;
+    int offSet = (pixelSize / 2);
+    QColor backGroundColor = Qt::transparent;
+    QPainter painter(pixmap);
+    if((x / 10) % 2 == 0){
+        if((y/10) % 2 == 0){
+            backGroundColor = Qt::lightGray;
+        }
+        else{
+            backGroundColor = QColor::fromRgb(255, 255, 255, 255);
+        }
+    }
+    else{
+        if((y/10) % 2 == 0){
+            backGroundColor = QColor::fromRgb(255, 255, 255, 255);
+        }
+        else{
+            backGroundColor = Qt::lightGray;
+        }
+    }
+    QPen defaultPen(backGroundColor,10);
+    painter.setPen(defaultPen);
+    painter.drawPoint(x - (x % pixelSize) + offSet + 1, y - (y % pixelSize) + offSet);
+    //draw with transparent color
+    repaint();
+}
+
+void FrameWindow::draw(QMouseEvent *e) {
+    int mouseX = e->pos().x();
+    int mouseY = e->pos().y();
+
+    int spriteX = mouseX / 10;
+    int spriteY = mouseY / 10;
+
+    if (pressed == 1 && pencilEnabled && !eraserEnabled) {
+        if (mouseX >= 0 && mouseX <= frameWidth * 10 && mouseY >= 0 && mouseY <= frameHeight * 10) {
+            sprite->setPixel(spriteX, spriteY, 10, color);
+            drawFrame(mouseX, mouseY, spriteX, spriteY);
+        }
+    }
+    // eraser
+    else if(pressed == 1 && !pencilEnabled && eraserEnabled) {
+        if (mouseX >= 0 && mouseX <= frameWidth * 10 && mouseY >= 0 && mouseY <= frameHeight * 10) {
+            QColor transparent = QColor(0, 0, 0, 0);
+            sprite->setPixel(spriteX, spriteY, 10, transparent);
+            drawFrame(mouseX, mouseY, spriteX, spriteY);
+            erase(mouseX, mouseY);
+        }
+    }
+}
 
 void FrameWindow::setDrawingColor(const QColor &newColor) {
     //qDebug() << newColor;
@@ -166,4 +182,36 @@ void FrameWindow::setEraserEnabled(){
         eraserEnabled = true;
         pencilEnabled = false;
     }
+}
+
+void FrameWindow::newFrame() {
+    // add new frame
+    sprite->addFrame();
+    // fill pix map transparent
+    pixmap->fill(Qt::transparent);
+    // increment frame
+   // sprite->nextFrame();
+    // load new frame
+    loadFrame();
+}
+
+void FrameWindow::loadPreviousFrame() {
+    sprite->previousFrame();
+    pixmap->fill(Qt::transparent);
+    loadFrame();
+}
+
+void FrameWindow::displayActiveFrame(int id){
+
+    qDebug() << id;
+
+    sprite->setFrameID(id);
+    pixmap->fill(Qt::transparent);
+    loadFrame();
+
+}
+
+void FrameWindow::sendSprite(){
+    //playbutton clicked = true
+    emit sendData(sprite);
 }

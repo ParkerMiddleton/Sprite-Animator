@@ -29,11 +29,16 @@ public:
     ~MainWindow();
 
 public slots:
+<<<<<<< Updated upstream
     ///
     /// \brief on_colorPicker_clicked triggers whenever the user
     /// clicks a color palette button
     ///
     void on_colorPicker_clicked();
+=======
+   void colorPickerClicked();
+
+>>>>>>> Stashed changes
 
 
 signals:

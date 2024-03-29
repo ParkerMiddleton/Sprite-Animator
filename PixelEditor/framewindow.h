@@ -6,6 +6,10 @@
 #include <QPaintDevice>
 #include <QPixmap>
 #include <QMouseEvent>
+<<<<<<< Updated upstream
+=======
+#include "sprite.h"
+>>>>>>> Stashed changes
 
 class FrameWindow : public QLabel
 {
@@ -16,10 +20,12 @@ class FrameWindow : public QLabel
 private:
     QPixmap *pixmap;
     QColor color;
+    Sprite *sprite;
     int pressed;
     bool pencilEnabled;
     bool eraserEnabled; // actually disables and enables
-
+    QMap<QString, Sprite*> sprites;
+    QString spriteName;
     void draw(QMouseEvent *e);
 
 public:
@@ -34,12 +40,22 @@ public:
     /// memory managment
     ///
     ~FrameWindow();
+    void drawFrame(int x, int y, int spriteX, int spriteY);
+    void loadFrame();
+    void erase(int x, int y);
+    int frameWidth;
+    int frameHeight;
 
 public slots:
 
     void setDrawingColor(const QColor &newColor);
     void setBrushEnabled();
     void setEraserEnabled();
+    void newFrame();
+    void loadPreviousFrame();
+    void displayActiveFrame(int id);
+    void sendSprite();
+
 
 signals:
     void informViewOfPencilEnabled(bool);
@@ -50,6 +66,7 @@ signals:
     /// \param p the active pixmap
     ///
     void sendPixmapData(QPixmap *p);
+    void sendData(Sprite *s);
 
 protected:
 

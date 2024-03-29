@@ -4,6 +4,7 @@
 #include <QWidget>
 #include <QLabel>
 #include <QPainter>
+#include "Sprite.h"
 
 
 ///
@@ -16,20 +17,26 @@ class PreviewWindow : public QLabel
     Q_OBJECT
 private:
     QPixmap *currentPixmap;
+    Sprite *sprite;
 
 public:
     explicit PreviewWindow(QWidget *parent = nullptr);
 
-
+    void playAnimation();
 
 public slots:
+<<<<<<< Updated upstream
 
     ///
     /// \brief recievePixmapData
     /// \param sentPixmap
     ///
     void recievePixmapData(QPixmap *sentPixmap);
+=======
+>>>>>>> Stashed changes
 
+    void recievePixmapData(QPixmap *sentPixmap);
+    void recieveSpriteData(Sprite *data);
 
 protected:
     void paintEvent(QPaintEvent *e) override;

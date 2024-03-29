@@ -2,16 +2,18 @@
 #define SPRITE_H
 
 #include <QColor>
+<<<<<<< Updated upstream
 #include <QVector>
+=======
+>>>>>>> Stashed changes
 #include <QList>
 
 class Layer {
 public:
     QList<QColor> pixels;
-
     Layer(int width, int height);
 
-    void setPixel(int r, int g, int b, int a, int x, int y);
+    void setPixel(QColor color, int index);
 };
 
 class Frame {
@@ -29,10 +31,10 @@ public:
     void mergeLayers();
     void setLayerIndex(int);
     QList<QColor> getMergedLayer();
-private:
     QList<Layer> layers;
-    Layer mergedLayer;
     int layerIndex;
+private:
+    Layer mergedLayer;
     int width;
     int height;
 };
@@ -46,7 +48,7 @@ public:
      * @param y, location y
      * @param BrushSize, length of the square to be drawn.
      */
-    void setPixel(int x, int y, int BrushSize);
+    void setPixel(int x, int y, int BrushSize, QColor color);
     /**
      * @brief erase Erases a pixel on the current layer of the current frame.
      * @param x
@@ -92,6 +94,16 @@ public:
      * @return
      */
     QList<QColor> getFrameImage();
+
+
+    /**
+     * @brief setFrameID sets the index of the current active frame in the view.
+     */
+    void setFrameID(int id);
+
+    void playAnimation();
+
+    int getFPS();
 
 private:
     QList<Frame> frames;

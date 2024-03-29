@@ -7,11 +7,18 @@ PreviewWindow::PreviewWindow(QWidget *parent)
     if(currentPixmap != nullptr){
         setPixmap(*currentPixmap);
     }
+<<<<<<< Updated upstream
+=======
+
+
+
+>>>>>>> Stashed changes
 }
 
 //Slot: Get data from the canvas
 void PreviewWindow::recievePixmapData(QPixmap *sentPixmap){
     currentPixmap = sentPixmap;
+
 }
 
 
@@ -22,4 +29,20 @@ void PreviewWindow::paintEvent(QPaintEvent *){
         p.drawPixmap(0,0,currentPixmap->scaled(250,150));
         update();
     }
+}
+
+void PreviewWindow::recieveSpriteData(Sprite *s){
+    sprite = s;
+}
+
+void PreviewWindow::playAnimation(){
+
+    int fps = sprite->getFPS();
+
+    for(int i = 0; i < fps; i++){
+
+    }
+
+
+
 }

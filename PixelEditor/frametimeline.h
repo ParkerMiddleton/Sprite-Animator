@@ -5,6 +5,7 @@
 #include <QScrollArea>
 #include <QVector>
 #include "frameicon.h"
+
 #include <QHBoxLayout>
 
 // this class houses frame icons and controls adding, removing and moving frames in the view, not the model
@@ -14,9 +15,10 @@ class FrameTimeline : public QScrollArea
 private:
 
     QWidget *par;
-    QVector<FrameIcon*> *framesInUse;
+    QMap<int,FrameIcon*> *framesInUse;
     QLayout *layout;
     FrameIcon *activeFrame;
+
 
 public:
     ///
@@ -31,9 +33,13 @@ public:
     ~FrameTimeline();
 
 
+
 signals:
+    void sendIconID(int id);
+
 
 public slots:
+    // void sendIconInformation();
 
     ///
     /// \brief addFrame  Triggers whenever

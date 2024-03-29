@@ -5,11 +5,14 @@ FrameTimeline::FrameTimeline(QWidget *parent)
     : QScrollArea{parent}
 {
 
-    framesInUse = new QVector<FrameIcon*>();
-    qDebug() <<  parent->frameSize();
+    framesInUse = new QMap<int, FrameIcon*>();
+
     layout= new QHBoxLayout();
     this->setLayout(layout);
+
+    //gets first button to represent the starting frame
     addFrame();
+
 }
 
 
@@ -22,11 +25,16 @@ FrameTimeline::~FrameTimeline(){
 
 void FrameTimeline::addFrame(){
 
-    ///Get data from backing data structure for FrameIcon ID
-    ///Call setID to give it an ID that matches.
     FrameIcon *icon = new FrameIcon();
-    ///icon.setID = Sprite.IDforNewFrame <---- or something
-    framesInUse->push_back(icon);
+
+    int index = framesInUse->size();
+    framesInUse->insert(index, icon);
+
+    connect(icon, &QPushButton::clicked, this, [this, index]() {
+        // Emit the sendIconID signal with the captured index
+        emit sendIconID(index);
+    });
+
     layout->addWidget(icon);
 
 
@@ -53,3 +61,8 @@ void FrameTimeline::moveRight(){
     // dont move it right if it's at the end of the sequence
 }
 
+// void FrameTimeline::sendIconInformation(){
+
+
+//     emit sendIconID(); // an active frame
+// }
