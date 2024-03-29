@@ -1,16 +1,7 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include <QMainWindow>
-#include <QDebug>
-#include <QInputDialog>
-#include <QFileDialog>
-#include <QMessageBox>
-#include <QImageWriter>
-#include <QPainter>
-#include <QColorDialog>
-#include <QColor>
-#include <QPalette>
+class EditorModel;
 
 QT_BEGIN_NAMESPACE
 namespace Ui
@@ -24,27 +15,30 @@ class MainWindow : public QMainWindow
 	Q_OBJECT
 
 public:
-	MainWindow(QWidget *parent = nullptr);
+	MainWindow(EditorModel *editor, QWidget *parent = nullptr);
 	~MainWindow();
 
 public slots:
-	void on_colorPicker_clicked();
+	void changeColor();
 
 signals:
+	void spriteCreationRequested();
 	void colorChanged(const QColor &color);
 
-	void saveSpriteRequested(const QString &string);
-	void openSpriteRequested(const QString &string);
+	void openClicked(const QFileInfo &filePath);
+	void saveClicked();
+	void saveAsClicked(const QFileInfo &filePath);
 
 private slots:
 	void on_actionOpenSprite_triggered();
-
 	void on_actionSaveSprite_triggered();
-
 	void on_actionSaveSpriteAs_triggered();
+
+	void on_actionNew_triggered();
 
 private:
 	Ui::MainWindow *ui;
+	EditorModel *editor;
 	QPainter brush;
 	QColor currentColor;
 	QColorDialog *colorDialog;

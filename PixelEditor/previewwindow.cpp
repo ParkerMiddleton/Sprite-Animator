@@ -1,5 +1,4 @@
 #include "previewwindow.h"
-#include "QDebug"
 
 PreviewWindow::PreviewWindow(QWidget *parent)
     : QLabel{parent}

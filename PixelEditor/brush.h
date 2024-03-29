@@ -1,9 +1,6 @@
 #ifndef BRUSH_H
 #define BRUSH_H
 
-#include <QObject>
-#include <QLabel>
-#include <QPaintDevice>
 #include "mainwindow.h"
 
 class Brush : public QObject {
