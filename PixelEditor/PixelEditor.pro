@@ -17,7 +17,7 @@ SOURCES += \
     main.cpp \
     mainwindow.cpp \
     previewwindow.cpp \
-    sprite.cpp
+    spritemodel.cpp
 
 HEADERS += \
     brush.h \
@@ -28,7 +28,7 @@ HEADERS += \
     layerplacementeditor.h \
     mainwindow.h \
     previewwindow.h \
-    sprite.h
+    spritemodel.h
 
 FORMS += \
     mainwindow.ui

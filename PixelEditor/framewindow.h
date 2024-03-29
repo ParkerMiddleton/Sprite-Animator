@@ -1,6 +1,8 @@
 #ifndef FRAMEWINDOW_H
 #define FRAMEWINDOW_H
 
+#include "spritemodel.h"
+#include "filesystem.h"
 
 #include <QLabel>
 #include <QPaintDevice>
@@ -11,37 +13,43 @@
 class FrameWindow : public QLabel
 {
 
-    Q_OBJECT
+	Q_OBJECT
 
 
 private:
-    QPixmap *pixmap;
-    QColor color;
-    int pressed;
-    bool pencilEnabled;
-    bool eraserEnabled; // actually disables and enables
+	// Model Fields
+	Sprite *sprite;
+	FileSystem fileSystem;
 
-    void draw(QMouseEvent *e);
+	QPixmap *pixmap;
+	QColor color;
+	int pressed;
+	bool pencilEnabled;
+	bool eraserEnabled; // actually disables and enables
+
+	void draw(QMouseEvent *e);
 
 public:
-    explicit FrameWindow(QWidget *parent = 0);
-    ~FrameWindow();
+	explicit FrameWindow(QWidget *parent = 0);
+	~FrameWindow();
 
 public slots:
-    void setDrawingColor(const QColor &newColor);
-    void setBrushEnabled();
-    void setEraserEnabled();
+	void setDrawingColor(const QColor &newColor);
+	void setBrushEnabled();
+	void setEraserEnabled();
+
+	void saveSprite(const QString &filename);
 
 signals:
-    void informViewOfPencilEnabled(bool);
-    void sendPixmapData(QPixmap *p);
+	void informViewOfPencilEnabled(bool);
+	void sendPixmapData(QPixmap *p);
 
 protected:
-    void paintEvent(QPaintEvent *e) override;
-    void mousePressEvent(QMouseEvent *e) override;
-    void mouseReleaseEvent(QMouseEvent *e) override;
-    void mouseMoveEvent(QMouseEvent *e)override;
-    // void resizeEvent(QResizeEvent *event)override;
+	void paintEvent(QPaintEvent *e) override;
+	void mousePressEvent(QMouseEvent *e) override;
+	void mouseReleaseEvent(QMouseEvent *e) override;
+	void mouseMoveEvent(QMouseEvent *e)override;
+	// void resizeEvent(QResizeEvent *event)override;
 };
 
 

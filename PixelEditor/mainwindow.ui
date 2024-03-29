@@ -784,6 +784,10 @@ color: rgb(2, 2, 2);</string>
     <property name="title">
      <string>File</string>
     </property>
+    <addaction name="actionOpenSprite"/>
+    <addaction name="separator"/>
+    <addaction name="actionSaveSprite"/>
+    <addaction name="actionSaveSpriteAs"/>
    </widget>
    <widget class="QMenu" name="menuEdit">
     <property name="title">
@@ -800,6 +804,24 @@ color: rgb(2, 2, 2);</string>
    <addaction name="menuHelp"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
+  <action name="actionOpenSprite">
+   <property name="text">
+    <string>Open</string>
+   </property>
+   <property name="menuRole">
+    <enum>QAction::TextHeuristicRole</enum>
+   </property>
+  </action>
+  <action name="actionSaveSprite">
+   <property name="text">
+    <string>Save</string>
+   </property>
+  </action>
+  <action name="actionSaveSpriteAs">
+   <property name="text">
+    <string>Save as...</string>
+   </property>
+  </action>
  </widget>
  <customwidgets>
   <customwidget>
