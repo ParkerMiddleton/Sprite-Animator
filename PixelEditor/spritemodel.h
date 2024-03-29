@@ -1,5 +1,5 @@
-#ifndef SPRITE_H
-#define SPRITE_H
+#ifndef SPRITEMODEL_H
+#define SPRITEMODEL_H
 
 class QJsonObject;
 class Sprite;
@@ -99,4 +99,4 @@ private:
 
 };
 
-#endif // SPRITE_H
+#endif // SPRITEMODEL_H

@@ -11,19 +11,19 @@ PRECOMPILED_HEADER = qt_std_pch.h
 
 SOURCES += \
     brush.cpp \
-    editormodel.cpp \
+    editor.cpp \
     main.cpp \
     mainwindow.cpp \
     previewwindow.cpp \
-    sprite.cpp \
+    spritemodel.cpp \
     viewport.cpp
 
 HEADERS += \
     brush.h \
-    editormodel.h \
+    editor.h \
     mainwindow.h \
     previewwindow.h \
-    sprite.h \
+    spritemodel.h \
     viewport.h
 
 FORMS += \

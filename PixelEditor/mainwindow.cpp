@@ -4,9 +4,9 @@
 #include "previewwindow.h"
 #include "viewport.h"
 
-#include "editormodel.h"
+#include "editor.h"
 
-MainWindow::MainWindow(EditorModel *editor, QWidget *parent)
+MainWindow::MainWindow(Editor *editor, QWidget *parent)
 	: QMainWindow(parent)
 	, ui(new Ui::MainWindow)
 	, editor(editor)
@@ -43,20 +43,20 @@ MainWindow::MainWindow(EditorModel *editor, QWidget *parent)
 	connect(this,
 			&MainWindow::spriteCreationRequested,
 			editor,
-			&EditorModel::createNewSprite);
+			&Editor::createNewSprite);
 
 	connect(editor,
-			&EditorModel::spriteCreated,
+			&Editor::spriteCreated,
 			vp,
 			&Viewport::setupSprite);
 
 	connect(vp,
 			&Viewport::colorPainted,
 			editor,
-			&EditorModel::setPixel);
+			&Editor::setPixel);
 
 	connect(editor,
-			&EditorModel::pixelSet,
+			&Editor::pixelSet,
 			vp,
 			&Viewport::setPixelColor);
 

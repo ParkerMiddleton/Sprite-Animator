@@ -1,4 +1,4 @@
-#include "sprite.h"
+#include "spritemodel.h"
 
 Layer::Layer(Sprite *parentSprite)
 	: parentSprite(parentSprite)

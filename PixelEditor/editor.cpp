@@ -1,6 +1,6 @@
-#include "editormodel.h"
+#include "editor.h"
 
-EditorModel::EditorModel(QObject *parent)
+Editor::Editor(QObject *parent)
 	: QObject{parent}
 	, sprite{nullptr}
 	, saveFilepath{""}
@@ -8,25 +8,25 @@ EditorModel::EditorModel(QObject *parent)
 
 }
 
-EditorModel::~EditorModel()
+Editor::~Editor()
 {
 	delete sprite;
 }
 
-void EditorModel::createNewSprite()
+void Editor::createNewSprite()
 {
 	sprite = new Sprite(SPRITE_WIDTH_DEFAULT, SPRITE_HEIGHT_DEFAULT);
 	emit spriteCreated(sprite->getCurrentFrame().getMergedLayerImage(), sprite->getWidth(), sprite->getHeight());
 }
 
-void EditorModel::setPixel(int x, int y, QColor color)
+void Editor::setPixel(int x, int y, QColor color)
 {
 	sprite->getCurrentFrame().getCurrentLayer().drawColor(x, y, color);
 
 	emit pixelSet(x, y, sprite->getCurrentFrame().getMergedPixel(x, y));
 }
 
-void EditorModel::serializeSprite(const QString &filename)
+void Editor::serializeSprite(const QString &filename)
 {
 	/*if (sprite.getName().isEmpty())
 	{
@@ -56,7 +56,7 @@ void EditorModel::serializeSprite(const QString &filename)
 	sprite = Sprite::fromJson(jsonDoc.object());
 }
 
-void EditorModel::deserializeSprite(const QString &filename)
+void Editor::deserializeSprite(const QString &filename)
 {
 	/*QFileInfo info(filename);
 	QString name = info.fileName();

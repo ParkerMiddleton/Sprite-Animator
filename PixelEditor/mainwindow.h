@@ -1,7 +1,7 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-class EditorModel;
+class Editor;
 
 QT_BEGIN_NAMESPACE
 namespace Ui
@@ -15,7 +15,7 @@ class MainWindow : public QMainWindow
 	Q_OBJECT
 
 public:
-	MainWindow(EditorModel *editor, QWidget *parent = nullptr);
+	MainWindow(Editor *editor, QWidget *parent = nullptr);
 	~MainWindow();
 
 public slots:
@@ -38,7 +38,7 @@ private slots:
 
 private:
 	Ui::MainWindow *ui;
-	EditorModel *editor;
+	Editor *editor;
 	QPainter brush;
 	QColor currentColor;
 	QColorDialog *colorDialog;

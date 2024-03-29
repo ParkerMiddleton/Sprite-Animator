@@ -1,27 +1,17 @@
-#ifndef EDITORMODEL_H
-#define EDITORMODEL_H
+#ifndef EDITOR_H
+#define EDITOR_H
 
-#include "sprite.h"
+#include "spritemodel.h"
 
 #include <QObject>
 
-/* for-later:
- * @authors
- * Aditya Mukerjee
- * Charles Wolfgramm-Vave
- * Koby Dato
- * Parker Middleton
- * Tommy Heimer
- * Egor Chesnokov
-*/
-
-class EditorModel : public QObject
+class Editor : public QObject
 {
 	Q_OBJECT
 
 public: // methods
-	explicit EditorModel(QObject *parent = nullptr);
-	~EditorModel();
+	explicit Editor(QObject *parent = nullptr);
+	~Editor();
 
 public slots:
 	void createNewSprite();
@@ -45,4 +35,4 @@ private:
 
 };
 
-#endif // EDITORMODEL_H
+#endif // EDITOR_H
