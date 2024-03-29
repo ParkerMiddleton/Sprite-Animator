@@ -1,5 +1,5 @@
 #include "brush.h"
-#include "mainwindow.h"
+//#include "mainwindow.h"
 #include <iostream> // For printing
 
 
@@ -10,12 +10,9 @@ Brush::Brush(int size, QColor color, QObject *parent)
     : QObject(parent), mainWindowPointer(nullptr), brushSize(size), brushColor(color)
 {
     // set color based off of signal sent from view
-   // connect(static_cast<MainWindow*>(parent), &MainWindow::colorChanged,
-    //        this, &Brush::setColor);
+    // connect(static_cast<MainWindow*>(parent), &MainWindow::colorChanged,
+    //         this, &Brush::setColor);
 }
-
-
-
 
 // Destructor
 Brush::~Brush() {}

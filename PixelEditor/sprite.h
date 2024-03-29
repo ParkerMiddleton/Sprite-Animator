@@ -2,10 +2,6 @@
 #define SPRITE_H
 
 #include <QColor>
-<<<<<<< Updated upstream
-#include <QVector>
-=======
->>>>>>> Stashed changes
 #include <QList>
 
 class Layer {

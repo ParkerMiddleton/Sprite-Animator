@@ -20,20 +20,11 @@ private:
     Sprite *sprite;
 
 public:
-    explicit PreviewWindow(QWidget *parent = nullptr);
+    explicit PreviewWindow(QWidget *parent = 0);
 
     void playAnimation();
 
 public slots:
-<<<<<<< Updated upstream
-
-    ///
-    /// \brief recievePixmapData
-    /// \param sentPixmap
-    ///
-    void recievePixmapData(QPixmap *sentPixmap);
-=======
->>>>>>> Stashed changes
 
     void recievePixmapData(QPixmap *sentPixmap);
     void recieveSpriteData(Sprite *data);

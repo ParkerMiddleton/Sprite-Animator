@@ -8,6 +8,7 @@ FrameTimeline::FrameTimeline(QWidget *parent)
     framesInUse = new QMap<int, FrameIcon*>();
 
     layout= new QHBoxLayout();
+    layout->setAlignment(Qt::AlignLeft);
     this->setLayout(layout);
 
     //gets first button to represent the starting frame

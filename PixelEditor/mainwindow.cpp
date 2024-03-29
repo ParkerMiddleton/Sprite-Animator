@@ -1,8 +1,8 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include "previewwindow.h"
 #include <QPainter>
 
+//#include "framewindow.h"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -13,6 +13,7 @@ MainWindow::MainWindow(QWidget *parent)
     FrameWindow *fw = ui->canvas;
     PreviewWindow *pw = ui->previewLabel;
     FrameTimeline *ft = ui->frameTimeline;
+    LayerPlacementEditor *lpe = ui->layerPlacer;
 
     colorDialog = new QColorDialog();
 
@@ -36,11 +37,6 @@ MainWindow::MainWindow(QWidget *parent)
     QSize eraserImageSize(40,40);
     ui->EraserButton->setIcon(eraserPixmap);
     ui->EraserButton->setIconSize(eraserImageSize);
-
-
-
-
-
 
     //VIEW -----> VIEW
     //On color palette button clicked, chose a color
@@ -81,31 +77,24 @@ MainWindow::MainWindow(QWidget *parent)
             pw,
             &PreviewWindow::recievePixmapData);
 
-    //tell the FrameWindowClass that the addFrame button was clicked
+    //adds a frame to the timeline
     connect(ui->addFrameButton,
             &QPushButton::clicked,
             ft,
             &FrameTimeline::addFrame);
 
-    //tell the FrameTimeline that the deleteFrame button was clicked
+    //delete a frame to the timeline
     connect(ui->deleteFrameButton,
             &QPushButton::clicked,
             ft,
             &FrameTimeline::removeFrame);
 
-    //tell the FrameTimeline that the active frame would like to move left on the timeline
-    connect(ui->moveFrameLeftButton,
-           &QPushButton::clicked,
-           ft,
-            &FrameTimeline::moveLeft);
+    // adds a layer to a specified frame
+    connect(ui->addLayer,
+            &QPushButton::clicked,
+            lpe,
+            &LayerPlacementEditor::addLayer);
 
-<<<<<<< Updated upstream
-    //tell the FrameTimeline that the active frame would like to move right on the timeline
-    connect(ui->moveFrameRightButton,
-           &QPushButton::clicked,
-           ft,
-            &FrameTimeline::moveRight);
-=======
     //delete a layer from the end of a frame
     connect(ui->addLayer,
             &QPushButton::clicked,
@@ -142,7 +131,6 @@ MainWindow::MainWindow(QWidget *parent)
     //         &FrameWindow::highlightPencil,
     //         ui->PencilButton,
     //         &QPushButton::setFlat);
->>>>>>> Stashed changes
 }
 
 
@@ -158,6 +146,3 @@ MainWindow::~MainWindow()
 {
     delete ui;
 }
-
-
-

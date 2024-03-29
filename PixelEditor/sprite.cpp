@@ -31,12 +31,7 @@ void Frame::setLayerIndex(int input){
 }
 
 void Frame::mergeLayers(){
-<<<<<<< Updated upstream
-    Layer tempLayer(width, height);
-    for(Layer i :layers){
-=======
     int index = 0;
->>>>>>> Stashed changes
 
     for(Layer& l:layers){
         for(QColor& q: l.pixels){

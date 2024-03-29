@@ -7,12 +7,9 @@ PreviewWindow::PreviewWindow(QWidget *parent)
     if(currentPixmap != nullptr){
         setPixmap(*currentPixmap);
     }
-<<<<<<< Updated upstream
-=======
 
 
 
->>>>>>> Stashed changes
 }
 
 //Slot: Get data from the canvas

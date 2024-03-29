@@ -10,9 +10,6 @@
 FrameWindow::FrameWindow(QWidget *parent) :
     QLabel(parent), pressed(0)
 {
-<<<<<<< Updated upstream
-    //connect(dynamic_cast<MainWindow*>(parent), &MainWindow::colorChanged, this, &FrameWindow::setDrawingColor);
-=======
     eraserEnabled = false;
     pencilEnabled = true;
     frameWidth = 750 / 10;
@@ -20,23 +17,13 @@ FrameWindow::FrameWindow(QWidget *parent) :
     sprite = new Sprite(frameWidth, frameHeight);
     spriteName = "sprite_" + QString::number(sprites.size());
     sprites.insert(spriteName, sprite);
->>>>>>> Stashed changes
 
     // test loop to fill sprite
     //for (int var = 0; var < 100; ++var) {
     //sprite->setPixel(var, var, 0, Qt::blue);
     //}
 
-<<<<<<< Updated upstream
-    int frameWidth = 750;
-    int frameHeight= 500;
-
-
-
-    pixmap = new QPixmap(frameWidth, frameHeight);
-=======
     pixmap = new QPixmap(750, 500);
->>>>>>> Stashed changes
 
     pixmap->fill(Qt::transparent);
 
