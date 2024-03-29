@@ -1,0 +1,4 @@
+build-PixelEditor-*/
+PixelEditor/PixelEditor.pro.user
+PixelEditor/PixelEditor.pro.user.*
+PixelEditor/*.qrc.autosave

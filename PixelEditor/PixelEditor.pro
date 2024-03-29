@@ -12,19 +12,23 @@ SOURCES += \
     frameicon.cpp \
     frametimeline.cpp \
     framewindow.cpp \
+    layericon.cpp \
+    layerplacementeditor.cpp \
     main.cpp \
     mainwindow.cpp \
     previewwindow.cpp \
-    sprite.cpp
+    spritemodel.cpp
 
 HEADERS += \
     brush.h \
     frameicon.h \
     frametimeline.h \
     framewindow.h \
+    layericon.h \
+    layerplacementeditor.h \
     mainwindow.h \
     previewwindow.h \
-    sprite.h
+    spritemodel.h
 
 FORMS += \
     mainwindow.ui
