@@ -1,8 +1,7 @@
 #include "mainwindow.h"
 
 #include "ui_mainwindow.h"
-#include "previewwindow.h"
-#include "viewport.h"
+
 
 #include "editor.h"
 
@@ -13,12 +12,12 @@ MainWindow::MainWindow(Editor *editor, QWidget *parent)
 {
 	ui->setupUi(this);
 
-	Viewport *vp = ui->viewport;
-	PreviewWindow *pw = ui->previewLabel;
+	vp = ui->viewport;
+	pw = ui->previewLabel;
 	colorDialog = new QColorDialog();
 
 	//Window title
-	setWindowTitle("Seg Fault Sprite Editor");
+	this->setWindowTitle("Pixel Editor");
 
 	//Color Palette Button Image
 	QPixmap palettePixmap(":/Images/pal2.png");
@@ -38,15 +37,40 @@ MainWindow::MainWindow(Editor *editor, QWidget *parent)
 	ui->EraserButton->setIcon(eraserPixmap);
 	ui->EraserButton->setIconSize(eraserImageSize);
 
-	/* MODEL <--> VIEW */
+	this->createActions();
+	this->createMenus();
 
-	connect(this,
-			&MainWindow::spriteCreationRequested,
-			editor,
-			&Editor::createNewSprite);
+	/*====== MODEL <--> VIEW ======*/
+
+	// this <--> Editor
+	connect(this, &MainWindow::newSpriteRequested
+			, editor, &Editor::createNewSprite);
+
+	connect(this, &MainWindow::loadRequested
+			, editor, &Editor::deserializeSprite);
+
+	connect(this, &MainWindow::saveRequested
+			, editor, &Editor::serializeSprite);
+
+	connect(editor, &Editor::spriteSaveStatusChanged
+			, this, &MainWindow::updateTitle);
+
+	connect(editor, &Editor::spriteSaveStatusChanged
+			, this, &MainWindow::updateTitle);
+
+	connect(editor, &Editor::needSaveFilenameToSerialize
+			, this, &MainWindow::on_actionSaveSpriteAs_triggered);
+
+	connect(editor, &Editor::readyCreateNewSprite
+			, this, &MainWindow::handleCreateNewSprite);
+
+	connect(editor, &Editor::readyOpenSprite
+			, this, &MainWindow::handleOpenSprite);
+
+	//
 
 	connect(editor,
-			&Editor::spriteCreated,
+			&Editor::spriteLoaded,
 			vp,
 			&Viewport::setupSprite);
 
@@ -101,6 +125,10 @@ MainWindow::MainWindow(Editor *editor, QWidget *parent)
 			&PreviewWindow::recievePixmapData);
 }
 
+MainWindow::~MainWindow()
+{
+	delete ui;
+}
 
 void MainWindow::changeColor()
 {
@@ -110,30 +138,87 @@ void MainWindow::changeColor()
 	emit colorChanged(currentColor);
 }
 
-MainWindow::~MainWindow()
+void MainWindow::updateTitle(const QString &spriteName, bool showStar)
 {
-	delete ui;
+	if (showStar)
+	{
+		this->setWindowTitle(spriteName + "* // Pixel Editor");
+	}
+	else
+	{
+		this->setWindowTitle(spriteName + " // Pixel Editor");
+	}
 }
 
-void MainWindow::on_actionOpenSprite_triggered()
+void MainWindow::handleCreateNewSprite(bool askUserToSave)
 {
+	if (askUserToSave)
+		this->on_actionSaveSpriteAs_triggered();
+
+	emit newSpriteRequested();
+}
+
+void MainWindow::handleOpenSprite(bool askUserToSave)
+{
+	if (askUserToSave)
+		this->on_actionSaveSpriteAs_triggered();
+
 	QString filename = QFileDialog::getOpenFileName(this, tr("Open"), "", tr("Sprite (*.ssp)"));
-	emit openClicked(QFileInfo(filename));
+
+	if (!filename.isEmpty()&& !filename.isNull())
+	{
+		emit loadRequested(filename);
+	}
 }
 
 void MainWindow::on_actionSaveSprite_triggered()
 {
-	emit saveClicked();
+	emit saveRequested("");
 }
 
 void MainWindow::on_actionSaveSpriteAs_triggered()
 {
 	QString filename = QFileDialog::getSaveFileName(this, tr("Save as"), "", tr("Sprite (*.ssp)"));
-	emit saveAsClicked(QFileInfo(filename));
+
+	if (!filename.isEmpty()&& !filename.isNull())
+	{
+		emit saveRequested(filename);
+	}
 }
 
-void MainWindow::on_actionNew_triggered()
+void MainWindow::createActions()
 {
-	emit spriteCreationRequested();
+	newAct = new QAction(tr("&New"), this);
+	newAct->setShortcuts(QKeySequence::New);
+	newAct->setStatusTip(tr("Create a new sprite"));
+	connect(newAct, &QAction::triggered
+			, editor, &Editor::setupCreateNewSprite);
+
+	openAct = new QAction(tr("&Open"), this);
+	openAct->setShortcuts(QKeySequence::Open);
+	openAct->setStatusTip(tr("Open an existing sprite"));
+	connect(openAct, &QAction::triggered
+			, editor, &Editor::setupOpenSprite);
+
+	saveAct = new QAction(tr("&Save"), this);
+	saveAct->setShortcuts(QKeySequence::Save);
+	saveAct->setStatusTip(tr("Save an opened sprite"));
+	connect(saveAct, &QAction::triggered
+			, this, &MainWindow::on_actionSaveSprite_triggered);
+
+	saveAsAct = new QAction(tr("&Save as"), this);
+	saveAsAct->setShortcuts(QKeySequence::SaveAs);
+	saveAsAct->setStatusTip(tr("Specify directory and save an opened sprite"));
+	connect(saveAsAct, &QAction::triggered
+			, this, &MainWindow::on_actionSaveSpriteAs_triggered);
 }
 
+void MainWindow::createMenus()
+{
+	fileMenu = menuBar()->addMenu(tr("&File"));
+	fileMenu->addAction(newAct);
+	fileMenu->addAction(openAct);
+	fileMenu->addSeparator();
+	fileMenu->addAction(saveAct);
+	fileMenu->addAction(saveAsAct);
+}

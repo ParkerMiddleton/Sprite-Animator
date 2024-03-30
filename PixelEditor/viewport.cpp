@@ -18,58 +18,13 @@ Viewport::Viewport(QWidget *parent)
 	gItemGroup.addToGroup(&gBackground);
 	gItemGroup.addToGroup(&gSprite);
 	gScene.addItem(&gItemGroup);
-	//gScene.addItem(&gSprite);
 	this->setScene(&gScene);
 
-	/*
+	/* // TODO: obsolete?
 	Known Issue: We want the label contained within the gridLayout object to match the height and width
 	of its parent container. As of now, this isnt working properly. Hard coded pixmap sizes are used below,
 	but we should be able to use this->height() and this->width() respectively.
 	*/
-
-	// // Fill the label with an array of transparent pixels
-	// pixmap = new QPixmap(frameWidth, frameHeight); // random values here are of the gridlayout's height and width
-
-	// //Fill the map with transparent pixels
-	// pixmap->fill(Qt::transparent);
-
-	// //Tells the QPainter object that this is the object we are drawing.
-	// QPainter painter (pixmap);
-
-	// //Draw the pixels
-	// int checkerSize = 10;
-	// for (int y = 0; y < frameHeight; y += checkerSize) { // height
-	//     for (int x = 0; x < frameWidth; x += checkerSize) { // width
-	//         if ((x / checkerSize + y / checkerSize) % 2 == 0) {
-	//             painter.fillRect(x, y, checkerSize, checkerSize, Qt::lightGray);
-	//         }else{
-	//             painter.fillRect(x, y, checkerSize, checkerSize, QColor::fromRgb(255, 255, 255,255));
-	//         }
-	//     }
-	// }
-	// // End painting
-	// painter.end();
-
-	// Set the pixmap as the label's pixmap
-	//setPixmap(*transparencyPixmap);
-	/*QPainter painter(pixmap);
-
-	int x = 0;
-	int y = 0;
-
-	for(QColor q : sprite->getFrameImage())
-	{
-		QPen defaultPen(q,1);
-		painter.setPen(defaultPen);
-		painter.drawPoint(x,y);
-		x++;
-		if(x == frameWidth)
-		{
-			x = 0;
-			y++;
-		}
-		repaint();
-	}*/
 }
 
 Viewport::~Viewport()
@@ -80,23 +35,18 @@ Viewport::~Viewport()
 
 void Viewport::setupSprite(const QImage &image, int width, int height)
 {
-	delete pBackground;
-	delete pSprite;
+	this->setupTransparencyBackground(width, height);
 
-	pBackground = new QPixmap(width, height);
-	pBackground->fill(Qt::magenta);
+	delete pSprite;
 
 	pSprite = new QPixmap(width, height);
 	pSprite->fill(Qt::transparent);
 	pSprite->convertFromImage(image, Qt::NoFormatConversion);
 
-	QTextStream(stdout) << pSprite->hasAlphaChannel() << "\n";
-
 	// Setup position in scene
 	spritePosOffset.setX(SCENE_WIDTH / 2 - width / 2);
 	spritePosOffset.setY(SCENE_HEIGHT / 2 - height / 2);
 
-	gBackground.setPixmap(*pBackground);
 	gSprite.setPixmap(*pSprite);
 
 	gBackground.setTransform(QTransform().translate(spritePosOffset.x(), spritePosOffset.y()));
@@ -114,6 +64,7 @@ void Viewport::setPixelColor(int x, int y, QColor color)
 	pen.setColor(color);
 	painter.setPen(pen);
 	painter.drawPoint(x, y);
+	painter.end();
 
 	gSprite.setPixmap(*pSprite);
 
@@ -217,6 +168,31 @@ void Viewport::zoom(const QPoint &mousePos, qreal factor)
 	const QPointF &currentMouseCoordinate = this->mapToScene(mousePos);
 	const QPointF &offsetMouseCoordinate = currentMouseCoordinate - prevMouseCoordinate;
 	this->translate(offsetMouseCoordinate.x(), offsetMouseCoordinate.y());
+}
+
+void Viewport::setupTransparencyBackground(int width, int height)
+{
+	delete pBackground;
+	pBackground = new QPixmap(width, height);
+
+	//Draw checker pattern
+	QPainter painter (pBackground);
+	int checkerSize = 10;
+
+	for (int y = 0; y < height; y += checkerSize)
+	{
+		for (int x = 0; x < width; x += checkerSize)
+		{
+			if ((x / checkerSize + y / checkerSize) % 2 == 0)
+				painter.fillRect(x, y, checkerSize, checkerSize, Qt::lightGray);
+			else
+				painter.fillRect(x, y, checkerSize, checkerSize, Qt::white);
+		}
+	}
+
+	painter.end();
+
+	gBackground.setPixmap(*pBackground);
 }
 
 void Viewport::setDrawingColor(const QColor &newColor)

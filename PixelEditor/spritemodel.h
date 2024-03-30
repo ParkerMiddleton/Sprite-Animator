@@ -25,6 +25,8 @@ private:
 
 	QList<QColor> pixels;
 
+	Layer();
+
 };
 
 class Frame
@@ -53,6 +55,8 @@ private:
 	QList<Layer> layers;
 	int currentLayerIndex;
 
+	Frame();
+
 	/// @brief mergeLayers merges all Layers into final image
 
 };
@@ -76,17 +80,13 @@ public:
 
 	Frame& getCurrentFrame();
 
-	QString getName();
 	int getWidth();
 	int getHeight();
-
-	void setName(const QString &newName);
 
 	static Sprite* fromJson(const QJsonObject &json);
 	QJsonObject toJson() const;
 
 private:
-	QString name;
 	int width;
 	int height;
 

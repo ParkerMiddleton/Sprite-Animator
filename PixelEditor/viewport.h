@@ -59,6 +59,8 @@ private:
 	void draw(const QPoint &mousePos);
 	void zoom(const QPoint &mousePos, qreal factor);
 
+	void setupTransparencyBackground(int width, int height);
+
 };
 
 #endif // VIEWPORT_H

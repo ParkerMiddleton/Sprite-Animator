@@ -3,13 +3,11 @@
 
 #include "spritemodel.h"
 
-#include <QObject>
-
 class Editor : public QObject
 {
 	Q_OBJECT
 
-public: // methods
+public:
 	explicit Editor(QObject *parent = nullptr);
 	~Editor();
 
@@ -17,21 +15,33 @@ public slots:
 	void createNewSprite();
 	void setPixel(int x, int y, QColor color);
 
-	void serializeSprite(const QString &filename = "");
-	void deserializeSprite(const QString &filename = "");
+	void serializeSprite(const QString &filename);
+	void deserializeSprite(const QString &filename);
+
+	void setupCreateNewSprite();
+	void setupOpenSprite();
 
 signals:
-	void spriteCreated(const QImage &image, int width, int height);
+	void spriteLoaded(const QImage &image, int width, int height);
 	void pixelSet(int x, int y, QColor color);
 
-	void filenameNeeded();
+	void spriteSaveStatusChanged(const QString &spriteName, bool isModified);
+
+	void readyCreateNewSprite(bool askUserToSave);
+	void readyOpenSprite(bool askUserToSave);
+	void needSaveFilenameToSerialize();
 
 private:
 	static const int SPRITE_WIDTH_DEFAULT = 32;
 	static const int SPRITE_HEIGHT_DEFAULT = 64;
 
 	Sprite *sprite;
-	QString saveFilepath;
+	QString currentSavePath;
+	QString currentSaveName;
+	bool isSpriteSaved;
+
+	void setIsSpriteSaved(bool state);
+	void splitFilename(const QString &filename, QString &path, QString &name);
 
 };
 

@@ -3,7 +3,9 @@
 Editor::Editor(QObject *parent)
 	: QObject{parent}
 	, sprite{nullptr}
-	, saveFilepath{""}
+	, currentSavePath{""}
+	, currentSaveName{""}
+	, isSpriteSaved{true}
 {
 
 }
@@ -16,35 +18,72 @@ Editor::~Editor()
 void Editor::createNewSprite()
 {
 	sprite = new Sprite(SPRITE_WIDTH_DEFAULT, SPRITE_HEIGHT_DEFAULT);
-	emit spriteCreated(sprite->getCurrentFrame().getMergedLayerImage(), sprite->getWidth(), sprite->getHeight());
+	currentSavePath = "";
+	currentSaveName = "UNTITLED";
+	this->setIsSpriteSaved(true);
+
+	emit spriteLoaded(sprite->getCurrentFrame().getMergedLayerImage(), sprite->getWidth(), sprite->getHeight());
+	emit spriteSaveStatusChanged(currentSaveName, false);
 }
 
 void Editor::setPixel(int x, int y, QColor color)
 {
 	sprite->getCurrentFrame().getCurrentLayer().drawColor(x, y, color);
+	this->setIsSpriteSaved(false);
 
 	emit pixelSet(x, y, sprite->getCurrentFrame().getMergedPixel(x, y));
 }
 
 void Editor::serializeSprite(const QString &filename)
 {
-	/*if (sprite.getName().isEmpty())
+	QString saveFilepath, saveName;
+
+	if (filename.isEmpty())
 	{
-		emit filenameNeeded();
+		if (currentSaveName.isEmpty() || currentSavePath.isEmpty())
+		{
+			emit needSaveFilenameToSerialize();
+			return;
+		}
+
+		saveFilepath = currentSavePath;
+		saveName = currentSaveName;
+	}
+	else
+	{
+		this->splitFilename(filename, saveFilepath, saveName);
+	}
+
+	QFile jsonFile(saveFilepath + saveName);
+
+	if (!jsonFile.open(QIODevice::WriteOnly))
+	{
+		qWarning("Unable to open file.");
 		return;
 	}
-	else if (!filename.isEmpty()) // FIXME
+
+	QJsonObject jsonSprite = sprite->toJson();
+	jsonFile.write(QJsonDocument(jsonSprite).toJson());
+
+	if (!filename.isEmpty())
 	{
-		QFileInfo info(filename);
-		QString name = info.fileName();
-		QDir dir = info.dir();
-		sprite.setName(name.left(name.lastIndexOf(".")));
-		saveFilepath = dir.path() + "/";
-	}*/
+		currentSaveName = saveName;
+		currentSavePath = saveFilepath;
+	}
 
-	QFile jsonFile(saveFilepath + sprite->getName());
+	this->setIsSpriteSaved(true);
 
-	if (jsonFile.open(QIODevice::ReadOnly))
+	emit spriteSaveStatusChanged(currentSaveName, false);
+}
+
+void Editor::deserializeSprite(const QString &filename)
+{
+	QString saveFilepath, saveName;
+	this->splitFilename(filename, saveFilepath, saveName);
+
+	QFile jsonFile(saveFilepath + saveName);
+
+	if (!jsonFile.open(QIODevice::ReadOnly))
 	{
 		qWarning("Unable to open file.");
 		return;
@@ -53,35 +92,56 @@ void Editor::serializeSprite(const QString &filename)
 	QByteArray jsonData = jsonFile.readAll();
 	QJsonDocument jsonDoc(QJsonDocument::fromJson(jsonData));
 
-	sprite = Sprite::fromJson(jsonDoc.object());
-}
+	Sprite *newSprite = Sprite::fromJson(jsonDoc.object());
 
-void Editor::deserializeSprite(const QString &filename)
-{
-	/*QFileInfo info(filename);
-	QString name = info.fileName();
-	QDir dir = info.dir();
-	sprite.setName(name.left(name.lastIndexOf(".")));
-	saveFilepath = dir.path() + "/";
-
-	if (saveFilepath.isEmpty())
+	if (!newSprite)
 	{
-		if (saveFilePath.isEmpty())
-			return false;
-	}
-	else
-	{
-		saveFilepath = spriteFilePath;
-	}*/
-
-	QFile jsonFile(saveFilepath + sprite->getName());
-
-	if (jsonFile.open(QIODevice::WriteOnly))
-	{
-		qWarning("Unable to open file.");
+		qWarning("Unable to deserialize.");
 		return;
 	}
 
-	QJsonObject jsonSprite = sprite->toJson();
-	jsonFile.write(QJsonDocument(jsonSprite).toJson());
+	delete sprite;
+	sprite = newSprite;
+
+	currentSaveName = saveName;
+	currentSavePath = saveFilepath;
+
+	this->setIsSpriteSaved(true);
+
+	emit spriteLoaded(sprite->getCurrentFrame().getMergedLayerImage(), sprite->getWidth(), sprite->getHeight());
+	emit spriteSaveStatusChanged(currentSaveName, false);
+}
+
+void Editor::setupCreateNewSprite()
+{
+	emit readyCreateNewSprite(!isSpriteSaved);
+}
+
+void Editor::setupOpenSprite()
+{
+	emit readyOpenSprite(!isSpriteSaved);
+}
+
+void Editor::setIsSpriteSaved(bool state)
+{
+	if (!state && isSpriteSaved)
+	{
+		isSpriteSaved = state;
+		emit spriteSaveStatusChanged(currentSaveName, true);
+	}
+	else if (state && !isSpriteSaved)
+	{
+		isSpriteSaved = state;
+		emit spriteSaveStatusChanged(currentSaveName, false);
+	}
+}
+
+void Editor::splitFilename(const QString &filename, QString &path, QString &name)
+{
+	QFileInfo info(filename);
+	QString fName = info.fileName();
+	QDir dir = info.dir();
+
+	path = dir.path() + "/";
+	name = info.fileName();
 }

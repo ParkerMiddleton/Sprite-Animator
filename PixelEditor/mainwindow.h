@@ -1,6 +1,9 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#include "previewwindow.h"
+#include "viewport.h"
+
 class Editor;
 
 QT_BEGIN_NAMESPACE
@@ -21,27 +24,44 @@ public:
 public slots:
 	void changeColor();
 
-signals:
-	void spriteCreationRequested();
-	void colorChanged(const QColor &color);
+	void updateTitle(const QString &spriteName, bool showStar);
 
-	void openClicked(const QFileInfo &filePath);
-	void saveClicked();
-	void saveAsClicked(const QFileInfo &filePath);
+	void handleCreateNewSprite(bool askUserToSave);
+	void handleOpenSprite(bool askUserToSave);
 
-private slots:
-	void on_actionOpenSprite_triggered();
+	// Menu bar
 	void on_actionSaveSprite_triggered();
 	void on_actionSaveSpriteAs_triggered();
 
-	void on_actionNew_triggered();
+signals:
+	void colorChanged(const QColor &color);
+
+	void newSpriteRequested();
+	void loadRequested(const QString &filename);
+	void saveRequested(const QString &filename);
 
 private:
 	Ui::MainWindow *ui;
 	Editor *editor;
+
+	Viewport *vp;
+	PreviewWindow *pw;
+
+	QColorDialog *colorDialog;
+
+	QMenu *fileMenu;
+	QActionGroup *alignmentGroup;
+	QAction *newAct;
+	QAction *openAct;
+	QAction *saveAct;
+	QAction *saveAsAct;
+
+	// Useful?
 	QPainter brush;
 	QColor currentColor;
-	QColorDialog *colorDialog;
+
+	void createActions();
+	void createMenus();
 
 };
 
