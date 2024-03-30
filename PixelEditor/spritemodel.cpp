@@ -125,12 +125,19 @@ QImage Frame::getMergedLayerImage()
 {
     QImage image(parentSprite->getWidth(), parentSprite->getHeight(), QImage::Format_RGBA8888);
 
+
     for (int row = 0; row < image.height(); row++)
     {
         for (int col = 0; col < image.width(); col++)
         {
+            image.setPixelColor(col,row, QColor(0,0,0,0));
+        }
+    }
 
-            // Iterate through layers in reverse order to draw from top to bottom
+    for (int row = 0; row < image.height(); row++)
+    {
+        for (int col = 0; col < image.width(); col++)
+        {
             for (const Layer &layer : layers)
             {
                 int index = col + row * image.width();

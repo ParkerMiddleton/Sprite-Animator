@@ -3,11 +3,11 @@
 
 int main(int argc, char *argv[])
 {
-	QApplication application(argc, argv);
-	
-	Editor editor;
-	MainWindow window(&editor);
-	window.show();
+    QApplication application(argc, argv);
 
-	return application.exec();
+    Editor editor;
+    MainWindow window(&editor);
+    window.show();
+
+    return application.exec();
 }

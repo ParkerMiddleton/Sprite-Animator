@@ -64,16 +64,15 @@ void Viewport::setSpriteImage(const QImage &image)
 
 void Viewport::setPixelColor(int x, int y, QColor color)
 {
-	QPainter painter(pSprite);
-	painter.setCompositionMode(QPainter::CompositionMode_Source);
-	pen.setColor(color);
-	painter.setPen(pen);
-	painter.drawPoint(x, y);
-	painter.end();
+    // QPainter painter(pSprite);
+    // painter.setCompositionMode(QPainter::CompositionMode_Source);
+    // pen.setColor(color);
+    // painter.setPen(pen);
+    // painter.drawPoint(x, y);
+    // painter.end();
 
-	gSprite.setPixmap(*pSprite);
-
-	emit sendPixmapData(pSprite);
+    // gSprite.setPixmap(*pSprite);
+    //emit colorPainted(x, y, color);
 }
 
 /*void Viewport::paintEvent(QPaintEvent *)
@@ -146,24 +145,24 @@ void Viewport::wheelEvent(QWheelEvent *event)
 
 void Viewport::draw(const QPoint &mousePos)
 {
-	QPointF scenePos = this->mapToScene(mousePos);
-	QPoint p2(scenePos.x() - spritePosOffset.x(), scenePos.y() - spritePosOffset.y());
+    QPointF scenePos = this->mapToScene(mousePos);
+    QPoint p2(scenePos.x() - spritePosOffset.x(), scenePos.y() - spritePosOffset.y());
+    // if (!(0 <= p2.x() && p2.x() < pSprite->width()
+    // 	&&
+    // 	  0 <= p2.y() && p2.y() < pSprite->height()))
+    // {
+    // 	return;
+    // }
 
-	if (!(0 <= p2.x() && p2.x() < pSprite->width()
-		&&
-		  0 <= p2.y() && p2.y() < pSprite->height()))
-	{
-		return;
-	}
-
-	if (currentTool == Tool::Brush)
-	{
-		emit colorPainted(p2.x(), p2.y(), color);
-	}
-	else if (currentTool == Tool::Eraser)
-	{
-		emit colorPainted(p2.x(), p2.y(), QColor(0, 0, 0, 0));
-	}
+    if (currentTool == Tool::Brush)
+    {
+        emit colorPainted(p2.x(), p2.y(), color);
+        emit updateFrame();
+    }
+    // else if (currentTool == Tool::Eraser)
+    // {
+    // 	emit colorPainted(p2.x(), p2.y(), QColor(0, 0, 0, 0));
+    // }
 }
 
 void Viewport::zoom(const QPoint &mousePos, qreal factor)

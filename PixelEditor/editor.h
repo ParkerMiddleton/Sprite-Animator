@@ -12,6 +12,7 @@ public:
 	~Editor();
 
 public slots:
+    void updateFrame();
 	void createNewSprite();
 	void setPixel(int x, int y, QColor color);
 

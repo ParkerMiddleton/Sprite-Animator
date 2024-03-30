@@ -8,7 +8,7 @@
 
 class Editor;
 
-
+//asdasd
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -21,50 +21,50 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-	MainWindow(Editor *editor, QWidget *parent = nullptr);
-	~MainWindow();
+    MainWindow(Editor *editor, QWidget *parent = nullptr);
+    ~MainWindow();
 
 public slots:
-	void changeColor();
+    void changeColor();
 
-	void updateTitle(const QString &spriteName, bool showStar);
+    void updateTitle(const QString &spriteName, bool showStar);
 
-	void handleCreateNewSprite(bool askUserToSave);
-	void handleOpenSprite(bool askUserToSave);
+    void handleCreateNewSprite(bool askUserToSave);
+    void handleOpenSprite(bool askUserToSave);
 
-	// Menu bar
-	void on_actionSaveSprite_triggered();
-	void on_actionSaveSpriteAs_triggered();
+    // Menu bar
+    void on_actionSaveSprite_triggered();
+    void on_actionSaveSpriteAs_triggered();
 
 signals:
-	void colorChanged(const QColor &color);
+    void colorChanged(const QColor &color);
 
-	void newSpriteRequested();
-	void loadRequested(const QString &filename);
-	void saveRequested(const QString &filename);
+    void newSpriteRequested();
+    void loadRequested(const QString &filename);
+    void saveRequested(const QString &filename);
 
 private:
-	Ui::MainWindow *ui;
-	Editor *editor;
+    Ui::MainWindow *ui;
+    Editor *editor;
 
-	Viewport *vp;
-	PreviewWindow *pw;
-	FrameTimeline *ft;
+    Viewport *vp;
+    PreviewWindow *pw;
+    FrameTimeline *ft;
     LayerPlacementEditor *lt;
 
-	QColorDialog *colorDialog;
+    QColorDialog *colorDialog;
 
-	QMenu *fileMenu;
-	QActionGroup *alignmentGroup;
-	QAction *newAct;
-	QAction *openAct;
-	QAction *saveAct;
-	QAction *saveAsAct;
+    QMenu *fileMenu;
+    QActionGroup *alignmentGroup;
+    QAction *newAct;
+    QAction *openAct;
+    QAction *saveAct;
+    QAction *saveAsAct;
 
-	QColor currentColor;
+    QColor currentColor;
 
-	void createActions();
-	void createMenus();
+    void createActions();
+    void createMenus();
 
 };
 #endif // MAINWINDOW_H

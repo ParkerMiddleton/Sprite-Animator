@@ -15,7 +15,9 @@ Editor::~Editor()
 {
 	delete sprite;
 }
-
+void Editor::updateFrame(){
+    emit frameChanged(sprite->getCurrentFrame().getMergedLayerImage());
+}
 void Editor::createNewSprite()
 {
 	sprite = new Sprite(SPRITE_WIDTH_DEFAULT, SPRITE_HEIGHT_DEFAULT);
@@ -32,7 +34,7 @@ void Editor::setPixel(int x, int y, QColor color)
 	sprite->getCurrentFrame().getCurrentLayer().drawColor(x, y, color);
 	this->setIsSpriteSaved(false);
 
-	emit pixelSet(x, y, sprite->getCurrentFrame().getMergedPixel(x, y));
+    emit pixelSet(x, y, sprite->getCurrentFrame().getMergedPixel(x, y));
 }
 
 void Editor::serializeSprite(const QString &filename)

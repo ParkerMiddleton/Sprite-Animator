@@ -112,7 +112,6 @@ MainWindow::MainWindow(Editor *editor, QWidget *parent)
 	connect(editor, &Editor::readyOpenSprite
 			, this, &MainWindow::handleOpenSprite);
 
-	//
 
 	connect(editor,
 			&Editor::spriteLoaded,
@@ -123,6 +122,11 @@ MainWindow::MainWindow(Editor *editor, QWidget *parent)
 			&Viewport::colorPainted,
 			editor,
 			&Editor::setPixel);
+
+    connect(vp,
+            &Viewport::updateFrame,
+            editor,
+            &Editor::updateFrame);
 
 	connect(editor,
 			&Editor::pixelSet,
@@ -162,12 +166,11 @@ MainWindow::MainWindow(Editor *editor, QWidget *parent)
 			ui->PencilButton,
 			&QPushButton::setEnabled);
 
-
-	//Send pixmap data to the preview window to mirror drawing.
-	/*connect(vp,
-			&Viewport::sendPixmapData,
-			pw,
-			&PreviewWindow::recievePixmapData);*/
+    //Send pixmap data to the preview window to mirror drawing.
+    /*connect(vp,
+            &Viewport::sendPixmapData,
+            pw,
+            &PreviewWindow::recievePixmapData);*/
 }
 
 MainWindow::~MainWindow()
