@@ -1,16 +1,10 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include <QMainWindow>
-#include <QDebug>
-#include <QInputDialog>
-#include <QFileDialog>
-#include <QMessageBox>
-#include <QImageWriter>
-#include <QPainter>
-#include <QColorDialog>
-#include <QColor>
-#include <QPalette>
+#include "previewwindow.h"
+#include "viewport.h"
+
+class Editor;
 
 
 
@@ -25,20 +19,50 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    MainWindow(QWidget *parent = nullptr);
-    ~MainWindow();
+	MainWindow(Editor *editor, QWidget *parent = nullptr);
+	~MainWindow();
 
 public slots:
-   void colorPickerClicked();
+	void changeColor();
 
+	void updateTitle(const QString &spriteName, bool showStar);
+
+	void handleCreateNewSprite(bool askUserToSave);
+	void handleOpenSprite(bool askUserToSave);
+
+	// Menu bar
+	void on_actionSaveSprite_triggered();
+	void on_actionSaveSpriteAs_triggered();
 
 signals:
-    void colorChanged(const QColor &color);
+	void colorChanged(const QColor &color);
+
+	void newSpriteRequested();
+	void loadRequested(const QString &filename);
+	void saveRequested(const QString &filename);
 
 private:
-    Ui::MainWindow *ui;
-    QPainter brush;
-    QColor currentColor;
-    QColorDialog *colorDialog;
+	Ui::MainWindow *ui;
+	Editor *editor;
+
+	Viewport *vp;
+	PreviewWindow *pw;
+
+	QColorDialog *colorDialog;
+
+	QMenu *fileMenu;
+	QActionGroup *alignmentGroup;
+	QAction *newAct;
+	QAction *openAct;
+	QAction *saveAct;
+	QAction *saveAsAct;
+
+	// Useful?
+	QPainter brush;
+	QColor currentColor;
+
+	void createActions();
+	void createMenus();
+
 };
 #endif // MAINWINDOW_H

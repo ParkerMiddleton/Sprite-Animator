@@ -1,11 +1,6 @@
 #ifndef PREVIEWWINDOW_H
 #define PREVIEWWINDOW_H
 
-#include <QWidget>
-#include <QLabel>
-#include <QPainter>
-#include "Sprite.h"
-
 
 ///
 /// \brief This class will always mirror the currently edited frame from the canvas window

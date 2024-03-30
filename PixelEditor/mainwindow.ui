@@ -32,56 +32,7 @@ background-color:rgb(37, 37, 37)</string>
       <enum>QLayout::SetNoConstraint</enum>
      </property>
      <item row="0" column="0">
-      <widget class="QFrame" name="editWindowFrame">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Ignored" vsizetype="Ignored">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="autoFillBackground">
-        <bool>false</bool>
-       </property>
-       <property name="styleSheet">
-        <string notr="true"> border-radius: 0px;
-    border: 1px ridge #fff; 
-  background-image: url(':/Images/transparent.png')</string>
-       </property>
-       <property name="frameShape">
-        <enum>QFrame::Box</enum>
-       </property>
-       <property name="frameShadow">
-        <enum>QFrame::Plain</enum>
-       </property>
-       <property name="lineWidth">
-        <number>11</number>
-       </property>
-       <property name="midLineWidth">
-        <number>0</number>
-       </property>
-       <widget class="FrameWindow" name="canvas">
-        <property name="geometry">
-         <rect>
-          <x>0</x>
-          <y>0</y>
-          <width>621</width>
-          <height>461</height>
-         </rect>
-        </property>
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="cursor">
-         <cursorShape>ArrowCursor</cursorShape>
-        </property>
-        <property name="text">
-         <string/>
-        </property>
-       </widget>
-      </widget>
+      <widget class="Viewport" name="viewport"/>
      </item>
     </layout>
    </widget>
@@ -780,33 +731,10 @@ text-align: center;</string>
     <string notr="true">background-color: rgb(255, 255, 255);
 color: rgb(2, 2, 2);</string>
    </property>
-   <widget class="QMenu" name="menuFile">
-    <property name="title">
-     <string>File</string>
-    </property>
-   </widget>
-   <widget class="QMenu" name="menuEdit">
-    <property name="title">
-     <string>Edit</string>
-    </property>
-   </widget>
-   <widget class="QMenu" name="menuHelp">
-    <property name="title">
-     <string>Help</string>
-    </property>
-   </widget>
-   <addaction name="menuFile"/>
-   <addaction name="menuEdit"/>
-   <addaction name="menuHelp"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
  <customwidgets>
-  <customwidget>
-   <class>FrameWindow</class>
-   <extends>QLabel</extends>
-   <header location="global">framewindow.h</header>
-  </customwidget>
   <customwidget>
    <class>PreviewWindow</class>
    <extends>QLabel</extends>

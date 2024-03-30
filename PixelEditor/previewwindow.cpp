@@ -1,10 +1,10 @@
 #include "previewwindow.h"
-#include "QDebug"
 
 PreviewWindow::PreviewWindow(QWidget *parent)
     : QLabel{parent}
 {
-    if(currentPixmap != nullptr){
+	/*if (currentPixmap != nullptr)
+	{
         setPixmap(*currentPixmap);
     }
 
@@ -21,11 +21,11 @@ void PreviewWindow::recievePixmapData(QPixmap *sentPixmap){
 
 //Paint event
 void PreviewWindow::paintEvent(QPaintEvent *){
-    QPainter p(this);
+	/*QPainter p(this);
     if(currentPixmap != nullptr ){
         p.drawPixmap(0,0,currentPixmap->scaled(250,150));
         update();
-    }
+	}*/
 }
 
 void PreviewWindow::recieveSpriteData(Sprite *s){

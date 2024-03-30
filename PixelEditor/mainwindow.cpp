@@ -1,21 +1,21 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include <QPainter>
 
-//#include "framewindow.h"
+#include "editor.h"
 
-MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent)
-    , ui(new Ui::MainWindow)
+MainWindow::MainWindow(Editor *editor, QWidget *parent)
+	: QMainWindow(parent)
+	, ui(new Ui::MainWindow)
+	, editor(editor)
 {
     ui->setupUi(this);
 
-    FrameWindow *fw = ui->canvas;
-    PreviewWindow *pw = ui->previewLabel;
-    FrameTimeline *ft = ui->frameTimeline;
-    LayerPlacementEditor *lpe = ui->layerPlacer;
+	vp = ui->viewport;
+	pw = ui->previewLabel;
+	colorDialog = new QColorDialog();
 
-    colorDialog = new QColorDialog();
+	//Window title
+	this->setWindowTitle("Pixel Editor");
 
     //Window title
     setWindowTitle("Seg Fault Sprite Editor");
@@ -32,117 +32,188 @@ MainWindow::MainWindow(QWidget *parent)
     ui->PencilButton->setIcon(pencilPixmap);
     ui->PencilButton->setIconSize(pencilImageSize);
 
-    //Eraser Button Image
-    QPixmap eraserPixmap(":/Images/eraser.png");
-    QSize eraserImageSize(40,40);
-    ui->EraserButton->setIcon(eraserPixmap);
-    ui->EraserButton->setIconSize(eraserImageSize);
+	this->createActions();
+	this->createMenus();
 
-    //VIEW -----> VIEW
-    //On color palette button clicked, chose a color
-    connect(ui->ColorPaletteButton,
-            &QPushButton::clicked,
-            this,
-            &MainWindow::colorPickerClicked);
+	/*====== MODEL <--> VIEW ======*/
 
+	// this <--> Editor
+	connect(this, &MainWindow::newSpriteRequested
+			, editor, &Editor::createNewSprite);
 
-    // Send chosen color to the frame window to be used
-    connect(this,
-            &MainWindow::colorChanged,
-            fw,
-            &FrameWindow::setDrawingColor);
+	connect(this, &MainWindow::loadRequested
+			, editor, &Editor::deserializeSprite);
 
-    // enable and disable brush
-    connect(ui->PencilButton,
-            &QPushButton::clicked,
-            fw,
-            &FrameWindow::setBrushEnabled);
+	connect(this, &MainWindow::saveRequested
+			, editor, &Editor::serializeSprite);
 
-    // enable and disable eraser
-    connect(ui->EraserButton,
-            &QPushButton::clicked,
-            fw,
-            &FrameWindow::setEraserEnabled);
+	connect(editor, &Editor::spriteSaveStatusChanged
+			, this, &MainWindow::updateTitle);
 
-    // frame window tells main that penicl button is to be disabled or enabled.
-    connect(fw,
-            &FrameWindow::informViewOfPencilEnabled,
-            ui->PencilButton,
-            &QPushButton::setEnabled);
+	connect(editor, &Editor::spriteSaveStatusChanged
+			, this, &MainWindow::updateTitle);
 
+	connect(editor, &Editor::needSaveFilenameToSerialize
+			, this, &MainWindow::on_actionSaveSpriteAs_triggered);
 
-    //Send pixmap data to the preview window to mirror drawing.
-    connect(fw,
-            &FrameWindow::sendPixmapData,
-            pw,
-            &PreviewWindow::recievePixmapData);
+	connect(editor, &Editor::readyCreateNewSprite
+			, this, &MainWindow::handleCreateNewSprite);
 
-    //adds a frame to the timeline
-    connect(ui->addFrameButton,
-            &QPushButton::clicked,
-            ft,
-            &FrameTimeline::addFrame);
+	connect(editor, &Editor::readyOpenSprite
+			, this, &MainWindow::handleOpenSprite);
 
-    //delete a frame to the timeline
-    connect(ui->deleteFrameButton,
-            &QPushButton::clicked,
-            ft,
-            &FrameTimeline::removeFrame);
+	//
 
-    // adds a layer to a specified frame
-    connect(ui->addLayer,
-            &QPushButton::clicked,
-            lpe,
-            &LayerPlacementEditor::addLayer);
+	connect(editor,
+			&Editor::spriteLoaded,
+			vp,
+			&Viewport::setupSprite);
 
-    //delete a layer from the end of a frame
-    connect(ui->addLayer,
-            &QPushButton::clicked,
-            lpe,
-            &LayerPlacementEditor::removeLayer);
+	connect(vp,
+			&Viewport::colorPainted,
+			editor,
+			&Editor::setPixel);
 
-    connect(ui->addFrameButton,
-            &QPushButton::clicked,
-            fw,
-            &FrameWindow::newFrame);
+	connect(editor,
+			&Editor::pixelSet,
+			vp,
+			&Viewport::setPixelColor);
 
-    connect(ui->moveFrameLeftButton,
-            &QPushButton::clicked,
-            fw,
-            &FrameWindow::loadPreviousFrame);
+	/* VIEW <--> VIEW */
 
-    // grab the current active frame
-    // get the object assocaited to that index,
+	//On color palette button clicked, choose a color
+	connect(ui->ColorPaletteButton,
+			&QPushButton::clicked,
+			this,
+			&MainWindow::changeColor);
 
 
-        connect(ft,
-            &FrameTimeline::sendIconID,
-            fw,
-            &FrameWindow::displayActiveFrame);
+	// Send chosen color to the frame window to be used
+	connect(this,
+			&MainWindow::colorChanged,
+			vp,
+			&Viewport::setDrawingColor);
 
-    connect(ui->playAnimationButton,
-                &QPushButton::clicked,
-                fw,
-                &FrameWindow::sendSprite);
+	// enable and disable brush
+	connect(ui->PencilButton,
+			&QPushButton::clicked,
+			vp,
+			&Viewport::setBrushEnabled);
+
+	// enable and disable eraser
+	connect(ui->EraserButton,
+			&QPushButton::clicked,
+			vp,
+			&Viewport::setEraserEnabled);
+
+	// frame window tells main that penicl button is to be disabled or enabled.
+	connect(vp,
+			&Viewport::informViewOfPencilEnabled,
+			ui->PencilButton,
+			&QPushButton::setEnabled);
 
 
-    // //makes the button appear enabled
-    // connect(fw,
-    //         &FrameWindow::highlightPencil,
-    //         ui->PencilButton,
-    //         &QPushButton::setFlat);
-}
-
-
-void MainWindow::colorPickerClicked()
-{
-    // The colorSelected signal will now be connected to the handleColorSelected slot.
-    QColor selectedColor = QColorDialog::getColor(currentColor, this, tr("Select Color"));
-    emit colorChanged(selectedColor);
-    currentColor = selectedColor;
+	//Send pixmap data to the preview window to mirror drawing.
+	connect(vp,
+			&Viewport::sendPixmapData,
+			pw,
+			&PreviewWindow::recievePixmapData);
 }
 
 MainWindow::~MainWindow()
 {
-    delete ui;
+	delete ui;
+}
+
+void MainWindow::changeColor()
+{
+	// The colorSelected signal will now be connected to the handleColorSelected slot.
+	currentColor = QColorDialog::getColor(Qt::black, this, tr("Select Color"));
+
+	emit colorChanged(currentColor);
+}
+
+void MainWindow::updateTitle(const QString &spriteName, bool showStar)
+{
+	if (showStar)
+	{
+		this->setWindowTitle(spriteName + "* // Pixel Editor");
+	}
+	else
+	{
+		this->setWindowTitle(spriteName + " // Pixel Editor");
+	}
+}
+
+void MainWindow::handleCreateNewSprite(bool askUserToSave)
+{
+	if (askUserToSave)
+		this->on_actionSaveSpriteAs_triggered();
+
+	emit newSpriteRequested();
+}
+
+void MainWindow::handleOpenSprite(bool askUserToSave)
+{
+	if (askUserToSave)
+		this->on_actionSaveSpriteAs_triggered();
+
+	QString filename = QFileDialog::getOpenFileName(this, tr("Open"), "", tr("Sprite (*.ssp)"));
+
+	if (!filename.isEmpty()&& !filename.isNull())
+	{
+		emit loadRequested(filename);
+	}
+}
+
+void MainWindow::on_actionSaveSprite_triggered()
+{
+	emit saveRequested("");
+}
+
+void MainWindow::on_actionSaveSpriteAs_triggered()
+{
+	QString filename = QFileDialog::getSaveFileName(this, tr("Save as"), "", tr("Sprite (*.ssp)"));
+
+	if (!filename.isEmpty()&& !filename.isNull())
+	{
+		emit saveRequested(filename);
+	}
+}
+
+void MainWindow::createActions()
+{
+	newAct = new QAction(tr("&New"), this);
+	newAct->setShortcuts(QKeySequence::New);
+	newAct->setStatusTip(tr("Create a new sprite"));
+	connect(newAct, &QAction::triggered
+			, editor, &Editor::setupCreateNewSprite);
+
+	openAct = new QAction(tr("&Open"), this);
+	openAct->setShortcuts(QKeySequence::Open);
+	openAct->setStatusTip(tr("Open an existing sprite"));
+	connect(openAct, &QAction::triggered
+			, editor, &Editor::setupOpenSprite);
+
+	saveAct = new QAction(tr("&Save"), this);
+	saveAct->setShortcuts(QKeySequence::Save);
+	saveAct->setStatusTip(tr("Save an opened sprite"));
+	connect(saveAct, &QAction::triggered
+			, this, &MainWindow::on_actionSaveSprite_triggered);
+
+	saveAsAct = new QAction(tr("&Save as"), this);
+	saveAsAct->setShortcuts(QKeySequence::SaveAs);
+	saveAsAct->setStatusTip(tr("Specify directory and save an opened sprite"));
+	connect(saveAsAct, &QAction::triggered
+			, this, &MainWindow::on_actionSaveSpriteAs_triggered);
+}
+
+void MainWindow::createMenus()
+{
+	fileMenu = menuBar()->addMenu(tr("&File"));
+	fileMenu->addAction(newAct);
+	fileMenu->addAction(openAct);
+	fileMenu->addSeparator();
+	fileMenu->addAction(saveAct);
+	fileMenu->addAction(saveAsAct);
 }
