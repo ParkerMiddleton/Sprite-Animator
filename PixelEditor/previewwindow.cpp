@@ -11,7 +11,7 @@ PreviewWindow::PreviewWindow(QWidget *parent)
 
 
 }
-
+/*
 //Slot: Get data from the canvas
 void PreviewWindow::recievePixmapData(QPixmap *sentPixmap){
     currentPixmap = sentPixmap;
@@ -27,7 +27,7 @@ void PreviewWindow::paintEvent(QPaintEvent *){
         update();
 	}*/
 }
-
+/*
 void PreviewWindow::recieveSpriteData(Sprite *s){
     sprite = s;
 }
@@ -43,3 +43,4 @@ void PreviewWindow::playAnimation(){
 
 
 }
+*/

@@ -53,7 +53,17 @@ void Viewport::setupSprite(const QImage &image, int width, int height)
 	gSprite.setTransform(QTransform().translate(spritePosOffset.x(), spritePosOffset.y()));
 
 	this->centerOn(&gSprite);
+	//this->scale(0.2f, 0.2f);
 
+	this->repaint();
+}
+
+void Viewport::setSpriteImage(const QImage &image)
+{
+	pSprite->fill(Qt::transparent);
+	pSprite->convertFromImage(image, Qt::NoFormatConversion);
+
+	gSprite.setPixmap(*pSprite);
 	this->repaint();
 }
 

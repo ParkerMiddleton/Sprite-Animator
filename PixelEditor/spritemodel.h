@@ -4,6 +4,14 @@
 class QJsonObject;
 class Sprite;
 
+struct Color
+{
+	uchar r = 0;
+	uchar g = 0;
+	uchar b = 0;
+	uchar a = 255;
+};
+
 class Layer
 {
 	friend class Frame;
@@ -23,7 +31,7 @@ public:
 private:
 	Sprite *parentSprite;
 
-	QList<QColor> pixels;
+	QList<Color> pixels;
 
 	Layer();
 

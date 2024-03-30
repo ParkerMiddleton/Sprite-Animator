@@ -122,6 +122,19 @@ void Editor::setupOpenSprite()
 	emit readyOpenSprite(!isSpriteSaved);
 }
 
+void Editor::addNewFrame()
+{
+	sprite->addFrame();
+	emit frameChanged(sprite->getCurrentFrame().getMergedLayerImage());
+}
+
+void Editor::selectFrame(int frameIndex)
+{
+	sprite->selectFrame(frameIndex);
+	Frame &frame = sprite->getCurrentFrame();
+	emit frameChanged(frame.getMergedLayerImage());
+}
+
 void Editor::setIsSpriteSaved(bool state)
 {
 	if (!state && isSpriteSaved)

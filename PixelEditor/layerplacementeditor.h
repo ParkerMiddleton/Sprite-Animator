@@ -1,17 +1,13 @@
 #ifndef LAYERPLACEMENTEDITOR_H
 #define LAYERPLACEMENTEDITOR_H
 
-#include <QWidget>
-#include <QScrollArea>
-#include <QHBoxLayout>
 #include "layericon.h"
-
 
 class LayerPlacementEditor : public QScrollArea
 {
     Q_OBJECT
-private:
 
+private:
     QLayout *layout;
 
 

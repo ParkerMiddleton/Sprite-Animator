@@ -21,6 +21,9 @@ public slots:
 	void setupCreateNewSprite();
 	void setupOpenSprite();
 
+	void addNewFrame();
+	void selectFrame(int frameIndex);
+
 signals:
 	void spriteLoaded(const QImage &image, int width, int height);
 	void pixelSet(int x, int y, QColor color);
@@ -31,9 +34,11 @@ signals:
 	void readyOpenSprite(bool askUserToSave);
 	void needSaveFilenameToSerialize();
 
+	void frameChanged(const QImage &image);
+
 private:
-	static const int SPRITE_WIDTH_DEFAULT = 512;
-	static const int SPRITE_HEIGHT_DEFAULT = 512;
+	static const int SPRITE_WIDTH_DEFAULT = 32;
+	static const int SPRITE_HEIGHT_DEFAULT = 64;
 
 	Sprite *sprite;
 	QString currentSavePath;

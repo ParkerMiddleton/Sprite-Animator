@@ -11,6 +11,8 @@ public:
 
 public slots:
 	void setupSprite(const QImage &image, int width, int height);
+	void setSpriteImage(const QImage &image);
+
 	void setPixelColor(int x, int y, QColor color);
 
 	void setDrawingColor(const QColor &color);

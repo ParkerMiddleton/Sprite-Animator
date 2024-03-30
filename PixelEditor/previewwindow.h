@@ -9,23 +9,22 @@
 ///
 class PreviewWindow : public QLabel
 {
-    Q_OBJECT
+	Q_OBJECT
 private:
-    QPixmap *currentPixmap;
-    Sprite *sprite;
+	QPixmap *currentPixmap;
 
 public:
-    explicit PreviewWindow(QWidget *parent = 0);
-
-    void playAnimation();
+	explicit PreviewWindow(QWidget *parent = 0);
+/*
+	void playAnimation();
 
 public slots:
 
-    void recievePixmapData(QPixmap *sentPixmap);
-    void recieveSpriteData(Sprite *data);
+	void recievePixmapData(QPixmap *sentPixmap);
+	void recieveSpriteData(Sprite *data);
 
 protected:
-    void paintEvent(QPaintEvent *e) override;
+	void paintEvent(QPaintEvent *e) override;*/
 
 };
 

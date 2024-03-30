@@ -12,6 +12,8 @@ MainWindow::MainWindow(Editor *editor, QWidget *parent)
 
 	vp = ui->viewport;
 	pw = ui->previewLabel;
+	ft = ui->frameTimeline;
+
 	colorDialog = new QColorDialog();
 
 	//Window title
@@ -32,8 +34,30 @@ MainWindow::MainWindow(Editor *editor, QWidget *parent)
     ui->PencilButton->setIcon(pencilPixmap);
     ui->PencilButton->setIconSize(pencilImageSize);
 
+	//Pencil Button Image
+	QPixmap eraserPixmap(":/Images/eraser.png");
+	QSize eraserImageSize(50,50);
+	ui->EraserButton->setIcon(eraserPixmap);
+	ui->EraserButton->setIconSize(eraserImageSize);
+
 	this->createActions();
 	this->createMenus();
+
+	/*== FRAME BUTTONS ==*/
+
+	connect(ui->addFrameButton, &QPushButton::clicked
+			, ft, &FrameTimeline::addFrame);
+
+	connect(ui->addFrameButton, &QPushButton::clicked
+			, editor, &Editor::addNewFrame);
+
+	//
+
+	connect(ft, &FrameTimeline::sendIconID
+			, editor, &Editor::selectFrame);
+
+	connect(editor, &Editor::frameChanged
+			, vp, &Viewport::setSpriteImage);
 
 	/*====== MODEL <--> VIEW ======*/
 
@@ -114,10 +138,10 @@ MainWindow::MainWindow(Editor *editor, QWidget *parent)
 
 
 	//Send pixmap data to the preview window to mirror drawing.
-	connect(vp,
+	/*connect(vp,
 			&Viewport::sendPixmapData,
 			pw,
-			&PreviewWindow::recievePixmapData);
+			&PreviewWindow::recievePixmapData);*/
 }
 
 MainWindow::~MainWindow()
@@ -128,7 +152,7 @@ MainWindow::~MainWindow()
 void MainWindow::changeColor()
 {
 	// The colorSelected signal will now be connected to the handleColorSelected slot.
-	currentColor = QColorDialog::getColor(Qt::black, this, tr("Select Color"));
+	currentColor = QColorDialog::getColor(currentColor, this, tr("Select Color"));
 
 	emit colorChanged(currentColor);
 }

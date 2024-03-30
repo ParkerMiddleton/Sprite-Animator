@@ -8,14 +8,17 @@ Layer::Layer(Sprite *parentSprite)
 
 	for (int index = 0; index < size; index++)
 	{
-		pixels.push_back(Qt::transparent);
+		pixels.push_back({0, 0, 0, 0});
 	}
 }
 
 void Layer::drawColor(int x, int y, QColor color, int brushSize)
 {
 	int index = x + y * parentSprite->getWidth();
-	pixels[index] = color;
+	pixels[index].r = color.red();
+	pixels[index].g = color.green();
+	pixels[index].b = color.blue();
+	pixels[index].a = color.alpha();
 }
 
 Layer Layer::fromJson(const QJsonObject &json, Sprite *parentSprite)
@@ -34,13 +37,25 @@ Layer Layer::fromJson(const QJsonObject &json, Sprite *parentSprite)
 			const QJsonObject &pixelJson = jsonPixelVal.toObject();
 
 			if (const QJsonValue &red = pixelJson["r"]; red.isDouble())
-				layer.pixels[pixelIndex].setRed(red.toInt());
+			{
+				//layer.pixels[pixelIndex].setRed(red.toInt());
+				layer.pixels[pixelIndex].r = red.toInt();
+			}
 			if (const QJsonValue &green = pixelJson["g"]; green.isDouble())
-				layer.pixels[pixelIndex].setGreen(green.toInt());
+			{
+				//layer.pixels[pixelIndex].setGreen(green.toInt());
+				layer.pixels[pixelIndex].g = green.toInt();
+			}
 			if (const QJsonValue &blue = pixelJson["b"]; blue.isDouble())
-				layer.pixels[pixelIndex].setBlue(blue.toInt());
+			{
+				//layer.pixels[pixelIndex].setBlue(blue.toInt());
+				layer.pixels[pixelIndex].b = blue.toInt();
+			}
 			if (const QJsonValue &alpha = pixelJson["a"]; alpha.isDouble())
-				layer.pixels[pixelIndex].setAlpha(alpha.toInt());
+			{
+				//layer.pixels[pixelIndex].setAlpha(alpha.toInt());
+				layer.pixels[pixelIndex].a = alpha.toInt();
+			}
 
 			pixelIndex++;
 		}
@@ -54,13 +69,13 @@ QJsonObject Layer::toJson() const
 	QJsonObject json;
 	QJsonArray jsonPixels;
 
-	for (const QColor &pixel : pixels)
+	for (const Color &pixel : pixels)
 	{
 		QJsonObject pixelJson;
-		pixelJson["r"] = pixel.red();
-		pixelJson["g"] = pixel.green();
-		pixelJson["b"] = pixel.blue();
-		pixelJson["a"] = pixel.alpha();
+		pixelJson["r"] = pixel.r;
+		pixelJson["g"] = pixel.g;
+		pixelJson["b"] = pixel.b;
+		pixelJson["a"] = pixel.a;
 		jsonPixels.append(pixelJson);
 	}
 
@@ -110,14 +125,15 @@ QImage Frame::getMergedLayerImage()
 {
 	QImage image(parentSprite->getWidth(), parentSprite->getHeight(), QImage::Format_RGBA8888);
 
-	for (const Layer &layer : layers)
+	for (int row = 0; row < image.height(); row++)
 	{
-		for (int row = 0; row < image.height(); row++)
+		for (int col = 0; col < image.width(); col++)
 		{
-			for (int col = 0; col < image.width(); col++)
+			for (const Layer &layer : layers)
 			{
 				int index = col + row * image.width();
-				image.setPixelColor(col, row, layer.pixels[index]);
+				const Color &clr = layer.pixels[index];
+				image.setPixelColor(col, row, QColor(clr.r, clr.g, clr.b, clr.a));
 			}
 		}
 	}
@@ -132,7 +148,8 @@ QColor Frame::getMergedPixel(int x, int y)
 
 	for (const Layer &layer : layers)
 	{
-		mergedPixel = layer.pixels[index];
+		const Color &clr = layer.pixels[index];
+		mergedPixel = QColor(clr.r, clr.g, clr.b, clr.a);
 	}
 
 	return mergedPixel;
@@ -187,7 +204,7 @@ Frame::Frame()
 Sprite::Sprite(int width, int height)
 	: width{width}
 	, height{height}
-	, currentFrameIndex{0}
+	, currentFrameIndex{-1}
 	, fps{0}
 {
 	this->addFrame();
@@ -196,12 +213,17 @@ Sprite::Sprite(int width, int height)
 void Sprite::addFrame()
 {
 	frames.push_back(Frame(this));
+	currentFrameIndex++;
 }
 
 void Sprite::selectFrame(int frameIndex)
 {
-	if (0 >= frameIndex && frameIndex < frames.size())
+	QTextStream(stdout) << "Attempting select: " << frameIndex << "\n";
+	QTextStream(stdout) << "Frames size: " << frames.size() << "\n";
+
+	if (frameIndex >= 0 && frameIndex < frames.size())
 	{
+		QTextStream(stdout) << "Frame was selected: " << currentFrameIndex << "\n";
 		currentFrameIndex = frameIndex;
 	}
 }

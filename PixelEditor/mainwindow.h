@@ -3,6 +3,7 @@
 
 #include "previewwindow.h"
 #include "viewport.h"
+#include "frametimeline.h"
 
 class Editor;
 
@@ -47,6 +48,7 @@ private:
 
 	Viewport *vp;
 	PreviewWindow *pw;
+	FrameTimeline *ft;
 
 	QColorDialog *colorDialog;
 
@@ -57,8 +59,6 @@ private:
 	QAction *saveAct;
 	QAction *saveAsAct;
 
-	// Useful?
-	QPainter brush;
 	QColor currentColor;
 
 	void createActions();
