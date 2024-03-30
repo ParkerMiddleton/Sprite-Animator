@@ -177,7 +177,7 @@ void Viewport::setupTransparencyBackground(int width, int height)
 
 	//Draw checker pattern
 	QPainter painter (pBackground);
-	int checkerSize = 10;
+	int checkerSize = 1;
 
 	for (int y = 0; y < height; y += checkerSize)
 	{

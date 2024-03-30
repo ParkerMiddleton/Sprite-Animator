@@ -32,8 +32,8 @@ signals:
 	void needSaveFilenameToSerialize();
 
 private:
-	static const int SPRITE_WIDTH_DEFAULT = 32;
-	static const int SPRITE_HEIGHT_DEFAULT = 64;
+	static const int SPRITE_WIDTH_DEFAULT = 512;
+	static const int SPRITE_HEIGHT_DEFAULT = 512;
 
 	Sprite *sprite;
 	QString currentSavePath;
