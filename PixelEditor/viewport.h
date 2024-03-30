@@ -35,7 +35,7 @@ protected:
 private:
 	enum class Tool { None, Brush, Eraser };
 
-	static const int SCENE_WIDTH = 1024;
+    static const int SCENE_WIDTH = 1024;
 	static const int SCENE_HEIGHT = 1024;
 
 	Tool currentTool;

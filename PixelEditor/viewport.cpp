@@ -20,11 +20,6 @@ Viewport::Viewport(QWidget *parent)
 	gScene.addItem(&gItemGroup);
 	this->setScene(&gScene);
 
-	/* // TODO: obsolete?
-	Known Issue: We want the label contained within the gridLayout object to match the height and width
-	of its parent container. As of now, this isnt working properly. Hard coded pixmap sizes are used below,
-	but we should be able to use this->height() and this->width() respectively.
-	*/
 }
 
 Viewport::~Viewport()

@@ -42,15 +42,28 @@ void FrameTimeline::addFrame(){
 
 }
 
-void FrameTimeline::removeFrame(){
+void FrameTimeline::removeFrame() {
+    if (framesInUse->isEmpty()) {
+        // The map is already empty, nothing to remove
+        return;
+    }
 
-	//Going to need to get the frame ID for an exisiting frame object
-	// this data will come from the sprite model
+    // Get the last index
+    int lastIndex = framesInUse->size() - 1;
 
-	//TODO: 1) Get the id of the last frame in the sequence
-	//      2) create a Frame Icon object with that same ID but use it to
-	//         remove the widget using the layout->removeWidget(someIcon)
+    // Get the key corresponding to the last index
+    int lastKey = framesInUse->keys().at(lastIndex);
 
+    if(lastKey > 0) {
+        // Remove the last element from the map and get the associated FrameIcon pointer
+        FrameIcon *iconToRemove = framesInUse->take(lastKey);
+
+        // Remove the widget from the layout
+        layout->removeWidget(iconToRemove);
+
+        // Optionally, delete the FrameIcon object to free up memory
+        delete iconToRemove;
+    }
 }
 
 void FrameTimeline::moveLeft(){
@@ -63,8 +76,3 @@ void FrameTimeline::moveRight(){
 	// dont move it right if it's at the end of the sequence
 }
 
-// void FrameTimeline::sendIconInformation(){
-
-
-//     emit sendIconID(); // an active frame
-// }

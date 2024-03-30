@@ -22,7 +22,11 @@ public slots:
 	void setupOpenSprite();
 
 	void addNewFrame();
+    void removeFrame();
+    void addNewLayer();
+    void removeLayer();
 	void selectFrame(int frameIndex);
+    void selectLayer(int layerIndex);
 
 signals:
 	void spriteLoaded(const QImage &image, int width, int height);

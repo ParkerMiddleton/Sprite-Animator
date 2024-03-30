@@ -110,10 +110,10 @@ void Frame::removeCurrentLayer()
 
 void Frame::selectLayer(int layerIndex)
 {
-	if (0 >= layerIndex && layerIndex < layers.size())
-	{
-		currentLayerIndex = layerIndex;
-	}
+    //if (layerIndex >= 0 && layerIndex < layers.size())
+    //{
+        currentLayerIndex = layerIndex;
+    //}
 }
 
 Layer& Frame::getCurrentLayer()
@@ -123,23 +123,60 @@ Layer& Frame::getCurrentLayer()
 
 QImage Frame::getMergedLayerImage()
 {
-	QImage image(parentSprite->getWidth(), parentSprite->getHeight(), QImage::Format_RGBA8888);
+    QImage image(parentSprite->getWidth(), parentSprite->getHeight(), QImage::Format_RGBA8888);
 
-	for (int row = 0; row < image.height(); row++)
-	{
-		for (int col = 0; col < image.width(); col++)
-		{
-			for (const Layer &layer : layers)
-			{
-				int index = col + row * image.width();
-				const Color &clr = layer.pixels[index];
-				image.setPixelColor(col, row, QColor(clr.r, clr.g, clr.b, clr.a));
-			}
-		}
-	}
+    for (int row = 0; row < image.height(); row++)
+    {
+        for (int col = 0; col < image.width(); col++)
+        {
 
-	return image;
+            // Iterate through layers in reverse order to draw from top to bottom
+            for (const Layer &layer : layers)
+            {
+                int index = col + row * image.width();
+                const Color &clr = layer.pixels[index];
+
+                // Check if the pixel is not fully transparent
+                if (clr.a != 0)
+                {
+                    // Set the pixel color and mark as set
+                    image.setPixelColor(col, row, QColor(clr.r, clr.g, clr.b, clr.a));
+                }
+            }
+        }
+    }
+
+    return image;
 }
+
+QImage Frame::getMergedLayerImageTwo()
+{
+    QImage image(parentSprite->getWidth(), parentSprite->getHeight(), QImage::Format_RGBA8888);
+
+    for (int row = 0; row < image.height(); row++)
+    {
+        for (int col = 0; col < image.width(); col++)
+        {
+
+            // Iterate through layers in reverse order to draw from top to bottom
+            for (const Layer &layer : layers)
+            {
+                int index = col + row * image.width();
+                const Color &clr = layer.pixels[index];
+
+                // Check if the pixel is not fully transparent
+                if (clr.a != 0)
+                {
+                    // Set the pixel color and mark as set
+                    image.setPixelColor(col, row, QColor(clr.r, clr.g, clr.b, clr.a));
+                }
+            }
+        }
+    }
+
+    return image;
+}
+
 
 QColor Frame::getMergedPixel(int x, int y)
 {
@@ -230,7 +267,24 @@ void Sprite::selectFrame(int frameIndex)
 
 void Sprite::removeCurrentFrame()
 {
-	frames.removeAt(currentFrameIndex);
+    if (currentFrameIndex > 0) {
+        frames.removeAt(currentFrameIndex);
+    }
+}
+
+void Sprite::removeFrame(){
+    //move frame index to display other frame.
+    if (currentFrameIndex > 0) {
+        frames.removeLast();
+        currentFrameIndex--;
+    }
+    else {
+        currentFrameIndex = 0;
+    }
+}
+
+void Sprite::selectLayer(int index) {
+    frames[currentFrameIndex].selectLayer(index);
 }
 
 Frame& Sprite::getCurrentFrame()

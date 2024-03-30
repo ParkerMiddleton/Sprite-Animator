@@ -1,4 +1,5 @@
 #include "editor.h"
+#include <QDebug>
 
 Editor::Editor(QObject *parent)
 	: QObject{parent}
@@ -43,6 +44,7 @@ void Editor::serializeSprite(const QString &filename)
 		if (currentSaveName.isEmpty() || currentSavePath.isEmpty())
 		{
 			emit needSaveFilenameToSerialize();
+
 			return;
 		}
 
@@ -128,11 +130,33 @@ void Editor::addNewFrame()
 	emit frameChanged(sprite->getCurrentFrame().getMergedLayerImage());
 }
 
+void Editor::addNewLayer() {
+    //TODO:: implement add layer
+    sprite->getCurrentFrame().addLayer();
+    emit frameChanged(sprite->getCurrentFrame().getMergedLayerImage());
+}
+
+void Editor::removeLayer() {
+    //TODO:: implement remove layer
+}
+
+void Editor::removeFrame()
+{
+    sprite->removeFrame();
+    emit frameChanged(sprite->getCurrentFrame().getMergedLayerImage());
+}
+
 void Editor::selectFrame(int frameIndex)
 {
 	sprite->selectFrame(frameIndex);
 	Frame &frame = sprite->getCurrentFrame();
 	emit frameChanged(frame.getMergedLayerImage());
+}
+
+void Editor::selectLayer(int layerIndex) {
+    QTextStream(stdout) << layerIndex;
+    sprite->selectLayer(layerIndex);
+    emit frameChanged(sprite->getCurrentFrame().getMergedLayerImage());
 }
 
 void Editor::setIsSpriteSaved(bool state)

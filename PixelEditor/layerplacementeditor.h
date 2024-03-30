@@ -9,6 +9,7 @@ class LayerPlacementEditor : public QScrollArea
 
 private:
     QLayout *layout;
+    QMap<int, LayerIcon*> *layerButtons;
 
 
 public:
@@ -28,6 +29,7 @@ public slots:
 
 
 signals:
+    void sendLayerIconID(int index);
 };
 
 #endif // LAYERPLACEMENTEDITOR_H

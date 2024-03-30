@@ -4,6 +4,7 @@
 #include "previewwindow.h"
 #include "viewport.h"
 #include "frametimeline.h"
+#include "layerplacementeditor.h"
 
 class Editor;
 
@@ -49,6 +50,7 @@ private:
 	Viewport *vp;
 	PreviewWindow *pw;
 	FrameTimeline *ft;
+    LayerPlacementEditor *lt;
 
 	QColorDialog *colorDialog;
 

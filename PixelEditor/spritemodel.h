@@ -42,6 +42,8 @@ class Frame
 public:
 	Frame(Sprite *parentSprite);
 
+    Layer mergedLayer;
+
 	/// @brief addLayer Adds a new Layer to the frame.
 	void addLayer();
 
@@ -52,6 +54,7 @@ public:
 	Layer& getCurrentLayer();
 
 	QImage getMergedLayerImage();
+    QImage getMergedLayerImageTwo();
 	QColor getMergedPixel(int x, int y);
 
 	static Frame fromJson(const QJsonObject &json, Sprite *parentSprite);
@@ -79,12 +82,16 @@ public:
 
 	void selectFrame(int frameIndex);
 
+    void selectLayer(int index);
+
 	void moveCurrentFrameForward();
 
 	void moveCurrentFrameBackward();
 
 	/// @brief removeFrame Removes the current frame.
 	void removeCurrentFrame();
+
+    void removeFrame();
 
 	Frame& getCurrentFrame();
 

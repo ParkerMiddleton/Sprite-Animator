@@ -13,6 +13,9 @@ MainWindow::MainWindow(Editor *editor, QWidget *parent)
 	vp = ui->viewport;
 	pw = ui->previewLabel;
 	ft = ui->frameTimeline;
+    lt = ui->layerPlacer;
+
+    //editor->setupCreateNewSprite();
 
 	colorDialog = new QColorDialog();
 
@@ -48,16 +51,39 @@ MainWindow::MainWindow(Editor *editor, QWidget *parent)
 	connect(ui->addFrameButton, &QPushButton::clicked
 			, ft, &FrameTimeline::addFrame);
 
+    connect(ui->deleteFrameButton, &QPushButton::clicked
+            , ft, &FrameTimeline::removeFrame);
+
 	connect(ui->addFrameButton, &QPushButton::clicked
 			, editor, &Editor::addNewFrame);
 
-	//
+    connect(ui->deleteFrameButton, &QPushButton::clicked
+            , editor, &Editor::removeFrame);
 
-	connect(ft, &FrameTimeline::sendIconID
-			, editor, &Editor::selectFrame);
+    connect(ft, &FrameTimeline::sendIconID
+            , editor, &Editor::selectFrame);
 
-	connect(editor, &Editor::frameChanged
-			, vp, &Viewport::setSpriteImage);
+    connect(editor, &Editor::frameChanged
+            , vp, &Viewport::setSpriteImage);
+
+    /*== LAYER BUTTONS ==*/
+
+    connect(ui->addLayer, &QPushButton::clicked
+            , lt, &LayerPlacementEditor::addLayer);
+
+    connect(ui->removeLayer, &QPushButton::clicked
+            , lt, &LayerPlacementEditor::removeLayer);
+
+    connect(ui->addLayer, &QPushButton::clicked
+            , editor, &Editor::addNewLayer);
+
+    connect(ui->removeLayer, &QPushButton::clicked
+            , editor, &Editor::removeLayer);
+
+    connect(lt, &LayerPlacementEditor::sendLayerIconID
+            , editor, &Editor::selectLayer);
+
+
 
 	/*====== MODEL <--> VIEW ======*/
 
