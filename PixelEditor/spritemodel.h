@@ -23,7 +23,7 @@ public:
 	/// @param x, location x
 	/// @param y, location y
 	/// @param BrushSize, length of the square to be drawn.
-	void drawColor(int x, int y, QColor color, int brushSize = 1);
+	void setPixel(int x, int y, QColor color);
 
 	static Layer fromJson(const QJsonObject &json, Sprite *parentSprite);
 	QJsonObject toJson() const;
@@ -42,7 +42,7 @@ class Frame
 public:
 	Frame(Sprite *parentSprite);
 
-    Layer mergedLayer;
+	void paintAt(int x, int y, QColor color, int brushSize = 1);
 
 	/// @brief addLayer Adds a new Layer to the frame.
 	void addLayer();
@@ -53,21 +53,25 @@ public:
 
 	Layer& currentLayer();
 
-	QImage getMergedLayerImage();
-	QColor getMergedPixel(int x, int y);
+	const QPixmap& getDisplayData();
 
 	int getLayerCount();
+	int getCurrentLayerIndex();
 
 	static Frame fromJson(const QJsonObject &json, Sprite *parentSprite);
 	QJsonObject toJson() const;
 
 private:
 	Sprite *parentSprite;
+	QPixmap displayData;
 
 	QList<Layer> layers;
 	int currentLayerIndex;
 
-	Frame();
+	Frame(int width, int height);
+
+	void mergeLayersIntoDisplayData();
+	QColor getMergedPixel(int x, int y);
 
 	/// @brief mergeLayers merges all Layers into final image
 
@@ -95,6 +99,7 @@ public:
 	int getHeight();
 
 	int getFrameCount();
+	int getCurrentFrameIndex();
 
 	static Sprite* fromJson(const QJsonObject &json);
 	QJsonObject toJson() const;

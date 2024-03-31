@@ -3,8 +3,6 @@
 Viewport::Viewport(QWidget *parent)
 	: QGraphicsView{parent}
 	, currentTool{Tool::None}
-	, pBackground{nullptr}
-	, pSprite{nullptr}
 	, gScene{0, 0, SCENE_WIDTH, SCENE_HEIGHT}
 	, isMousePressed{false}
 	, spritePosOffset{0, 0}
@@ -14,7 +12,6 @@ Viewport::Viewport(QWidget *parent)
 	this->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 	this->setTransformationAnchor(QGraphicsView::NoAnchor);
 
-	pen.setWidth(1);
 	gItemGroup.addToGroup(&gBackground);
 	gItemGroup.addToGroup(&gSprite);
 	gScene.addItem(&gItemGroup);
@@ -23,55 +20,36 @@ Viewport::Viewport(QWidget *parent)
 
 Viewport::~Viewport()
 {
-	delete pBackground;
-	delete pSprite;
+
 }
 
-void Viewport::updateDisplayImage(const QImage &image, bool newSprite)
+void Viewport::setupNewSpriteDisplay(int spriteWidth, int spriteHeight)
 {
-	if (newSprite)
-	{
-		delete pSprite;
-		this->setupTransparencyBackground(image.width(), image.height());
-		pSprite = new QPixmap(image.width(), image.height());
+	this->setupTransparencyBackground(spriteWidth, spriteHeight);
 
-		// Setup position in scene
-		spritePosOffset.setX(SCENE_WIDTH / 2 - image.width() / 2);
-		spritePosOffset.setY(SCENE_HEIGHT / 2 - image.height() / 2);
+	// Setup position in scene
+	spritePosOffset.setX(SCENE_WIDTH / 2 - spriteWidth / 2);
+	spritePosOffset.setY(SCENE_HEIGHT / 2 - spriteHeight / 2);
 
-		gBackground.setTransform(QTransform().translate(spritePosOffset.x(), spritePosOffset.y()));
-		gSprite.setTransform(QTransform().translate(spritePosOffset.x(), spritePosOffset.y()));
-	}
+	gBackground.setTransform(QTransform().translate(spritePosOffset.x(), spritePosOffset.y()));
+	gSprite.setTransform(QTransform().translate(spritePosOffset.x(), spritePosOffset.y()));
 
-	pSprite->fill(Qt::transparent);
-	pSprite->convertFromImage(image, Qt::NoFormatConversion);
+	this->resetTransform();
+	this->scale(6.f, 6.f);
+	this->centerOn(&gBackground);
 
-	gSprite.setPixmap(*pSprite);
+	emit spriteSizeChanged(QPoint{spriteWidth, spriteHeight});
+}
 
-	if (newSprite)
-	{
-		this->resetTransform();
-		this->scale(6.f, 6.f);
-		this->centerOn(&gSprite);
+void Viewport::updateSpriteDisplay(const QPixmap &sprite)
+{
+	//pSprite->fill(Qt::transparent);
+	//pSprite->convertFromImage(image, Qt::NoFormatConversion);
 
-		emit spriteSizeChanged(QPoint{image.width(), image.height()});
-	}
+	gSprite.setPixmap(sprite);
+	//emit sendPixmapData(sprite);
 
 	//this->repaint();
-}
-
-void Viewport::setPixelColor(int x, int y, QColor color)
-{
-	QPainter painter(pSprite);
-	painter.setCompositionMode(QPainter::CompositionMode_Source);
-	pen.setColor(color);
-	painter.setPen(pen);
-	painter.drawPoint(x, y);
-	painter.end();
-
-	gSprite.setPixmap(*pSprite);
-
-	emit sendPixmapData(pSprite);
 }
 
 /*void Viewport::paintEvent(QPaintEvent *)
@@ -150,16 +128,12 @@ void Viewport::draw(const QPoint &mousePos)
 	QPointF scenePos = this->mapToScene(mousePos);
 	QPoint p2(scenePos.x() - spritePosOffset.x(), scenePos.y() - spritePosOffset.y());
 
-	if (!(0 <= p2.x() && p2.x() < pSprite->width()
-		&&
-		  0 <= p2.y() && p2.y() < pSprite->height()))
-	{
+	if (!(0 <= p2.x() && p2.x() < gBackground.pixmap().width() && 0 <= p2.y() && p2.y() < gBackground.pixmap().height()))
 		return;
-	}
 
 	if (currentTool == Tool::Brush)
 	{
-		emit colorPainted(p2.x(), p2.y(), color);
+		emit colorPainted(p2.x(), p2.y(), drawingColor);
 	}
 	else if (currentTool == Tool::Eraser)
 	{
@@ -178,11 +152,10 @@ void Viewport::zoom(const QPoint &mousePos, qreal factor)
 
 void Viewport::setupTransparencyBackground(int width, int height)
 {
-	delete pBackground;
-	pBackground = new QPixmap(width, height);
+	QPixmap pBackground(width, height);
 
 	//Draw checker pattern
-	QPainter painter (pBackground);
+	QPainter painter(&pBackground);
 
 	for (int y = 0; y < height; y++)
 	{
@@ -197,12 +170,12 @@ void Viewport::setupTransparencyBackground(int width, int height)
 
 	painter.end();
 
-	gBackground.setPixmap(*pBackground);
+	gBackground.setPixmap(pBackground);
 }
 
 void Viewport::setDrawingColor(const QColor &newColor)
 {
-	color = newColor;
+	drawingColor = newColor;
 }
 
 void Viewport::setBrushEnabled()

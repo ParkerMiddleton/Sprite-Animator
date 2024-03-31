@@ -13,7 +13,7 @@ public:
 
 public slots:
 	void createNewSprite();
-	void setPixel(int x, int y, QColor color);
+	void paintAt(int x, int y, QColor color);
 
 	void serializeSprite(const QString &filename);
 	void deserializeSprite(const QString &filename);
@@ -33,11 +33,10 @@ public slots:
 	void removeLayer();
 
 signals:
-	void spriteLoaded(int framesCount);
+	void newSprite(int framesCount);
+	void newSpriteSize(int width, int height);
 	void newFrameSelection(int layersCount);
-	void displayImageChanged(const QImage &image, bool newSprite);
-
-	void pixelSet(int x, int y, QColor color);
+	void displayDataUpdated(const QPixmap &displayData);
 
 	void spriteSaveStatusChanged(const QString &spriteName, bool isModified);
 
@@ -56,7 +55,7 @@ private:
 
 	void setIsSpriteSaved(bool state);
 	void splitFilename(const QString &filename, QString &path, QString &name);
-	void emitSpriteLoadedSignals();
+	void emitNewSpriteSignals();
 
 };
 

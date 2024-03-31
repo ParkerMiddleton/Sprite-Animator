@@ -10,8 +10,8 @@ public:
 	~Viewport();
 
 public slots:
-	void updateDisplayImage(const QImage &image, bool newSprite);
-	void setPixelColor(int x, int y, QColor color);
+	void setupNewSpriteDisplay(int spriteWidth, int spriteHeight);
+	void updateSpriteDisplay(const QPixmap &sprite);
 
 	void setDrawingColor(const QColor &color);
 	void setBrushEnabled();
@@ -41,18 +41,13 @@ private:
 
 	Tool currentTool;
 
-	QPixmap *pBackground;
-	QPixmap *pSprite;
-
 	QGraphicsScene gScene;
 	QGraphicsItemGroup gItemGroup;
 
 	QGraphicsPixmapItem gBackground;
 	QGraphicsPixmapItem gSprite;
 
-	QPen pen;
-
-	QColor color;
+	QColor drawingColor;
 	bool isMousePressed;
 	QPoint spritePosOffset;
 

@@ -64,7 +64,7 @@ MainWindow::MainWindow(Editor *editor, QWidget *parent)
 	connect(ui->deleteFrameButton, &QPushButton::clicked
 			, editor, &Editor::removeFrame);
 
-	connect(editor, &Editor::spriteLoaded
+	connect(editor, &Editor::newSprite
 			, ft, &TimelinePanel::setupFrameButtons);
 
 	connect(ui->moveFrameLeftButton, &QPushButton::clicked
@@ -117,14 +117,14 @@ MainWindow::MainWindow(Editor *editor, QWidget *parent)
 	connect(editor, &Editor::readyOpenSprite
 			, this, &MainWindow::handleOpenSprite);
 
-	connect(editor, &Editor::displayImageChanged
-			, vp, &Viewport::updateDisplayImage);
+	connect(editor, &Editor::newSpriteSize
+			, vp, &Viewport::setupNewSpriteDisplay);
+
+	connect(editor, &Editor::displayDataUpdated
+			, vp, &Viewport::updateSpriteDisplay);
 
 	connect(vp, &Viewport::colorPainted
-			, editor, &Editor::setPixel);
-
-	connect(editor, &Editor::pixelSet
-			, vp, &Viewport::setPixelColor);
+			, editor, &Editor::paintAt);
 
 	/* VIEW <--> VIEW */
 

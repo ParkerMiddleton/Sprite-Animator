@@ -12,7 +12,7 @@ Layer::Layer(Sprite *parentSprite)
 	}
 }
 
-void Layer::drawColor(int x, int y, QColor color, int brushSize)
+void Layer::setPixel(int x, int y, QColor color)
 {
 	int index = x + y * parentSprite->getWidth();
 	pixels[index].r = color.red();
@@ -93,9 +93,26 @@ Layer::Layer()
 
 Frame::Frame(Sprite *parentSprite)
 	: parentSprite{parentSprite}
+	, displayData(parentSprite->getWidth(), parentSprite->getHeight())
 	, currentLayerIndex{-1}
 {
+	displayData.fill(Qt::transparent);
 	this->addLayer();
+}
+
+void Frame::paintAt(int x, int y, QColor color, int brushSize)
+{
+	layers[currentLayerIndex].setPixel(x, y, color);
+
+	QPen pen;
+	pen.setWidth(1);
+
+	QPainter painter(&displayData);
+	painter.setCompositionMode(QPainter::CompositionMode_Source);
+	pen.setColor(this->getMergedPixel(x, y));
+	painter.setPen(pen);
+	painter.drawPoint(x, y);
+	painter.end();
 }
 
 void Frame::addLayer()
@@ -119,6 +136,8 @@ void Frame::removeCurrentLayer()
 		{
 			currentLayerIndex--;
 		}
+
+		this->mergeLayersIntoDisplayData();
 	}
 }
 
@@ -146,32 +165,9 @@ Color mixColorsAdditive(Color bgc, Color fgc)
 	return Color{uchar(255.0 * result.r), uchar(255.0 * result.g), uchar(255.0 * result.b), uchar(255.0 * result.a)};
 }
 
-QImage Frame::getMergedLayerImage()
+const QPixmap& Frame::getDisplayData()
 {
-	QImage image(parentSprite->getWidth(), parentSprite->getHeight(), QImage::Format_RGBA8888);
-
-	for (int row = 0; row < image.height(); row++)
-	{
-		for (int col = 0; col < image.width(); col++)
-		{
-			image.setPixelColor(col, row, this->getMergedPixel(col, row));
-		}
-	}
-
-	return image;
-}
-
-QColor Frame::getMergedPixel(int x, int y)
-{
-	int index = x + y * parentSprite->getWidth();
-	Color clr{0, 0, 0, 0};
-
-	for (const Layer &layer : layers)
-	{
-		clr = mixColorsAdditive(clr, layer.pixels[index]);
-	}
-
-	return QColor(clr.r, clr.g, clr.b, clr.a);
+	return displayData;
 }
 
 int Frame::getLayerCount()
@@ -179,23 +175,28 @@ int Frame::getLayerCount()
 	return layers.size();
 }
 
+int Frame::getCurrentLayerIndex()
+{
+	return currentLayerIndex;
+}
+
 Frame Frame::fromJson(const QJsonObject &json, Sprite *parentSprite)
 {
-	Frame frame;
+	Frame frame(parentSprite->getWidth(), parentSprite->getHeight());
 	frame.parentSprite = parentSprite;
 
 	if (const QJsonValue &jsonVal = json["layers"]; jsonVal.isArray())
 	{
 		const QJsonArray &jsonLayers = jsonVal.toArray();
 		frame.layers.reserve(jsonLayers.size());
-		static int in = 0;
 
 		for (const QJsonValue &jsonLayerVal : jsonLayers)
 		{
-			QTextStream(stdout) << in++;
 			frame.layers.append(Layer::fromJson(jsonLayerVal.toObject(), parentSprite));
 		}
 	}
+
+	frame.mergeLayersIntoDisplayData();
 
 	return frame;
 }
@@ -217,10 +218,40 @@ QJsonObject Frame::toJson() const
 	return json;
 }
 
-Frame::Frame()
-	: currentLayerIndex{0}
+Frame::Frame(int width, int height)
+	: displayData(width, height)
+	, currentLayerIndex{0}
 {
+	displayData.fill(Qt::transparent);
+}
 
+void Frame::mergeLayersIntoDisplayData()
+{
+	// TODO: Rewrite using QPainter and without QImage.
+	QImage image(parentSprite->getWidth(), parentSprite->getHeight(), QImage::Format_RGBA8888);
+
+	for (int row = 0; row < image.height(); row++)
+	{
+		for (int col = 0; col < image.width(); col++)
+		{
+			image.setPixelColor(col, row, this->getMergedPixel(col, row));
+		}
+	}
+
+	displayData.convertFromImage(image, Qt::NoFormatConversion);
+}
+
+QColor Frame::getMergedPixel(int x, int y)
+{
+	int index = x + y * parentSprite->getWidth();
+	Color clr{0, 0, 0, 0};
+
+	for (const Layer &layer : layers)
+	{
+		clr = mixColorsAdditive(clr, layer.pixels[index]);
+	}
+
+	return QColor(clr.r, clr.g, clr.b, clr.a);
 }
 
 // SPRITE CLASS
@@ -294,6 +325,11 @@ int Sprite::getHeight()
 int Sprite::getFrameCount()
 {
 	return frames.size();
+}
+
+int Sprite::getCurrentFrameIndex()
+{
+	return currentFrameIndex;
 }
 
 Sprite* Sprite::fromJson(const QJsonObject &json)

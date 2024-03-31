@@ -23,15 +23,16 @@ void Editor::createNewSprite()
 	currentSaveName = "UNTITLED";
 	this->setIsSpriteSaved(true);
 
-	this->emitSpriteLoadedSignals();
+	this->emitNewSpriteSignals();
 }
 
-void Editor::setPixel(int x, int y, QColor color)
+void Editor::paintAt(int x, int y, QColor color)
 {
-	sprite->currentFrame().currentLayer().drawColor(x, y, color);
-	this->setIsSpriteSaved(false);
+	Frame &currentFrame = sprite->currentFrame();
+	currentFrame.paintAt(x, y, color);
 
-	emit pixelSet(x, y, sprite->currentFrame().getMergedPixel(x, y));
+	this->setIsSpriteSaved(false);
+	emit displayDataUpdated(sprite->currentFrame().getDisplayData());
 }
 
 void Editor::serializeSprite(const QString &filename)
@@ -107,7 +108,7 @@ void Editor::deserializeSprite(const QString &filename)
 	currentSavePath = saveFilepath;
 
 	this->setIsSpriteSaved(true);
-	this->emitSpriteLoadedSignals();
+	this->emitNewSpriteSignals();
 }
 
 void Editor::setupCreateNewSprite()
@@ -122,55 +123,75 @@ void Editor::setupOpenSprite()
 
 void Editor::moveFrameLeft()
 {
-	this->sprite->moveCurrentFrameLeft();
-	emit displayImageChanged(sprite->currentFrame().getMergedLayerImage(), false);
+	sprite->moveCurrentFrameLeft();
+	QTextStream(stdout) << "\nCurrent Frame Index: " << sprite->getCurrentFrameIndex();
+
+	this->setIsSpriteSaved(false);
+	emit displayDataUpdated(sprite->currentFrame().getDisplayData());
 }
 
 void Editor::moveFrameRight()
 {
-	this->sprite->moveCurrentFrameRight();
-	emit displayImageChanged(sprite->currentFrame().getMergedLayerImage(), false);
+	sprite->moveCurrentFrameRight();
+	QTextStream(stdout) << "\nCurrent Frame Index: " << sprite->getCurrentFrameIndex();
+
+	this->setIsSpriteSaved(false);
+	emit displayDataUpdated(sprite->currentFrame().getDisplayData());
 }
 
 void Editor::selectFrame(int frameIndex)
 {
-	QTextStream(stdout) << "\nFrame selected: " << frameIndex;
 	sprite->selectFrame(frameIndex);
-	emit displayImageChanged(sprite->currentFrame().getMergedLayerImage(), false);
+	QTextStream(stdout) << "\nCurrent Frame Index: " << sprite->getCurrentFrameIndex();
+
 	emit newFrameSelection(sprite->currentFrame().getLayerCount());
+	emit displayDataUpdated(sprite->currentFrame().getDisplayData());
 }
 
 void Editor::addNewFrame()
 {
 	sprite->addFrame();
-	emit displayImageChanged(sprite->currentFrame().getMergedLayerImage(), false);
+	QTextStream(stdout) << "\nCurrent Frame Index: " << sprite->getCurrentFrameIndex();
+
+	this->setIsSpriteSaved(false);
 	emit newFrameSelection(sprite->currentFrame().getLayerCount());
+	emit displayDataUpdated(sprite->currentFrame().getDisplayData());
 }
 
 void Editor::removeFrame()
 {
 	sprite->removeCurrentFrame();
-	emit displayImageChanged(sprite->currentFrame().getMergedLayerImage(), false);
+	QTextStream(stdout) << "\nCurrent Frame Index: " << sprite->getCurrentFrameIndex();
+
+	this->setIsSpriteSaved(false);
 	emit newFrameSelection(sprite->currentFrame().getLayerCount());
+	emit displayDataUpdated(sprite->currentFrame().getDisplayData());
 }
 
 void Editor::selectLayer(int layerIndex)
 {
-	QTextStream(stdout) << "\nLayer selected: " << layerIndex;
 	sprite->currentFrame().selectLayer(layerIndex);
-	emit displayImageChanged(sprite->currentFrame().getMergedLayerImage(), false);
+	QTextStream(stdout) << "\nCurrent Layer Index: " << sprite->currentFrame().getCurrentLayerIndex();
+
+	emit displayDataUpdated(sprite->currentFrame().getDisplayData());
 }
 
 void Editor::addNewLayer()
 {
 	sprite->currentFrame().addLayer();
-	emit displayImageChanged(sprite->currentFrame().getMergedLayerImage(), false);
+	QTextStream(stdout) << "\nCurrent Layer Index: " << sprite->currentFrame().getCurrentLayerIndex();
+
+	this->setIsSpriteSaved(false);
+	emit displayDataUpdated(sprite->currentFrame().getDisplayData());
 }
 
 void Editor::removeLayer()
 {
 	sprite->currentFrame().removeCurrentLayer();
-	emit displayImageChanged(sprite->currentFrame().getMergedLayerImage(), false);
+	QTextStream(stdout) << "\nCurrent Layer Index: " << sprite->currentFrame().getCurrentLayerIndex();
+
+	this->setIsSpriteSaved(false);
+	emit displayDataUpdated(sprite->currentFrame().getDisplayData());
 }
 
 void Editor::setIsSpriteSaved(bool state)
@@ -194,10 +215,11 @@ void Editor::splitFilename(const QString &filename, QString &path, QString &name
 	name = info.fileName();
 }
 
-void Editor::emitSpriteLoadedSignals()
+void Editor::emitNewSpriteSignals()
 {
-	emit spriteLoaded(sprite->getFrameCount());
+	emit newSprite(sprite->getFrameCount());
+	emit newSpriteSize(sprite->getWidth(), sprite->getHeight());
 	emit newFrameSelection(sprite->currentFrame().getLayerCount());
-	emit displayImageChanged(sprite->currentFrame().getMergedLayerImage(), true);
+	emit displayDataUpdated(sprite->currentFrame().getDisplayData());
 	emit spriteSaveStatusChanged(currentSaveName, false);
 }
