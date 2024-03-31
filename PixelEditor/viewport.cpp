@@ -47,7 +47,7 @@ void Viewport::updateSpriteDisplay(const QPixmap &sprite)
 	//pSprite->convertFromImage(image, Qt::NoFormatConversion);
 
 	gSprite.setPixmap(sprite);
-	//emit sendPixmapData(sprite);
+    emit sendPixmapData(new QPixmap(sprite)); // old code was slightly easier to emit this, feel free to refractor but the logic is needed.
 
 	//this->repaint();
 }

@@ -1,6 +1,7 @@
 #ifndef PREVIEWWINDOW_H
 #define PREVIEWWINDOW_H
 
+#include "spritemodel.h"
 
 ///
 /// \brief This class will always mirror the currently edited frame from the canvas window
@@ -12,10 +13,11 @@ class PreviewWindow : public QLabel
 	Q_OBJECT
 private:
 	QPixmap *currentPixmap;
+    Sprite* sprite;
 
 public:
 	explicit PreviewWindow(QWidget *parent = 0);
-/*
+
 	void playAnimation();
 
 public slots:
@@ -24,7 +26,7 @@ public slots:
 	void recieveSpriteData(Sprite *data);
 
 protected:
-	void paintEvent(QPaintEvent *e) override;*/
+    void paintEvent(QPaintEvent *e) override;
 
 };
 

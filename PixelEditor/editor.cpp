@@ -24,6 +24,7 @@ void Editor::createNewSprite()
 	this->setIsSpriteSaved(true);
 
 	this->emitNewSpriteSignals();
+    emit sendSpriteData(sprite);
 }
 
 void Editor::paintAt(int x, int y, QColor color)
@@ -33,6 +34,7 @@ void Editor::paintAt(int x, int y, QColor color)
 
 	this->setIsSpriteSaved(false);
 	emit displayDataUpdated(sprite->currentFrame().getDisplayData());
+    emit sendSpriteData(sprite);
 }
 
 void Editor::serializeSprite(const QString &filename)
@@ -128,6 +130,7 @@ void Editor::moveFrameLeft()
 
 	this->setIsSpriteSaved(false);
 	emit displayDataUpdated(sprite->currentFrame().getDisplayData());
+    emit sendSpriteData(sprite);
 }
 
 void Editor::moveFrameRight()
@@ -137,6 +140,7 @@ void Editor::moveFrameRight()
 
 	this->setIsSpriteSaved(false);
 	emit displayDataUpdated(sprite->currentFrame().getDisplayData());
+    emit sendSpriteData(sprite);
 }
 
 void Editor::selectFrame(int frameIndex)
@@ -146,6 +150,7 @@ void Editor::selectFrame(int frameIndex)
 
 	emit newFrameSelection(sprite->currentFrame().getLayerCount());
 	emit displayDataUpdated(sprite->currentFrame().getDisplayData());
+    emit sendSpriteData(sprite);
 }
 
 void Editor::addNewFrame()
@@ -156,6 +161,7 @@ void Editor::addNewFrame()
 	this->setIsSpriteSaved(false);
 	emit newFrameSelection(sprite->currentFrame().getLayerCount());
 	emit displayDataUpdated(sprite->currentFrame().getDisplayData());
+    emit sendSpriteData(sprite);
 }
 
 void Editor::removeFrame()
@@ -166,6 +172,7 @@ void Editor::removeFrame()
 	this->setIsSpriteSaved(false);
 	emit newFrameSelection(sprite->currentFrame().getLayerCount());
 	emit displayDataUpdated(sprite->currentFrame().getDisplayData());
+    emit sendSpriteData(sprite);
 }
 
 void Editor::selectLayer(int layerIndex)
@@ -174,6 +181,7 @@ void Editor::selectLayer(int layerIndex)
 	QTextStream(stdout) << "\nCurrent Layer Index: " << sprite->currentFrame().getCurrentLayerIndex();
 
 	emit displayDataUpdated(sprite->currentFrame().getDisplayData());
+    emit sendSpriteData(sprite);
 }
 
 void Editor::addNewLayer()
@@ -183,6 +191,7 @@ void Editor::addNewLayer()
 
 	this->setIsSpriteSaved(false);
 	emit displayDataUpdated(sprite->currentFrame().getDisplayData());
+    emit sendSpriteData(sprite);
 }
 
 void Editor::removeLayer()
@@ -192,6 +201,7 @@ void Editor::removeLayer()
 
 	this->setIsSpriteSaved(false);
 	emit displayDataUpdated(sprite->currentFrame().getDisplayData());
+    emit sendSpriteData(sprite);
 }
 
 void Editor::setIsSpriteSaved(bool state)

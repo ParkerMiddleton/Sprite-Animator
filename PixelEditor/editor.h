@@ -44,6 +44,8 @@ signals:
 	void readyOpenSprite(bool askUserToSave);
 	void needSaveFilenameToSerialize();
 
+    void sendSpriteData(Sprite* s);
+
 private:
 	static const int SPRITE_WIDTH_DEFAULT = 32;
 	static const int SPRITE_HEIGHT_DEFAULT = 64;

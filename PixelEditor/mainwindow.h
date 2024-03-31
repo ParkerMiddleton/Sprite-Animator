@@ -36,6 +36,8 @@ public slots:
 	void initializeSaveProcess();
 	void initializeSaveProcessWithDialogue();
 
+    void highlightButton(QPushButton *button);
+
 signals:
     void colorChanged(const QColor &color);
 
