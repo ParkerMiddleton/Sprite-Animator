@@ -12,7 +12,6 @@ public:
 	~Editor();
 
 public slots:
-    void updateFrame();
 	void createNewSprite();
 	void setPixel(int x, int y, QColor color);
 
@@ -22,15 +21,22 @@ public slots:
 	void setupCreateNewSprite();
 	void setupOpenSprite();
 
-	void addNewFrame();
-    void removeFrame();
-    void addNewLayer();
-    void removeLayer();
+	void moveFrameLeft();
+	void moveFrameRight();
+
 	void selectFrame(int frameIndex);
-    void selectLayer(int layerIndex);
+	void addNewFrame();
+	void removeFrame();
+
+	void selectLayer(int layerIndex);
+	void addNewLayer();
+	void removeLayer();
 
 signals:
-	void spriteLoaded(const QImage &image, int width, int height);
+	void spriteLoaded(int framesCount);
+	void newFrameSelection(int layersCount);
+	void displayImageChanged(const QImage &image, bool newSprite);
+
 	void pixelSet(int x, int y, QColor color);
 
 	void spriteSaveStatusChanged(const QString &spriteName, bool isModified);
@@ -38,8 +44,6 @@ signals:
 	void readyCreateNewSprite(bool askUserToSave);
 	void readyOpenSprite(bool askUserToSave);
 	void needSaveFilenameToSerialize();
-
-	void frameChanged(const QImage &image);
 
 private:
 	static const int SPRITE_WIDTH_DEFAULT = 32;
@@ -52,6 +56,7 @@ private:
 
 	void setIsSpriteSaved(bool state);
 	void splitFilename(const QString &filename, QString &path, QString &name);
+	void emitSpriteLoadedSignals();
 
 };
 

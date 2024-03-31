@@ -93,7 +93,7 @@ Layer::Layer()
 
 Frame::Frame(Sprite *parentSprite)
 	: parentSprite{parentSprite}
-	, currentLayerIndex{0}
+	, currentLayerIndex{-1}
 {
 	this->addLayer();
 }
@@ -101,102 +101,82 @@ Frame::Frame(Sprite *parentSprite)
 void Frame::addLayer()
 {
 	layers.push_back(Layer(parentSprite));
-}
-
-void Frame::removeCurrentLayer()
-{
-	layers.remove(currentLayerIndex);
+	currentLayerIndex = layers.size() - 1;
 }
 
 void Frame::selectLayer(int layerIndex)
 {
-    //if (layerIndex >= 0 && layerIndex < layers.size())
-    //{
-        currentLayerIndex = layerIndex;
-    //}
+	currentLayerIndex = layerIndex;
 }
 
-Layer& Frame::getCurrentLayer()
+void Frame::removeCurrentLayer()
+{
+	if (layers.size() > 1) // If there is more than one layer.
+	{
+		layers.removeAt(currentLayerIndex);
+
+		if (currentLayerIndex == layers.size()) // If index was the last layer.
+		{
+			currentLayerIndex--;
+		}
+	}
+}
+
+Layer& Frame::currentLayer()
 {
 	return layers[currentLayerIndex];
 }
 
+Color mixColorsAdditive(Color bgc, Color fgc)
+{
+	struct DClr { double r = 0.0; double g = 0.0; double b = 0.0; double a = 0.0; };
+	DClr result;
+	DClr bg{(double)bgc.r / 255.0, (double)bgc.g / 255.0, (double)bgc.b / 255.0, (double)bgc.a / 255.0};
+	DClr fg{(double)fgc.r / 255.0, (double)fgc.g / 255.0, (double)fgc.b / 255.0, (double)fgc.a / 255.0};
+
+	result.a = 1 - (1 - fg.a) * (1 - bg.a);
+
+	if (result.a >= 1.0e-6) // If not fully transparent
+	{
+		result.r = fg.r * fg.a / result.a + bg.r * bg.a * (1 - fg.a) / result.a;
+		result.g = fg.g * fg.a / result.a + bg.g * bg.a * (1 - fg.a) / result.a;
+		result.b = fg.b * fg.a / result.a + bg.b * bg.a * (1 - fg.a) / result.a;
+	}
+
+	return Color{uchar(255.0 * result.r), uchar(255.0 * result.g), uchar(255.0 * result.b), uchar(255.0 * result.a)};
+}
+
 QImage Frame::getMergedLayerImage()
 {
-    QImage image(parentSprite->getWidth(), parentSprite->getHeight(), QImage::Format_RGBA8888);
+	QImage image(parentSprite->getWidth(), parentSprite->getHeight(), QImage::Format_RGBA8888);
 
+	for (int row = 0; row < image.height(); row++)
+	{
+		for (int col = 0; col < image.width(); col++)
+		{
+			image.setPixelColor(col, row, this->getMergedPixel(col, row));
+		}
+	}
 
-    for (int row = 0; row < image.height(); row++)
-    {
-        for (int col = 0; col < image.width(); col++)
-        {
-            image.setPixelColor(col,row, QColor(0,0,0,0));
-        }
-    }
-
-    for (int row = 0; row < image.height(); row++)
-    {
-        for (int col = 0; col < image.width(); col++)
-        {
-            for (const Layer &layer : layers)
-            {
-                int index = col + row * image.width();
-                const Color &clr = layer.pixels[index];
-
-                // Check if the pixel is not fully transparent
-                if (clr.a != 0)
-                {
-                    // Set the pixel color and mark as set
-                    image.setPixelColor(col, row, QColor(clr.r, clr.g, clr.b, clr.a));
-                }
-            }
-        }
-    }
-
-    return image;
+	return image;
 }
-
-QImage Frame::getMergedLayerImageTwo()
-{
-    QImage image(parentSprite->getWidth(), parentSprite->getHeight(), QImage::Format_RGBA8888);
-
-    for (int row = 0; row < image.height(); row++)
-    {
-        for (int col = 0; col < image.width(); col++)
-        {
-
-            // Iterate through layers in reverse order to draw from top to bottom
-            for (const Layer &layer : layers)
-            {
-                int index = col + row * image.width();
-                const Color &clr = layer.pixels[index];
-
-                // Check if the pixel is not fully transparent
-                if (clr.a != 0)
-                {
-                    // Set the pixel color and mark as set
-                    image.setPixelColor(col, row, QColor(clr.r, clr.g, clr.b, clr.a));
-                }
-            }
-        }
-    }
-
-    return image;
-}
-
 
 QColor Frame::getMergedPixel(int x, int y)
 {
 	int index = x + y * parentSprite->getWidth();
-	QColor mergedPixel;
+	Color clr{0, 0, 0, 0};
 
 	for (const Layer &layer : layers)
 	{
-		const Color &clr = layer.pixels[index];
-		mergedPixel = QColor(clr.r, clr.g, clr.b, clr.a);
+		clr = mixColorsAdditive(clr, layer.pixels[index]);
 	}
 
-	return mergedPixel;
+	return QColor(clr.r, clr.g, clr.b, clr.a);
+}
+
+int Frame::getLayerCount()
+{
+	return layers.size();
 }
 
 Frame Frame::fromJson(const QJsonObject &json, Sprite *parentSprite)
@@ -257,44 +237,46 @@ Sprite::Sprite(int width, int height)
 void Sprite::addFrame()
 {
 	frames.push_back(Frame(this));
-	currentFrameIndex++;
+	currentFrameIndex = frames.size() - 1;
 }
 
 void Sprite::selectFrame(int frameIndex)
 {
-	QTextStream(stdout) << "Attempting select: " << frameIndex << "\n";
-	QTextStream(stdout) << "Frames size: " << frames.size() << "\n";
+	currentFrameIndex = frameIndex;
+}
 
-	if (frameIndex >= 0 && frameIndex < frames.size())
+void Sprite::moveCurrentFrameLeft()
+{
+	if (currentFrameIndex > 0)
 	{
-		QTextStream(stdout) << "Frame was selected: " << currentFrameIndex << "\n";
-		currentFrameIndex = frameIndex;
+		int oldIndex = currentFrameIndex;
+		frames.swapItemsAt(oldIndex, --currentFrameIndex);
+	}
+}
+
+void Sprite::moveCurrentFrameRight()
+{
+	if (frames.size() > 1 && currentFrameIndex < frames.size() - 1)
+	{
+		int oldIndex = currentFrameIndex;
+		frames.swapItemsAt(oldIndex, ++currentFrameIndex);
 	}
 }
 
 void Sprite::removeCurrentFrame()
 {
-    if (currentFrameIndex > 0) {
-        frames.removeAt(currentFrameIndex);
-    }
+	if (frames.size() > 1) // If there is more than one frame.
+	{
+		frames.removeAt(currentFrameIndex);
+
+		if (currentFrameIndex == frames.size()) // If index was the last frame.
+		{
+			currentFrameIndex--;
+		}
+	}
 }
 
-void Sprite::removeFrame(){
-    //move frame index to display other frame.
-    if (currentFrameIndex > 0) {
-        frames.removeLast();
-        currentFrameIndex--;
-    }
-    else {
-        currentFrameIndex = 0;
-    }
-}
-
-void Sprite::selectLayer(int index) {
-    frames[currentFrameIndex].selectLayer(index);
-}
-
-Frame& Sprite::getCurrentFrame()
+Frame& Sprite::currentFrame()
 {
 	return frames[currentFrameIndex];
 }
@@ -307,6 +289,11 @@ int Sprite::getWidth()
 int Sprite::getHeight()
 {
 	return height;
+}
+
+int Sprite::getFrameCount()
+{
+	return frames.size();
 }
 
 Sprite* Sprite::fromJson(const QJsonObject &json)

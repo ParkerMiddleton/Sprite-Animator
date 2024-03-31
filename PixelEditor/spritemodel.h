@@ -51,11 +51,12 @@ public:
 
 	void selectLayer(int layerIndex);
 
-	Layer& getCurrentLayer();
+	Layer& currentLayer();
 
 	QImage getMergedLayerImage();
-    QImage getMergedLayerImageTwo();
 	QColor getMergedPixel(int x, int y);
+
+	int getLayerCount();
 
 	static Frame fromJson(const QJsonObject &json, Sprite *parentSprite);
 	QJsonObject toJson() const;
@@ -82,21 +83,18 @@ public:
 
 	void selectFrame(int frameIndex);
 
-    void selectLayer(int index);
-
-	void moveCurrentFrameForward();
-
-	void moveCurrentFrameBackward();
+	void moveCurrentFrameLeft();
+	void moveCurrentFrameRight();
 
 	/// @brief removeFrame Removes the current frame.
 	void removeCurrentFrame();
 
-    void removeFrame();
-
-	Frame& getCurrentFrame();
+	Frame& currentFrame();
 
 	int getWidth();
 	int getHeight();
+
+	int getFrameCount();
 
 	static Sprite* fromJson(const QJsonObject &json);
 	QJsonObject toJson() const;

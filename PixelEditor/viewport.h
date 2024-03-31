@@ -10,8 +10,7 @@ public:
 	~Viewport();
 
 public slots:
-	void setupSprite(const QImage &image, int width, int height);
-	void setSpriteImage(const QImage &image);
+	void updateDisplayImage(const QImage &image, bool newSprite);
 	void setPixelColor(int x, int y, QColor color);
 
 	void setDrawingColor(const QColor &color);
@@ -19,10 +18,12 @@ public slots:
 	void setEraserEnabled();
 
 signals:
-    void updateFrame();
 	void colorPainted(int x, int y, QColor color);
 	void informViewOfPencilEnabled(bool);
 	void sendPixmapData(QPixmap *p);
+
+	void mouseMoved(QPoint pos);
+	void spriteSizeChanged(QPoint size);
 
 protected:
 	//void paintEvent(QPaintEvent *event) override;

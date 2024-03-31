@@ -3,8 +3,8 @@
 
 #include "previewwindow.h"
 #include "viewport.h"
-#include "frametimeline.h"
-#include "layerplacementeditor.h"
+#include "timelinepanel.h"
+#include "layerspanel.h"
 
 class Editor;
 
@@ -33,8 +33,8 @@ public slots:
     void handleOpenSprite(bool askUserToSave);
 
     // Menu bar
-    void on_actionSaveSprite_triggered();
-    void on_actionSaveSpriteAs_triggered();
+	void initializeSaveProcess();
+	void initializeSaveProcessWithDialogue();
 
 signals:
     void colorChanged(const QColor &color);
@@ -49,10 +49,8 @@ private:
 
     Viewport *vp;
     PreviewWindow *pw;
-    FrameTimeline *ft;
-    LayerPlacementEditor *lt;
-
-    QColorDialog *colorDialog;
+	TimelinePanel *ft;
+	LayersPanel *lt;
 
     QMenu *fileMenu;
     QActionGroup *alignmentGroup;

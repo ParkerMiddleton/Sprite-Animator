@@ -10,28 +10,26 @@ CONFIG += c++17
 PRECOMPILED_HEADER = qt_std_pch.h
 
 SOURCES += \
-    brush.cpp \
     frameicon.cpp \
-    frametimeline.cpp \
     layericon.cpp \
-    layerplacementeditor.cpp \
     editor.cpp \
+    layerspanel.cpp \
     main.cpp \
     mainwindow.cpp \
     previewwindow.cpp \
     spritemodel.cpp \
+    timelinepanel.cpp \
     viewport.cpp
 
 HEADERS += \
-    brush.h \
     frameicon.h \
-    frametimeline.h \
     layericon.h \
-    layerplacementeditor.h \
     editor.h \
+    layerspanel.h \
     mainwindow.h \
     previewwindow.h \
     spritemodel.h \
+    timelinepanel.h \
     viewport.h
 
 FORMS += \

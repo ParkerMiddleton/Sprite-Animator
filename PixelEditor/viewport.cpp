@@ -5,7 +5,7 @@ Viewport::Viewport(QWidget *parent)
 	, currentTool{Tool::None}
 	, pBackground{nullptr}
 	, pSprite{nullptr}
-	, gScene(0, 0, SCENE_WIDTH, SCENE_HEIGHT)
+	, gScene{0, 0, SCENE_WIDTH, SCENE_HEIGHT}
 	, isMousePressed{false}
 	, spritePosOffset{0, 0}
 	, isPanning{false}
@@ -19,7 +19,6 @@ Viewport::Viewport(QWidget *parent)
 	gItemGroup.addToGroup(&gSprite);
 	gScene.addItem(&gItemGroup);
 	this->setScene(&gScene);
-
 }
 
 Viewport::~Viewport()
@@ -28,51 +27,51 @@ Viewport::~Viewport()
 	delete pSprite;
 }
 
-void Viewport::setupSprite(const QImage &image, int width, int height)
+void Viewport::updateDisplayImage(const QImage &image, bool newSprite)
 {
-	this->setupTransparencyBackground(width, height);
+	if (newSprite)
+	{
+		delete pSprite;
+		this->setupTransparencyBackground(image.width(), image.height());
+		pSprite = new QPixmap(image.width(), image.height());
 
-	delete pSprite;
+		// Setup position in scene
+		spritePosOffset.setX(SCENE_WIDTH / 2 - image.width() / 2);
+		spritePosOffset.setY(SCENE_HEIGHT / 2 - image.height() / 2);
 
-	pSprite = new QPixmap(width, height);
-	pSprite->fill(Qt::transparent);
-	pSprite->convertFromImage(image, Qt::NoFormatConversion);
+		gBackground.setTransform(QTransform().translate(spritePosOffset.x(), spritePosOffset.y()));
+		gSprite.setTransform(QTransform().translate(spritePosOffset.x(), spritePosOffset.y()));
+	}
 
-	// Setup position in scene
-	spritePosOffset.setX(SCENE_WIDTH / 2 - width / 2);
-	spritePosOffset.setY(SCENE_HEIGHT / 2 - height / 2);
-
-	gSprite.setPixmap(*pSprite);
-
-	gBackground.setTransform(QTransform().translate(spritePosOffset.x(), spritePosOffset.y()));
-	gSprite.setTransform(QTransform().translate(spritePosOffset.x(), spritePosOffset.y()));
-
-	this->centerOn(&gSprite);
-	//this->scale(0.2f, 0.2f);
-
-	this->repaint();
-}
-
-void Viewport::setSpriteImage(const QImage &image)
-{
 	pSprite->fill(Qt::transparent);
 	pSprite->convertFromImage(image, Qt::NoFormatConversion);
 
 	gSprite.setPixmap(*pSprite);
-	this->repaint();
+
+	if (newSprite)
+	{
+		this->resetTransform();
+		this->scale(6.f, 6.f);
+		this->centerOn(&gSprite);
+
+		emit spriteSizeChanged(QPoint{image.width(), image.height()});
+	}
+
+	//this->repaint();
 }
 
 void Viewport::setPixelColor(int x, int y, QColor color)
 {
-    // QPainter painter(pSprite);
-    // painter.setCompositionMode(QPainter::CompositionMode_Source);
-    // pen.setColor(color);
-    // painter.setPen(pen);
-    // painter.drawPoint(x, y);
-    // painter.end();
+	QPainter painter(pSprite);
+	painter.setCompositionMode(QPainter::CompositionMode_Source);
+	pen.setColor(color);
+	painter.setPen(pen);
+	painter.drawPoint(x, y);
+	painter.end();
 
-    // gSprite.setPixmap(*pSprite);
-    //emit colorPainted(x, y, color);
+	gSprite.setPixmap(*pSprite);
+
+	emit sendPixmapData(pSprite);
 }
 
 /*void Viewport::paintEvent(QPaintEvent *)
@@ -108,7 +107,7 @@ void Viewport::mouseReleaseEvent(QMouseEvent *event)
 	if (event->button() == Qt::RightButton)
 	{
 		isPanning = false;
-		this->setCursor(Qt::ArrowCursor);
+		this->setCursor(Qt::CrossCursor);
 	}
 	else if (event->button() == Qt::LeftButton)
 	{
@@ -118,9 +117,12 @@ void Viewport::mouseReleaseEvent(QMouseEvent *event)
 
 void Viewport::mouseMoveEvent(QMouseEvent *event)
 {
+	const QPointF &newViewPos = this->mapToScene(event->pos());
+
+	emit mouseMoved(QPoint(newViewPos.x(), newViewPos.y()) - spritePosOffset);
+
 	if (isPanning)
 	{
-		const QPointF &newViewPos = this->mapToScene(event->pos());
 		QPointF deltaViewPos = newViewPos - oldViewPos;
 		this->translate(deltaViewPos.rx(), deltaViewPos.ry());
 		oldViewPos = this->mapToScene(event->pos());
@@ -145,24 +147,24 @@ void Viewport::wheelEvent(QWheelEvent *event)
 
 void Viewport::draw(const QPoint &mousePos)
 {
-    QPointF scenePos = this->mapToScene(mousePos);
-    QPoint p2(scenePos.x() - spritePosOffset.x(), scenePos.y() - spritePosOffset.y());
-    // if (!(0 <= p2.x() && p2.x() < pSprite->width()
-    // 	&&
-    // 	  0 <= p2.y() && p2.y() < pSprite->height()))
-    // {
-    // 	return;
-    // }
+	QPointF scenePos = this->mapToScene(mousePos);
+	QPoint p2(scenePos.x() - spritePosOffset.x(), scenePos.y() - spritePosOffset.y());
 
-    if (currentTool == Tool::Brush)
-    {
-        emit colorPainted(p2.x(), p2.y(), color);
-        emit updateFrame();
-    }
-    // else if (currentTool == Tool::Eraser)
-    // {
-    // 	emit colorPainted(p2.x(), p2.y(), QColor(0, 0, 0, 0));
-    // }
+	if (!(0 <= p2.x() && p2.x() < pSprite->width()
+		&&
+		  0 <= p2.y() && p2.y() < pSprite->height()))
+	{
+		return;
+	}
+
+	if (currentTool == Tool::Brush)
+	{
+		emit colorPainted(p2.x(), p2.y(), color);
+	}
+	else if (currentTool == Tool::Eraser)
+	{
+		emit colorPainted(p2.x(), p2.y(), QColor(0, 0, 0, 0));
+	}
 }
 
 void Viewport::zoom(const QPoint &mousePos, qreal factor)
@@ -181,16 +183,15 @@ void Viewport::setupTransparencyBackground(int width, int height)
 
 	//Draw checker pattern
 	QPainter painter (pBackground);
-	int checkerSize = 1;
 
-	for (int y = 0; y < height; y += checkerSize)
+	for (int y = 0; y < height; y++)
 	{
-		for (int x = 0; x < width; x += checkerSize)
+		for (int x = 0; x < width; x++)
 		{
-			if ((x / checkerSize + y / checkerSize) % 2 == 0)
-				painter.fillRect(x, y, checkerSize, checkerSize, Qt::lightGray);
+			if ((x + y) % 2 == 0)
+				painter.fillRect(x, y, 1, 1, Qt::lightGray);
 			else
-				painter.fillRect(x, y, checkerSize, checkerSize, Qt::white);
+				painter.fillRect(x, y, 1, 1, Qt::white);
 		}
 	}
 

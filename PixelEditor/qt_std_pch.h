@@ -33,4 +33,9 @@
 
 #include <QtWidgets>
 
+#include <QHBoxLayout>
+
+#include <QScrollArea>
+#include <QVector>
+
 #endif // QT_STD_PCH_H

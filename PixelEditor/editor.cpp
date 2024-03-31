@@ -15,9 +15,7 @@ Editor::~Editor()
 {
 	delete sprite;
 }
-void Editor::updateFrame(){
-    emit frameChanged(sprite->getCurrentFrame().getMergedLayerImage());
-}
+
 void Editor::createNewSprite()
 {
 	sprite = new Sprite(SPRITE_WIDTH_DEFAULT, SPRITE_HEIGHT_DEFAULT);
@@ -25,16 +23,15 @@ void Editor::createNewSprite()
 	currentSaveName = "UNTITLED";
 	this->setIsSpriteSaved(true);
 
-	emit spriteLoaded(sprite->getCurrentFrame().getMergedLayerImage(), sprite->getWidth(), sprite->getHeight());
-	emit spriteSaveStatusChanged(currentSaveName, false);
+	this->emitSpriteLoadedSignals();
 }
 
 void Editor::setPixel(int x, int y, QColor color)
 {
-	sprite->getCurrentFrame().getCurrentLayer().drawColor(x, y, color);
+	sprite->currentFrame().currentLayer().drawColor(x, y, color);
 	this->setIsSpriteSaved(false);
 
-    emit pixelSet(x, y, sprite->getCurrentFrame().getMergedPixel(x, y));
+	emit pixelSet(x, y, sprite->currentFrame().getMergedPixel(x, y));
 }
 
 void Editor::serializeSprite(const QString &filename)
@@ -76,7 +73,6 @@ void Editor::serializeSprite(const QString &filename)
 	}
 
 	this->setIsSpriteSaved(true);
-
 	emit spriteSaveStatusChanged(currentSaveName, false);
 }
 
@@ -111,9 +107,7 @@ void Editor::deserializeSprite(const QString &filename)
 	currentSavePath = saveFilepath;
 
 	this->setIsSpriteSaved(true);
-
-	emit spriteLoaded(sprite->getCurrentFrame().getMergedLayerImage(), sprite->getWidth(), sprite->getHeight());
-	emit spriteSaveStatusChanged(currentSaveName, false);
+	this->emitSpriteLoadedSignals();
 }
 
 void Editor::setupCreateNewSprite()
@@ -126,39 +120,56 @@ void Editor::setupOpenSprite()
 	emit readyOpenSprite(!isSpriteSaved);
 }
 
-void Editor::addNewFrame()
+void Editor::moveFrameLeft()
 {
-	sprite->addFrame();
-	emit frameChanged(sprite->getCurrentFrame().getMergedLayerImage());
+	this->sprite->moveCurrentFrameLeft();
+	emit displayImageChanged(sprite->currentFrame().getMergedLayerImage(), false);
 }
 
-void Editor::addNewLayer() {
-    //TODO:: implement add layer
-    sprite->getCurrentFrame().addLayer();
-    emit frameChanged(sprite->getCurrentFrame().getMergedLayerImage());
-}
-
-void Editor::removeLayer() {
-    //TODO:: implement remove layer
-}
-
-void Editor::removeFrame()
+void Editor::moveFrameRight()
 {
-    sprite->removeFrame();
-    emit frameChanged(sprite->getCurrentFrame().getMergedLayerImage());
+	this->sprite->moveCurrentFrameRight();
+	emit displayImageChanged(sprite->currentFrame().getMergedLayerImage(), false);
 }
 
 void Editor::selectFrame(int frameIndex)
 {
+	QTextStream(stdout) << "\nFrame selected: " << frameIndex;
 	sprite->selectFrame(frameIndex);
-	Frame &frame = sprite->getCurrentFrame();
-	emit frameChanged(frame.getMergedLayerImage());
+	emit displayImageChanged(sprite->currentFrame().getMergedLayerImage(), false);
+	emit newFrameSelection(sprite->currentFrame().getLayerCount());
 }
 
-void Editor::selectLayer(int layerIndex) {
-    QTextStream(stdout) << layerIndex;
-    sprite->selectLayer(layerIndex);
-    emit frameChanged(sprite->getCurrentFrame().getMergedLayerImage());
+void Editor::addNewFrame()
+{
+	sprite->addFrame();
+	emit displayImageChanged(sprite->currentFrame().getMergedLayerImage(), false);
+	emit newFrameSelection(sprite->currentFrame().getLayerCount());
+}
+
+void Editor::removeFrame()
+{
+	sprite->removeCurrentFrame();
+	emit displayImageChanged(sprite->currentFrame().getMergedLayerImage(), false);
+	emit newFrameSelection(sprite->currentFrame().getLayerCount());
+}
+
+void Editor::selectLayer(int layerIndex)
+{
+	QTextStream(stdout) << "\nLayer selected: " << layerIndex;
+	sprite->currentFrame().selectLayer(layerIndex);
+	emit displayImageChanged(sprite->currentFrame().getMergedLayerImage(), false);
+}
+
+void Editor::addNewLayer()
+{
+	sprite->currentFrame().addLayer();
+	emit displayImageChanged(sprite->currentFrame().getMergedLayerImage(), false);
+}
+
+void Editor::removeLayer()
+{
+
 }
 
 void Editor::setIsSpriteSaved(bool state)
@@ -178,9 +189,14 @@ void Editor::setIsSpriteSaved(bool state)
 void Editor::splitFilename(const QString &filename, QString &path, QString &name)
 {
 	QFileInfo info(filename);
-	QString fName = info.fileName();
-	QDir dir = info.dir();
-
-	path = dir.path() + "/";
+	path = info.dir().path() + "/";
 	name = info.fileName();
+}
+
+void Editor::emitSpriteLoadedSignals()
+{
+	emit spriteLoaded(sprite->getFrameCount());
+	emit newFrameSelection(sprite->currentFrame().getLayerCount());
+	emit displayImageChanged(sprite->currentFrame().getMergedLayerImage(), true);
+	emit spriteSaveStatusChanged(currentSaveName, false);
 }

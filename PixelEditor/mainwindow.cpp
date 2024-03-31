@@ -8,34 +8,27 @@ MainWindow::MainWindow(Editor *editor, QWidget *parent)
 	, ui(new Ui::MainWindow)
 	, editor(editor)
 {
-    ui->setupUi(this);
+	ui->setupUi(this);
 
 	vp = ui->viewport;
 	pw = ui->previewLabel;
 	ft = ui->frameTimeline;
-    lt = ui->layerPlacer;
-
-    //editor->setupCreateNewSprite();
-
-	colorDialog = new QColorDialog();
+	lt = ui->layerPlacer;
 
 	//Window title
 	this->setWindowTitle("Pixel Editor");
 
-    //Window title
-    setWindowTitle("Seg Fault Sprite Editor");
+	//Color Palette Button Image
+	QPixmap palettePixmap(":/Images/pal2.png");
+	QSize palettePixmapSize(50,50);
+	ui->ColorPaletteButton->setIcon(palettePixmap);
+	ui->ColorPaletteButton->setIconSize(palettePixmapSize);
 
-    //Color Palette Button Image
-    QPixmap palettePixmap(":/Images/pal2.png");
-    QSize palettePixmapSize(50,50);
-    ui->ColorPaletteButton->setIcon(palettePixmap);
-    ui->ColorPaletteButton->setIconSize(palettePixmapSize);
-
-    //Pencil Button Image
-    QPixmap pencilPixmap(":/Images/pencil.png");
-    QSize pencilImageSize(50,50);
-    ui->PencilButton->setIcon(pencilPixmap);
-    ui->PencilButton->setIconSize(pencilImageSize);
+	//Pencil Button Image
+	QPixmap pencilPixmap(":/Images/pencil.png");
+	QSize pencilImageSize(50,50);
+	ui->PencilButton->setIcon(pencilPixmap);
+	ui->PencilButton->setIconSize(pencilImageSize);
 
 	//Pencil Button Image
 	QPixmap eraserPixmap(":/Images/eraser.png");
@@ -46,44 +39,59 @@ MainWindow::MainWindow(Editor *editor, QWidget *parent)
 	this->createActions();
 	this->createMenus();
 
-	/*== FRAME BUTTONS ==*/
+	connect(vp, &Viewport::mouseMoved, this, [this](QPoint pos) {
+		ui->coordInfoText->setText(QString::number(pos.x()) + ", " + QString::number(pos.y()));
+	});
+
+	connect(vp, &Viewport::spriteSizeChanged, this, [this](QPoint size) {
+		ui->sizeInfoText->setText(QString::number(size.x()) + "x" + QString::number(size.y()));
+	});
+
+	/*== TIMELINE PANEL ==*/
 
 	connect(ui->addFrameButton, &QPushButton::clicked
-			, ft, &FrameTimeline::addFrame);
+			, ft, &TimelinePanel::addFrame);
 
-    connect(ui->deleteFrameButton, &QPushButton::clicked
-            , ft, &FrameTimeline::removeFrame);
+	connect(ui->deleteFrameButton, &QPushButton::clicked
+			, ft, &TimelinePanel::removeFrame);
+
+	connect(ft, &TimelinePanel::frameButtonSelected
+			, editor, &Editor::selectFrame);
 
 	connect(ui->addFrameButton, &QPushButton::clicked
 			, editor, &Editor::addNewFrame);
 
-    connect(ui->deleteFrameButton, &QPushButton::clicked
-            , editor, &Editor::removeFrame);
+	connect(ui->deleteFrameButton, &QPushButton::clicked
+			, editor, &Editor::removeFrame);
 
-    connect(ft, &FrameTimeline::sendIconID
-            , editor, &Editor::selectFrame);
+	connect(editor, &Editor::spriteLoaded
+			, ft, &TimelinePanel::setupFrameButtons);
 
-    connect(editor, &Editor::frameChanged
-            , vp, &Viewport::setSpriteImage);
+	connect(ui->moveFrameLeftButton, &QPushButton::clicked
+			, editor, &Editor::moveFrameLeft);
 
-    /*== LAYER BUTTONS ==*/
+	connect(ui->moveFrameRightButton, &QPushButton::clicked
+			, editor, &Editor::moveFrameRight);
 
-    connect(ui->addLayer, &QPushButton::clicked
-            , lt, &LayerPlacementEditor::addLayer);
+	/*== LAYERS PANEL ==*/
 
-    connect(ui->removeLayer, &QPushButton::clicked
-            , lt, &LayerPlacementEditor::removeLayer);
+	connect(ui->addLayerButton, &QPushButton::clicked
+			, lt, &LayersPanel::addLayer);
 
-    connect(ui->addLayer, &QPushButton::clicked
-            , editor, &Editor::addNewLayer);
+	connect(ui->removeLayerButton, &QPushButton::clicked
+			, lt, &LayersPanel::removeLayer);
 
-    connect(ui->removeLayer, &QPushButton::clicked
-            , editor, &Editor::removeLayer);
+	connect(lt, &LayersPanel::layerButtonSelected
+			, editor, &Editor::selectLayer);
 
-    connect(lt, &LayerPlacementEditor::sendLayerIconID
-            , editor, &Editor::selectLayer);
+	connect(ui->addLayerButton, &QPushButton::clicked
+			, editor, &Editor::addNewLayer);
 
+	connect(ui->removeLayerButton, &QPushButton::clicked
+			, editor, &Editor::removeLayer);
 
+	connect(editor, &Editor::newFrameSelection
+			, lt, &LayersPanel::setupLayerButtons);
 
 	/*====== MODEL <--> VIEW ======*/
 
@@ -100,11 +108,8 @@ MainWindow::MainWindow(Editor *editor, QWidget *parent)
 	connect(editor, &Editor::spriteSaveStatusChanged
 			, this, &MainWindow::updateTitle);
 
-	connect(editor, &Editor::spriteSaveStatusChanged
-			, this, &MainWindow::updateTitle);
-
 	connect(editor, &Editor::needSaveFilenameToSerialize
-			, this, &MainWindow::on_actionSaveSpriteAs_triggered);
+			, this, &MainWindow::initializeSaveProcessWithDialogue);
 
 	connect(editor, &Editor::readyCreateNewSprite
 			, this, &MainWindow::handleCreateNewSprite);
@@ -112,65 +117,42 @@ MainWindow::MainWindow(Editor *editor, QWidget *parent)
 	connect(editor, &Editor::readyOpenSprite
 			, this, &MainWindow::handleOpenSprite);
 
+	connect(editor, &Editor::displayImageChanged
+			, vp, &Viewport::updateDisplayImage);
 
-	connect(editor,
-			&Editor::spriteLoaded,
-			vp,
-			&Viewport::setupSprite);
+	connect(vp, &Viewport::colorPainted
+			, editor, &Editor::setPixel);
 
-	connect(vp,
-			&Viewport::colorPainted,
-			editor,
-			&Editor::setPixel);
-
-    connect(vp,
-            &Viewport::updateFrame,
-            editor,
-            &Editor::updateFrame);
-
-	connect(editor,
-			&Editor::pixelSet,
-			vp,
-			&Viewport::setPixelColor);
+	connect(editor, &Editor::pixelSet
+			, vp, &Viewport::setPixelColor);
 
 	/* VIEW <--> VIEW */
 
 	//On color palette button clicked, choose a color
-	connect(ui->ColorPaletteButton,
-			&QPushButton::clicked,
-			this,
-			&MainWindow::changeColor);
-
+	connect(ui->ColorPaletteButton, &QPushButton::clicked
+			, this, &MainWindow::changeColor);
 
 	// Send chosen color to the frame window to be used
-	connect(this,
-			&MainWindow::colorChanged,
-			vp,
-			&Viewport::setDrawingColor);
+	connect(this, &MainWindow::colorChanged
+			, vp, &Viewport::setDrawingColor);
 
 	// enable and disable brush
-	connect(ui->PencilButton,
-			&QPushButton::clicked,
-			vp,
-			&Viewport::setBrushEnabled);
+	connect(ui->PencilButton, &QPushButton::clicked
+			, vp, &Viewport::setBrushEnabled);
 
 	// enable and disable eraser
-	connect(ui->EraserButton,
-			&QPushButton::clicked,
-			vp,
-			&Viewport::setEraserEnabled);
+	connect(ui->EraserButton, &QPushButton::clicked
+			, vp, &Viewport::setEraserEnabled);
 
 	// frame window tells main that penicl button is to be disabled or enabled.
-	connect(vp,
-			&Viewport::informViewOfPencilEnabled,
-			ui->PencilButton,
-			&QPushButton::setEnabled);
+	connect(vp, &Viewport::informViewOfPencilEnabled
+			, ui->PencilButton, &QPushButton::setEnabled);
 
-    //Send pixmap data to the preview window to mirror drawing.
-    /*connect(vp,
-            &Viewport::sendPixmapData,
-            pw,
-            &PreviewWindow::recievePixmapData);*/
+	//Send pixmap data to the preview window to mirror drawing.
+	/*connect(vp,
+			&Viewport::sendPixmapData,
+			pw,
+			&PreviewWindow::recievePixmapData);*/
 }
 
 MainWindow::~MainWindow()
@@ -181,7 +163,7 @@ MainWindow::~MainWindow()
 void MainWindow::changeColor()
 {
 	// The colorSelected signal will now be connected to the handleColorSelected slot.
-	currentColor = QColorDialog::getColor(currentColor, this, tr("Select Color"));
+	currentColor = QColorDialog::getColor(currentColor, this, tr("Select Color"), QColorDialog::ShowAlphaChannel);
 
 	emit colorChanged(currentColor);
 }
@@ -201,7 +183,16 @@ void MainWindow::updateTitle(const QString &spriteName, bool showStar)
 void MainWindow::handleCreateNewSprite(bool askUserToSave)
 {
 	if (askUserToSave)
-		this->on_actionSaveSpriteAs_triggered();
+	{
+		QMessageBox::StandardButton reply;
+		reply = QMessageBox::question(this, "Unsaved Changes", "You have unsaved changes. Would you like to save?",
+									  QMessageBox::Yes | QMessageBox::No);
+
+		if (reply == QMessageBox::Yes)
+		{
+			this->initializeSaveProcess();
+		}
+	}
 
 	emit newSpriteRequested();
 }
@@ -209,7 +200,16 @@ void MainWindow::handleCreateNewSprite(bool askUserToSave)
 void MainWindow::handleOpenSprite(bool askUserToSave)
 {
 	if (askUserToSave)
-		this->on_actionSaveSpriteAs_triggered();
+	{
+		QMessageBox::StandardButton reply;
+		reply = QMessageBox::question(this, "Unsaved Changes", "You have unsaved changes. Would you like to save?",
+									  QMessageBox::Yes | QMessageBox::No);
+
+		if (reply == QMessageBox::Yes)
+		{
+			this->initializeSaveProcess();
+		}
+	}
 
 	QString filename = QFileDialog::getOpenFileName(this, tr("Open"), "", tr("Sprite (*.ssp)"));
 
@@ -219,12 +219,12 @@ void MainWindow::handleOpenSprite(bool askUserToSave)
 	}
 }
 
-void MainWindow::on_actionSaveSprite_triggered()
+void MainWindow::initializeSaveProcess()
 {
 	emit saveRequested("");
 }
 
-void MainWindow::on_actionSaveSpriteAs_triggered()
+void MainWindow::initializeSaveProcessWithDialogue()
 {
 	QString filename = QFileDialog::getSaveFileName(this, tr("Save as"), "", tr("Sprite (*.ssp)"));
 
@@ -252,13 +252,13 @@ void MainWindow::createActions()
 	saveAct->setShortcuts(QKeySequence::Save);
 	saveAct->setStatusTip(tr("Save an opened sprite"));
 	connect(saveAct, &QAction::triggered
-			, this, &MainWindow::on_actionSaveSprite_triggered);
+			, this, &MainWindow::initializeSaveProcess);
 
 	saveAsAct = new QAction(tr("&Save as"), this);
 	saveAsAct->setShortcuts(QKeySequence::SaveAs);
 	saveAsAct->setStatusTip(tr("Specify directory and save an opened sprite"));
 	connect(saveAsAct, &QAction::triggered
-			, this, &MainWindow::on_actionSaveSpriteAs_triggered);
+			, this, &MainWindow::initializeSaveProcessWithDialogue);
 }
 
 void MainWindow::createMenus()

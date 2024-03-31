@@ -32,7 +32,14 @@ background-color:rgb(37, 37, 37)</string>
       <enum>QLayout::SetNoConstraint</enum>
      </property>
      <item row="0" column="0">
-      <widget class="Viewport" name="viewport"/>
+      <widget class="Viewport" name="viewport" native="true">
+       <property name="cursor">
+        <cursorShape>CrossCursor</cursorShape>
+       </property>
+       <property name="mouseTracking">
+        <bool>true</bool>
+       </property>
+      </widget>
      </item>
     </layout>
    </widget>
@@ -352,7 +359,7 @@ border: none;</string>
      <string>Preview </string>
     </property>
    </widget>
-   <widget class="QFrame" name="layerFrame">
+   <widget class="QFrame" name="layersPanel">
     <property name="geometry">
      <rect>
       <x>730</x>
@@ -387,7 +394,7 @@ border: none;</string>
      </property>
      <layout class="QGridLayout" name="layerViewGrid"/>
     </widget>
-    <widget class="QPushButton" name="addLayer">
+    <widget class="QPushButton" name="addLayerButton">
      <property name="geometry">
       <rect>
        <x>10</x>
@@ -405,7 +412,7 @@ border: none;</string>
       <string>Add Layer</string>
      </property>
     </widget>
-    <widget class="QPushButton" name="removeLayer">
+    <widget class="QPushButton" name="removeLayerButton">
      <property name="geometry">
       <rect>
        <x>130</x>
@@ -423,7 +430,7 @@ border: none;</string>
       <string>Remove Layer</string>
      </property>
     </widget>
-    <widget class="LayerPlacementEditor" name="layerPlacer">
+    <widget class="LayersPanel" name="layerPlacer">
      <property name="geometry">
       <rect>
        <x>10</x>
@@ -463,7 +470,7 @@ border: none;</string>
      <string>Layers</string>
     </property>
    </widget>
-   <widget class="QFrame" name="frameTimelineFrame">
+   <widget class="QFrame" name="timelinePanel">
     <property name="geometry">
      <rect>
       <x>10</x>
@@ -519,7 +526,7 @@ border: none;</string>
 border: none;</string>
      </property>
      <property name="text">
-      <string>Frame Timeline</string>
+      <string>Timeline</string>
      </property>
     </widget>
     <widget class="QPushButton" name="deleteFrameButton">
@@ -576,7 +583,7 @@ border: none;</string>
       <string>&gt;</string>
      </property>
     </widget>
-    <widget class="FrameTimeline" name="frameTimeline">
+    <widget class="TimelinePanel" name="frameTimeline">
      <property name="geometry">
       <rect>
        <x>90</x>
@@ -600,7 +607,7 @@ border: none;</string>
      </widget>
     </widget>
    </widget>
-   <widget class="QFrame" name="positionFrame">
+   <widget class="QFrame" name="infoPanel">
     <property name="geometry">
      <rect>
       <x>730</x>
@@ -621,12 +628,12 @@ border: none;</string>
     <property name="frameShadow">
      <enum>QFrame::Raised</enum>
     </property>
-    <widget class="QLabel" name="xCoordText">
+    <widget class="QLabel" name="coordText">
      <property name="geometry">
       <rect>
        <x>10</x>
        <y>30</y>
-       <width>81</width>
+       <width>31</width>
        <height>16</height>
       </rect>
      </property>
@@ -635,15 +642,15 @@ border: none;</string>
 </string>
      </property>
      <property name="text">
-      <string>X Coordinate:</string>
+      <string>xy:</string>
      </property>
     </widget>
-    <widget class="QLabel" name="yCoordText">
+    <widget class="QLabel" name="sizeText">
      <property name="geometry">
       <rect>
        <x>10</x>
        <y>50</y>
-       <width>81</width>
+       <width>31</width>
        <height>16</height>
       </rect>
      </property>
@@ -652,36 +659,10 @@ border: none;</string>
 </string>
      </property>
      <property name="text">
-      <string>Y Coordinate:</string>
+      <string>size:</string>
      </property>
     </widget>
-    <widget class="QLineEdit" name="xCpprdTextBpx">
-     <property name="geometry">
-      <rect>
-       <x>90</x>
-       <y>30</y>
-       <width>113</width>
-       <height>20</height>
-      </rect>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">border:none;</string>
-     </property>
-    </widget>
-    <widget class="QLineEdit" name="yCoordTextBox">
-     <property name="geometry">
-      <rect>
-       <x>90</x>
-       <y>50</y>
-       <width>113</width>
-       <height>20</height>
-      </rect>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">border: none;</string>
-     </property>
-    </widget>
-    <widget class="QLabel" name="positionText">
+    <widget class="QLabel" name="infoText">
      <property name="geometry">
       <rect>
        <x>10</x>
@@ -695,7 +676,41 @@ border: none;</string>
 text-align: center;</string>
      </property>
      <property name="text">
-      <string>Position</string>
+      <string>Info</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="coordInfoText">
+     <property name="geometry">
+      <rect>
+       <x>50</x>
+       <y>30</y>
+       <width>71</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">border: none;
+</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+    <widget class="QLabel" name="sizeInfoText">
+     <property name="geometry">
+      <rect>
+       <x>50</x>
+       <y>50</y>
+       <width>71</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">border: none;
+</string>
+     </property>
+     <property name="text">
+      <string/>
      </property>
     </widget>
    </widget>
@@ -741,15 +756,20 @@ color: rgb(2, 2, 2);</string>
    <header location="global">previewwindow.h</header>
   </customwidget>
   <customwidget>
-   <class>FrameTimeline</class>
+   <class>LayersPanel</class>
    <extends>QScrollArea</extends>
-   <header location="global">frametimeline.h</header>
+   <header location="global">layerspanel.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>LayerPlacementEditor</class>
+   <class>Viewport</class>
+   <extends>QWidget</extends>
+   <header>viewport.h</header>
+  </customwidget>
+  <customwidget>
+   <class>TimelinePanel</class>
    <extends>QScrollArea</extends>
-   <header location="global">layerplacementeditor.h</header>
+   <header location="global">timelinepanel.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>
