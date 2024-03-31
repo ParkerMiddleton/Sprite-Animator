@@ -1,24 +1,38 @@
 #include "spritemodel.h"
 
 Layer::Layer(Sprite *parentSprite)
-	: parentSprite(parentSprite)
+	: parentSprite{parentSprite}
 {
 	int size = parentSprite->getWidth() * parentSprite->getHeight();
-	pixels.reserve(size);
+	pixels.resize(size * 4);
 
 	for (int index = 0; index < size; index++)
 	{
-		pixels.push_back({0, 0, 0, 0});
+		int pxy = index * 4;
+
+		pixels[pxy + 0] = 0;
+		pixels[pxy + 1] = 0;
+		pixels[pxy + 2] = 0;
+		pixels[pxy + 3] = 0;
 	}
 }
 
 void Layer::setPixel(int x, int y, QColor color)
 {
 	int index = x + y * parentSprite->getWidth();
-	pixels[index].r = color.red();
-	pixels[index].g = color.green();
-	pixels[index].b = color.blue();
-	pixels[index].a = color.alpha();
+	int pxy = index * 4;
+	pixels[pxy + 0] = color.red();
+	pixels[pxy + 1] = color.green();
+	pixels[pxy + 2] = color.blue();
+	pixels[pxy + 3] = color.alpha();
+}
+
+QColor Layer::getPixel(int x, int y) const
+{
+	int index = x + y * parentSprite->getWidth();
+	int pxy = index * 4;
+
+	return QColor{pixels[pxy + 0], pixels[pxy + 1], pixels[pxy + 2], pixels[pxy + 3]};
 }
 
 Layer Layer::fromJson(const QJsonObject &json, Sprite *parentSprite)
@@ -29,32 +43,30 @@ Layer Layer::fromJson(const QJsonObject &json, Sprite *parentSprite)
 	if (const QJsonValue &jsonVal = json["pixels"]; jsonVal.isArray())
 	{
 		const QJsonArray &jsonPixels = jsonVal.toArray();
-		layer.pixels.resize(jsonPixels.size());
+		layer.pixels.resize(jsonPixels.size() * 4);
+		//layer.pixels = new int[jsonPixels.size() * 4];
 
 		int pixelIndex = 0;
 		for (const QJsonValue &jsonPixelVal : jsonPixels)
 		{
 			const QJsonObject &pixelJson = jsonPixelVal.toObject();
+			int pxy = pixelIndex * 4;
 
 			if (const QJsonValue &red = pixelJson["r"]; red.isDouble())
 			{
-				//layer.pixels[pixelIndex].setRed(red.toInt());
-				layer.pixels[pixelIndex].r = red.toInt();
+				layer.pixels[pxy + 0] = red.toInt();
 			}
 			if (const QJsonValue &green = pixelJson["g"]; green.isDouble())
 			{
-				//layer.pixels[pixelIndex].setGreen(green.toInt());
-				layer.pixels[pixelIndex].g = green.toInt();
+				layer.pixels[pxy + 1] = green.toInt();
 			}
 			if (const QJsonValue &blue = pixelJson["b"]; blue.isDouble())
 			{
-				//layer.pixels[pixelIndex].setBlue(blue.toInt());
-				layer.pixels[pixelIndex].b = blue.toInt();
+				layer.pixels[pxy + 2] = blue.toInt();
 			}
 			if (const QJsonValue &alpha = pixelJson["a"]; alpha.isDouble())
 			{
-				//layer.pixels[pixelIndex].setAlpha(alpha.toInt());
-				layer.pixels[pixelIndex].a = alpha.toInt();
+				layer.pixels[pxy + 3] = alpha.toInt();
 			}
 
 			pixelIndex++;
@@ -69,13 +81,16 @@ QJsonObject Layer::toJson() const
 	QJsonObject json;
 	QJsonArray jsonPixels;
 
-	for (const Color &pixel : pixels)
+	int size = parentSprite->getWidth() * parentSprite->getHeight();
+
+	for (int index = 0; index < size; index++)
 	{
 		QJsonObject pixelJson;
-		pixelJson["r"] = pixel.r;
-		pixelJson["g"] = pixel.g;
-		pixelJson["b"] = pixel.b;
-		pixelJson["a"] = pixel.a;
+		int pxy = index * 4;
+		pixelJson["r"] = pixels[pxy + 0];
+		pixelJson["g"] = pixels[pxy + 1];
+		pixelJson["b"] = pixels[pxy + 2];
+		pixelJson["a"] = pixels[pxy + 3];
 		jsonPixels.append(pixelJson);
 	}
 
@@ -146,25 +161,6 @@ Layer& Frame::currentLayer()
 	return layers[currentLayerIndex];
 }
 
-Color mixColorsAdditive(Color bgc, Color fgc)
-{
-	struct DClr { double r = 0.0; double g = 0.0; double b = 0.0; double a = 0.0; };
-	DClr result;
-	DClr bg{(double)bgc.r / 255.0, (double)bgc.g / 255.0, (double)bgc.b / 255.0, (double)bgc.a / 255.0};
-	DClr fg{(double)fgc.r / 255.0, (double)fgc.g / 255.0, (double)fgc.b / 255.0, (double)fgc.a / 255.0};
-
-	result.a = 1 - (1 - fg.a) * (1 - bg.a);
-
-	if (result.a >= 1.0e-6) // If not fully transparent
-	{
-		result.r = fg.r * fg.a / result.a + bg.r * bg.a * (1 - fg.a) / result.a;
-		result.g = fg.g * fg.a / result.a + bg.g * bg.a * (1 - fg.a) / result.a;
-		result.b = fg.b * fg.a / result.a + bg.b * bg.a * (1 - fg.a) / result.a;
-	}
-
-	return Color{uchar(255.0 * result.r), uchar(255.0 * result.g), uchar(255.0 * result.b), uchar(255.0 * result.a)};
-}
-
 const QPixmap& Frame::getDisplayData()
 {
 	return displayData;
@@ -227,8 +223,27 @@ Frame::Frame(int width, int height)
 
 void Frame::mergeLayersIntoDisplayData()
 {
+	QPen pen;
+	pen.setWidth(1);
+
+	QPainter painter(&displayData);
+	painter.setCompositionMode(QPainter::CompositionMode_Source);
+
+	for (int row = 0; row < displayData.height(); row++)
+	{
+		for (int col = 0; col < displayData.width(); col++)
+		{
+			pen.setColor(this->getMergedPixel(col, row));
+			painter.setPen(pen);
+			painter.drawPoint(col, row);
+		}
+	}
+
+	painter.end();
+
 	// TODO: Rewrite using QPainter and without QImage.
-	QImage image(parentSprite->getWidth(), parentSprite->getHeight(), QImage::Format_RGBA8888);
+	// TODO: DONE DONE DONE
+	/*QImage image(parentSprite->getWidth(), parentSprite->getHeight(), QImage::Format_RGBA8888);
 
 	for (int row = 0; row < image.height(); row++)
 	{
@@ -238,20 +253,40 @@ void Frame::mergeLayersIntoDisplayData()
 		}
 	}
 
-	displayData.convertFromImage(image, Qt::NoFormatConversion);
+	displayData.convertFromImage(image, Qt::NoFormatConversion);*/
 }
 
 QColor Frame::getMergedPixel(int x, int y)
 {
-	int index = x + y * parentSprite->getWidth();
-	Color clr{0, 0, 0, 0};
+	QColor mergedColor(Qt::transparent);
 
 	for (const Layer &layer : layers)
 	{
-		clr = mixColorsAdditive(clr, layer.pixels[index]);
+		mergedColor = colorsBlendAlpha(mergedColor, layer.getPixel(x, y));
 	}
 
-	return QColor(clr.r, clr.g, clr.b, clr.a);
+	return mergedColor;
+}
+
+
+QColor Frame::colorsBlendAlpha(QColor bgc, QColor fgc)
+{
+	// Taken from: https://stackoverflow.com/a/727339
+	struct DClr { double r = 0.0; double g = 0.0; double b = 0.0; double a = 0.0; };
+	DClr result;
+	DClr bg{(double)bgc.red() / 255.0, (double)bgc.green() / 255.0, (double)bgc.blue() / 255.0, (double)bgc.alpha() / 255.0};
+	DClr fg{(double)fgc.red() / 255.0, (double)fgc.green() / 255.0, (double)fgc.blue() / 255.0, (double)fgc.alpha() / 255.0};
+
+	result.a = 1 - (1 - fg.a) * (1 - bg.a);
+
+	if (result.a >= 1.0e-6) // If not fully transparent
+	{
+		result.r = fg.r * fg.a / result.a + bg.r * bg.a * (1 - fg.a) / result.a;
+		result.g = fg.g * fg.a / result.a + bg.g * bg.a * (1 - fg.a) / result.a;
+		result.b = fg.b * fg.a / result.a + bg.b * bg.a * (1 - fg.a) / result.a;
+	}
+
+	return QColor{uchar(255.0 * result.r), uchar(255.0 * result.g), uchar(255.0 * result.b), uchar(255.0 * result.a)};
 }
 
 // SPRITE CLASS

@@ -4,14 +4,6 @@
 class QJsonObject;
 class Sprite;
 
-struct Color
-{
-	uchar r = 0;
-	uchar g = 0;
-	uchar b = 0;
-	uchar a = 255;
-};
-
 class Layer
 {
 	friend class Frame;
@@ -24,14 +16,14 @@ public:
 	/// @param y, location y
 	/// @param BrushSize, length of the square to be drawn.
 	void setPixel(int x, int y, QColor color);
+	QColor getPixel(int x, int y) const;
 
 	static Layer fromJson(const QJsonObject &json, Sprite *parentSprite);
 	QJsonObject toJson() const;
 
 private:
 	Sprite *parentSprite;
-
-	QList<Color> pixels;
+	QList<int> pixels;
 
 	Layer();
 
@@ -72,6 +64,7 @@ private:
 
 	void mergeLayersIntoDisplayData();
 	QColor getMergedPixel(int x, int y);
+	QColor colorsBlendAlpha(QColor bgc, QColor fgc);
 
 	/// @brief mergeLayers merges all Layers into final image
 
