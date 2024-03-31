@@ -169,7 +169,8 @@ void Editor::addNewLayer()
 
 void Editor::removeLayer()
 {
-
+	sprite->currentFrame().removeCurrentLayer();
+	emit displayImageChanged(sprite->currentFrame().getMergedLayerImage(), false);
 }
 
 void Editor::setIsSpriteSaved(bool state)
