@@ -12,13 +12,8 @@ public slots:
 	void setupNewSpriteDisplay(int spriteWidth, int spriteHeight);
 	void updateSpriteDisplay(const QPixmap &sprite);
 
-	void setDrawingColor(const QColor &color);
-	void setBrushEnabled();
-	void setEraserEnabled();
-
 signals:
-	void colorPainted(int x, int y, QColor color);
-	void informViewOfPencilEnabled(bool);
+	void pixelClicked(int x, int y);
 
 	void mouseMoved(QPoint pos);
 	void spriteSizeChanged(QPoint size);
@@ -31,12 +26,8 @@ protected:
 	void wheelEvent(QWheelEvent *event) override;
 
 private:
-	enum class Tool { None, Brush, Eraser };
-
     static const int SCENE_WIDTH = 1024;
 	static const int SCENE_HEIGHT = 1024;
-
-	Tool currentTool;
 
 	QGraphicsScene gScene;
 	QGraphicsItemGroup gItemGroup;
@@ -44,8 +35,7 @@ private:
 	QGraphicsPixmapItem gBackground;
 	QGraphicsPixmapItem gSprite;
 
-	QColor drawingColor;
-	bool isMousePressed;
+	bool isLeftMouseButtonPressed;
 	QPoint spritePosOffset;
 
 	bool isPanning;

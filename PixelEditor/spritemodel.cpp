@@ -221,10 +221,8 @@ QJsonObject Frame::toJson() const
 	QJsonObject json;
 	QJsonArray jsonLayers;
 
-	static int ins = 0;
 	for (const Layer &layer : layers)
 	{
-		QTextStream(stdout) << ins++;
 		jsonLayers.append(layer.toJson());
 	}
 

@@ -2,9 +2,8 @@
 
 Viewport::Viewport(QWidget *parent)
 	: QGraphicsView{parent}
-	, currentTool{Tool::None}
 	, gScene{0, 0, SCENE_WIDTH, SCENE_HEIGHT}
-	, isMousePressed{false}
+	, isLeftMouseButtonPressed{false}
 	, spritePosOffset{0, 0}
 	, isPanning{false}
 {
@@ -51,7 +50,7 @@ void Viewport::mousePressEvent(QMouseEvent *event)
 	}
 	else if (event->button() == Qt::LeftButton)
 	{
-		isMousePressed = true;
+		isLeftMouseButtonPressed = true;
 		this->draw(event->pos());
 	}
 }
@@ -65,7 +64,7 @@ void Viewport::mouseReleaseEvent(QMouseEvent *event)
 	}
 	else if (event->button() == Qt::LeftButton)
 	{
-		isMousePressed = false;
+		isLeftMouseButtonPressed = false;
 	}
 }
 
@@ -81,7 +80,7 @@ void Viewport::mouseMoveEvent(QMouseEvent *event)
 		this->translate(deltaViewPos.rx(), deltaViewPos.ry());
 		oldViewPos = this->mapToScene(event->pos());
 	}
-	else if (isMousePressed)
+	else if (isLeftMouseButtonPressed)
 	{
 		this->draw(event->pos());
 	}
@@ -107,14 +106,7 @@ void Viewport::draw(const QPoint &mousePos)
 	if (!(0 <= p2.x() && p2.x() < gBackground.pixmap().width() && 0 <= p2.y() && p2.y() < gBackground.pixmap().height()))
 		return;
 
-	if (currentTool == Tool::Brush)
-	{
-		emit colorPainted(p2.x(), p2.y(), drawingColor);
-	}
-	else if (currentTool == Tool::Eraser)
-	{
-		emit colorPainted(p2.x(), p2.y(), QColor(0, 0, 0, 0));
-	}
+	emit pixelClicked(p2.x(), p2.y());
 }
 
 void Viewport::zoom(const QPoint &mousePos, qreal factor)
@@ -147,19 +139,4 @@ void Viewport::setupTransparencyBackground(int width, int height)
 	painter.end();
 
 	gBackground.setPixmap(pBackground);
-}
-
-void Viewport::setDrawingColor(const QColor &newColor)
-{
-	drawingColor = newColor;
-}
-
-void Viewport::setBrushEnabled()
-{
-	currentTool = Tool::Brush;
-}
-
-void Viewport::setEraserEnabled()
-{
-	currentTool = Tool::Eraser;
 }

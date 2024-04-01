@@ -2,23 +2,30 @@
 
 Editor::Editor(QObject *parent)
 	: QObject{parent}
+
 	, sprite{nullptr}
 	, currentSavePath{""}
 	, currentSaveName{""}
 	, isSpriteSaved{true}
+
 	, isAnimationPlaying{false}
+	, frameDuration{0}
+
+	, currentTool{Tool::None}
+	, drawingColor{Qt::black}
+
 	, brushSize{1}
+	, eraserSize{1}
 {
-	animationTimerLambda = [](Editor* editor,
-							  QList<std::reference_wrapper<const QPixmap>> frames,
-							  int currentPlayedFrame,
-							  int frameDuration)
+	animationTimerLambda = [](Editor *editor, int currentPlayedFrame)
 	{
-		if (currentPlayedFrame == frames.size() - 1) currentPlayedFrame = -1;
-		emit editor->animationDisplayDataUpdated(frames[++currentPlayedFrame]);
+		if (currentPlayedFrame == editor->sprite->getFrameCount() - 1)
+			currentPlayedFrame = -1;
+
+		emit editor->animationDisplayDataUpdated(editor->sprite->getFrame(++currentPlayedFrame).getDisplayData());
 
 		if (editor->isAnimationPlaying)
-			QTimer::singleShot(frameDuration, editor, std::bind(editor->animationTimerLambda, editor, frames, currentPlayedFrame, frameDuration));
+			QTimer::singleShot(editor->frameDuration, editor, std::bind(editor->animationTimerLambda, editor, currentPlayedFrame));
 	};
 }
 
@@ -27,23 +34,26 @@ Editor::~Editor()
 	delete sprite;
 }
 
+void Editor::paintAt(int x, int y)
+{
+	if (currentTool == Tool::Brush)
+		sprite->currentFrame().paintAt(x, y, drawingColor, brushSize);
+	else if (currentTool == Tool::Eraser)
+		sprite->currentFrame().paintAt(x, y, Qt::transparent, eraserSize);
+
+	this->setIsSpriteSaved(false);
+	emit displayDataUpdated(sprite->currentFrame().getDisplayData());
+}
+
 void Editor::createNewSprite()
 {
 	sprite = new Sprite(SPRITE_WIDTH_DEFAULT, SPRITE_HEIGHT_DEFAULT);
 	currentSavePath = "";
 	currentSaveName = "UNTITLED";
+	frameDuration = 1000 / sprite->getFPS();
 	this->setIsSpriteSaved(true);
 
 	this->emitNewSpriteSignals();
-}
-
-void Editor::paintAt(int x, int y, QColor color)
-{
-	Frame &currentFrame = sprite->currentFrame();
-	currentFrame.paintAt(x, y, color, brushSize);
-
-	this->setIsSpriteSaved(false);
-	emit displayDataUpdated(sprite->currentFrame().getDisplayData());
 }
 
 void Editor::serializeSprite(const QString &filename)
@@ -117,6 +127,7 @@ void Editor::deserializeSprite(const QString &filename)
 
 	currentSaveName = saveName;
 	currentSavePath = saveFilepath;
+	frameDuration = 1000 / sprite->getFPS();
 
 	this->setIsSpriteSaved(true);
 	this->emitNewSpriteSignals();
@@ -130,24 +141,6 @@ void Editor::setupCreateNewSprite()
 void Editor::setupOpenSprite()
 {
 	emit readyOpenSprite(!isSpriteSaved);
-}
-
-void Editor::moveFrameLeft()
-{
-	sprite->moveCurrentFrameLeft();
-	QTextStream(stdout) << "\nCurrent Frame Index: " << sprite->getCurrentFrameIndex();
-
-	this->setIsSpriteSaved(false);
-	emit displayDataUpdated(sprite->currentFrame().getDisplayData());
-}
-
-void Editor::moveFrameRight()
-{
-	sprite->moveCurrentFrameRight();
-	QTextStream(stdout) << "\nCurrent Frame Index: " << sprite->getCurrentFrameIndex();
-
-	this->setIsSpriteSaved(false);
-	emit displayDataUpdated(sprite->currentFrame().getDisplayData());
 }
 
 void Editor::selectFrame(int frameIndex)
@@ -179,6 +172,24 @@ void Editor::removeFrame()
 	emit displayDataUpdated(sprite->currentFrame().getDisplayData());
 }
 
+void Editor::moveFrameLeft()
+{
+	sprite->moveCurrentFrameLeft();
+	QTextStream(stdout) << "\nCurrent Frame Index: " << sprite->getCurrentFrameIndex();
+
+	this->setIsSpriteSaved(false);
+	emit displayDataUpdated(sprite->currentFrame().getDisplayData());
+}
+
+void Editor::moveFrameRight()
+{
+	sprite->moveCurrentFrameRight();
+	QTextStream(stdout) << "\nCurrent Frame Index: " << sprite->getCurrentFrameIndex();
+
+	this->setIsSpriteSaved(false);
+	emit displayDataUpdated(sprite->currentFrame().getDisplayData());
+}
+
 void Editor::selectLayer(int layerIndex)
 {
 	sprite->currentFrame().selectLayer(layerIndex);
@@ -205,32 +216,53 @@ void Editor::removeLayer()
 	emit displayDataUpdated(sprite->currentFrame().getDisplayData());
 }
 
+void Editor::setAnimationFramerate(int fps)
+{
+	frameDuration = 1000 / fps;
+	sprite->setFPS(fps);
+
+	this->setIsSpriteSaved(false);
+}
+
 void Editor::playAnimation()
 {
 	isAnimationPlaying = true;
 	emit animationPlayerToggled();
 
-	int fps = sprite->getFPS(); // Get the frames per second
-	int frameDuration = 1000 / fps; // Calculate the duration of each frame in milliseconds
-
-	QList<std::reference_wrapper<const QPixmap>> frames;
-
-	for (int index = 0; index < sprite->getFrameCount(); index++)
-		frames.push_back(std::ref(sprite->getFrame(index).getDisplayData()));
-
-	QTimer::singleShot(frameDuration, this, std::bind(animationTimerLambda, this, frames, -1, frameDuration));
+	QTimer::singleShot(frameDuration, this, std::bind(animationTimerLambda, this, -1));
 }
 
 void Editor::stopAnimation()
 {
 	isAnimationPlaying = false;
+
 	emit animationPlayerToggled();
 	emit displayDataUpdated(sprite->currentFrame().getDisplayData());
+}
+
+void Editor::setBrushEnabled()
+{
+	currentTool = Tool::Brush;
+}
+
+void Editor::setEraserEnabled()
+{
+	currentTool = Tool::Eraser;
+}
+
+void Editor::setDrawingColor(QColor color)
+{
+	drawingColor = color;
 }
 
 void Editor::setBrushSize(int size)
 {
 	brushSize = size;
+}
+
+void Editor::setEraserSize(int size)
+{
+	eraserSize = size;
 }
 
 void Editor::setIsSpriteSaved(bool state)

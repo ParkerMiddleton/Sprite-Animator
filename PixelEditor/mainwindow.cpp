@@ -122,8 +122,8 @@ MainWindow::MainWindow(Editor *editor, QWidget *parent)
 
 	connect(editor, &Editor::displayDataUpdated
 			, vp, &Viewport::updateSpriteDisplay);
-
-	connect(vp, &Viewport::colorPainted
+	
+	connect(vp, &Viewport::pixelClicked
 			, editor, &Editor::paintAt);
 
 	/* VIEW <--> VIEW */
@@ -134,19 +134,21 @@ MainWindow::MainWindow(Editor *editor, QWidget *parent)
 
 	// Send chosen color to the frame window to be used
 	connect(this, &MainWindow::colorChanged
-			, vp, &Viewport::setDrawingColor);
+			, editor, &Editor::setDrawingColor);
 
 	// enable and disable brush
 	connect(ui->PencilButton, &QPushButton::clicked
-			, vp, &Viewport::setBrushEnabled);
+			, editor, &Editor::setBrushEnabled);
 
 	// enable and disable eraser
 	connect(ui->EraserButton, &QPushButton::clicked
-			, vp, &Viewport::setEraserEnabled);
+			, editor, &Editor::setEraserEnabled);
 
 	// frame window tells main that penicl button is to be disabled or enabled.
+	/*
 	connect(vp, &Viewport::informViewOfPencilEnabled
-			, ui->PencilButton, &QPushButton::setEnabled);
+			, ui->PencilButton, &QPushButton::setEnabled); // TODO: May be useful for buttons UI?
+	*/
 
 	/* HIGHLIGHT BUTTON CLICKED */
 
@@ -332,7 +334,8 @@ void MainWindow::createMenus()
 	fileMenu->addAction(saveAsAct);
 }
 
-void MainWindow::highlightButton(QPushButton *button) {
+void MainWindow::highlightButton(QPushButton *button)
+{
 	// Store the original style sheet of the button
 	QString originalStyleSheet = button->styleSheet();
 
