@@ -38,4 +38,7 @@
 #include <QScrollArea>
 #include <QVector>
 
+// STL
+#include <functional>
+
 #endif // QT_STD_PCH_H

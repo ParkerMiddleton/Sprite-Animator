@@ -10,8 +10,8 @@ MainWindow::MainWindow(Editor *editor, QWidget *parent)
 {
 	ui->setupUi(this);
 
-	vp = ui->viewport;
-	pw = ui->previewLabel;
+	vp = ui->viewportView;
+	pw = ui->previewView;
 	ft = ui->frameTimeline;
 	lt = ui->layerPlacer;
 
@@ -148,51 +148,59 @@ MainWindow::MainWindow(Editor *editor, QWidget *parent)
 	connect(vp, &Viewport::informViewOfPencilEnabled
 			, ui->PencilButton, &QPushButton::setEnabled);
 
-    /* HIGHLIGHT BUTTON CLICKED */
+	/* HIGHLIGHT BUTTON CLICKED */
 
-    connect(ui->PencilButton, &QPushButton::clicked, this, [this]() {
-        highlightButton(ui->PencilButton);
-    });
+	connect(ui->PencilButton, &QPushButton::clicked, this, [this]() {
+		highlightButton(ui->PencilButton);
+	});
 
-    connect(ui->EraserButton, &QPushButton::clicked, this, [this]() {
-        highlightButton(ui->EraserButton);
-    });
+	connect(ui->EraserButton, &QPushButton::clicked, this, [this]() {
+		highlightButton(ui->EraserButton);
+	});
 
-    connect(ui->addFrameButton, &QPushButton::clicked, this, [this]() {
-        highlightButton(ui->addFrameButton);
-    });
+	connect(ui->addFrameButton, &QPushButton::clicked, this, [this]() {
+		highlightButton(ui->addFrameButton);
+	});
 
-    connect(ui->deleteFrameButton, &QPushButton::clicked, this, [this]() {
-        highlightButton(ui->deleteFrameButton);
-    });
+	connect(ui->deleteFrameButton, &QPushButton::clicked, this, [this]() {
+		highlightButton(ui->deleteFrameButton);
+	});
 
-    connect(ui->addLayerButton, &QPushButton::clicked, this, [this]() {
-        highlightButton(ui->addLayerButton);
-    });
+	connect(ui->addLayerButton, &QPushButton::clicked, this, [this]() {
+		highlightButton(ui->addLayerButton);
+	});
 
-    connect(ui->removeLayerButton, &QPushButton::clicked, this, [this]() {
-        highlightButton(ui->removeLayerButton);
-    });
+	connect(ui->removeLayerButton, &QPushButton::clicked, this, [this]() {
+		highlightButton(ui->removeLayerButton);
+	});
 
-    connect(ui->playAnimationButton, &QPushButton::clicked, this, [this]() {
-        highlightButton(ui->playAnimationButton);
-    });
+	connect(ui->playAnimationButton, &QPushButton::clicked, this, [this]() {
+		highlightButton(ui->playAnimationButton);
+	});
 
-    connect(ui->stopAnimationButton, &QPushButton::clicked, this, [this]() {
-        highlightButton(ui->stopAnimationButton);
-    });
+	connect(ui->stopAnimationButton, &QPushButton::clicked, this, [this]() {
+		highlightButton(ui->stopAnimationButton);
+	});
 
-	//Send pixmap data to the preview window to mirror drawing.
-    connect(vp,
-			&Viewport::sendPixmapData,
-			pw,
-            &PreviewWindow::recievePixmapData);
-    //Send sprite data to the preview window
-    connect(editor,
-            &Editor::sendSpriteData,
-            pw,
-            &PreviewWindow::recieveSpriteData);
+	// PREVIEW
 
+	connect(editor, &Editor::animationPlayerToggled
+			, pw, &PreviewPanel::toggleAnimationPlayer);
+
+	connect(editor, &Editor::displayDataUpdated
+			, pw, &PreviewPanel::updateSpriteDisplay);
+
+	connect(editor, &Editor::animationDisplayDataUpdated
+			, pw, &PreviewPanel::updateSpriteAnimationDisplay);
+
+	connect(editor, &Editor::newSpriteSize
+			, pw, &PreviewPanel::setupNewSpriteDisplay);
+
+	connect(ui->playAnimationButton, &QPushButton::clicked
+			, editor, &Editor::playAnimation);
+
+	connect(ui->stopAnimationButton, &QPushButton::clicked
+			, editor, &Editor::stopAnimation);
 }
 
 MainWindow::~MainWindow()
@@ -202,23 +210,23 @@ MainWindow::~MainWindow()
 
 void MainWindow::changeColor()
 {
-    // Store the current color
-    QColor previousColor = currentColor;
+	// Store the current color
+	QColor previousColor = currentColor;
 
-    // Show the color change (for example, by temporarily changing the palette button's background color)
-    ui->ColorPaletteButton->setStyleSheet("background-color: white;");
+	// Show the color change (for example, by temporarily changing the palette button's background color)
+	ui->ColorPaletteButton->setStyleSheet("background-color: white;");
 
-    // Create a QTimer to open the color picker after a short delay
-    QTimer::singleShot(200, this, [this, previousColor]() {
-        // Restore the original color of the palette button
-        ui->ColorPaletteButton->setStyleSheet("");
+	// Create a QTimer to open the color picker after a short delay
+	QTimer::singleShot(200, this, [this, previousColor]() {
+		// Restore the original color of the palette button
+		ui->ColorPaletteButton->setStyleSheet("");
 
-        // Open the color picker dialog with the previous color selected
-        QColor newColor = QColorDialog::getColor(previousColor, this, tr("Select Color"), QColorDialog::ShowAlphaChannel);
+		// Open the color picker dialog with the previous color selected
+		QColor newColor = QColorDialog::getColor(previousColor, this, tr("Select Color"), QColorDialog::ShowAlphaChannel);
 
-        // Emit the signal with the new color
-        emit colorChanged(newColor);
-    });
+		// Emit the signal with the new color
+		emit colorChanged(newColor);
+	});
 }
 
 void MainWindow::updateTitle(const QString &spriteName, bool showStar)
@@ -325,15 +333,15 @@ void MainWindow::createMenus()
 }
 
 void MainWindow::highlightButton(QPushButton *button) {
-    // Store the original style sheet of the button
-    QString originalStyleSheet = button->styleSheet();
+	// Store the original style sheet of the button
+	QString originalStyleSheet = button->styleSheet();
 
-    // Highlight the button by changing its style temporarily
-    button->setStyleSheet("background-color: white;"); // You can customize the highlighting style here
+	// Highlight the button by changing its style temporarily
+	button->setStyleSheet("background-color: white;"); // You can customize the highlighting style here
 
-    // Create a QTimer to restore the original style after a short duration
-    QTimer::singleShot(200, this, [button, originalStyleSheet]() {
-        // Restore the original style sheet of the button
-        button->setStyleSheet(originalStyleSheet);
-    });
+	// Create a QTimer to restore the original style after a short duration
+	QTimer::singleShot(200, this, [button, originalStyleSheet]() {
+		// Restore the original style sheet of the button
+		button->setStyleSheet(originalStyleSheet);
+	});
 }

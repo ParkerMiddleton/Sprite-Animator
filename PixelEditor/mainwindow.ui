@@ -32,7 +32,7 @@ background-color:rgb(37, 37, 37)</string>
       <enum>QLayout::SetNoConstraint</enum>
      </property>
      <item row="0" column="0">
-      <widget class="Viewport" name="viewport" native="true">
+      <widget class="Viewport" name="viewportView" native="true">
        <property name="cursor">
         <cursorShape>CrossCursor</cursorShape>
        </property>
@@ -282,9 +282,9 @@ color: rgb(255, 255, 255);</string>
      </property>
      <layout class="QGridLayout" name="previewGrid">
       <item row="0" column="0">
-       <widget class="PreviewWindow" name="previewLabel">
-        <property name="text">
-         <string/>
+       <widget class="PreviewPanel" name="previewView">
+        <property name="enabled">
+         <bool>false</bool>
         </property>
        </widget>
       </item>
@@ -751,11 +751,6 @@ color: rgb(2, 2, 2);</string>
  </widget>
  <customwidgets>
   <customwidget>
-   <class>PreviewWindow</class>
-   <extends>QLabel</extends>
-   <header location="global">previewwindow.h</header>
-  </customwidget>
-  <customwidget>
    <class>LayersPanel</class>
    <extends>QScrollArea</extends>
    <header location="global">layerspanel.h</header>
@@ -771,6 +766,11 @@ color: rgb(2, 2, 2);</string>
    <extends>QScrollArea</extends>
    <header location="global">timelinepanel.h</header>
    <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>PreviewPanel</class>
+   <extends>QGraphicsView</extends>
+   <header location="global">previewpanel.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

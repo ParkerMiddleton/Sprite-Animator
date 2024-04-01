@@ -1,5 +1,4 @@
 #include "editor.h"
-#include <QDebug>
 
 Editor::Editor(QObject *parent)
 	: QObject{parent}
@@ -7,8 +6,20 @@ Editor::Editor(QObject *parent)
 	, currentSavePath{""}
 	, currentSaveName{""}
 	, isSpriteSaved{true}
+	, isAnimationPlaying{false}
+	, brushSize{1}
 {
+	animationTimerLambda = [](Editor* editor,
+							  QList<std::reference_wrapper<const QPixmap>> frames,
+							  int currentPlayedFrame,
+							  int frameDuration)
+	{
+		if (currentPlayedFrame == frames.size() - 1) currentPlayedFrame = -1;
+		emit editor->animationDisplayDataUpdated(frames[++currentPlayedFrame]);
 
+		if (editor->isAnimationPlaying)
+			QTimer::singleShot(frameDuration, editor, std::bind(editor->animationTimerLambda, editor, frames, currentPlayedFrame, frameDuration));
+	};
 }
 
 Editor::~Editor()
@@ -24,17 +35,15 @@ void Editor::createNewSprite()
 	this->setIsSpriteSaved(true);
 
 	this->emitNewSpriteSignals();
-    emit sendSpriteData(sprite);
 }
 
 void Editor::paintAt(int x, int y, QColor color)
 {
 	Frame &currentFrame = sprite->currentFrame();
-	currentFrame.paintAt(x, y, color);
+	currentFrame.paintAt(x, y, color, brushSize);
 
 	this->setIsSpriteSaved(false);
 	emit displayDataUpdated(sprite->currentFrame().getDisplayData());
-    emit sendSpriteData(sprite);
 }
 
 void Editor::serializeSprite(const QString &filename)
@@ -130,7 +139,6 @@ void Editor::moveFrameLeft()
 
 	this->setIsSpriteSaved(false);
 	emit displayDataUpdated(sprite->currentFrame().getDisplayData());
-    emit sendSpriteData(sprite);
 }
 
 void Editor::moveFrameRight()
@@ -140,7 +148,6 @@ void Editor::moveFrameRight()
 
 	this->setIsSpriteSaved(false);
 	emit displayDataUpdated(sprite->currentFrame().getDisplayData());
-    emit sendSpriteData(sprite);
 }
 
 void Editor::selectFrame(int frameIndex)
@@ -150,7 +157,6 @@ void Editor::selectFrame(int frameIndex)
 
 	emit newFrameSelection(sprite->currentFrame().getLayerCount());
 	emit displayDataUpdated(sprite->currentFrame().getDisplayData());
-    emit sendSpriteData(sprite);
 }
 
 void Editor::addNewFrame()
@@ -161,7 +167,6 @@ void Editor::addNewFrame()
 	this->setIsSpriteSaved(false);
 	emit newFrameSelection(sprite->currentFrame().getLayerCount());
 	emit displayDataUpdated(sprite->currentFrame().getDisplayData());
-    emit sendSpriteData(sprite);
 }
 
 void Editor::removeFrame()
@@ -172,7 +177,6 @@ void Editor::removeFrame()
 	this->setIsSpriteSaved(false);
 	emit newFrameSelection(sprite->currentFrame().getLayerCount());
 	emit displayDataUpdated(sprite->currentFrame().getDisplayData());
-    emit sendSpriteData(sprite);
 }
 
 void Editor::selectLayer(int layerIndex)
@@ -181,7 +185,6 @@ void Editor::selectLayer(int layerIndex)
 	QTextStream(stdout) << "\nCurrent Layer Index: " << sprite->currentFrame().getCurrentLayerIndex();
 
 	emit displayDataUpdated(sprite->currentFrame().getDisplayData());
-    emit sendSpriteData(sprite);
 }
 
 void Editor::addNewLayer()
@@ -191,7 +194,6 @@ void Editor::addNewLayer()
 
 	this->setIsSpriteSaved(false);
 	emit displayDataUpdated(sprite->currentFrame().getDisplayData());
-    emit sendSpriteData(sprite);
 }
 
 void Editor::removeLayer()
@@ -201,7 +203,34 @@ void Editor::removeLayer()
 
 	this->setIsSpriteSaved(false);
 	emit displayDataUpdated(sprite->currentFrame().getDisplayData());
-    emit sendSpriteData(sprite);
+}
+
+void Editor::playAnimation()
+{
+	isAnimationPlaying = true;
+	emit animationPlayerToggled();
+
+	int fps = sprite->getFPS(); // Get the frames per second
+	int frameDuration = 1000 / fps; // Calculate the duration of each frame in milliseconds
+
+	QList<std::reference_wrapper<const QPixmap>> frames;
+
+	for (int index = 0; index < sprite->getFrameCount(); index++)
+		frames.push_back(std::ref(sprite->getFrame(index).getDisplayData()));
+
+	QTimer::singleShot(frameDuration, this, std::bind(animationTimerLambda, this, frames, -1, frameDuration));
+}
+
+void Editor::stopAnimation()
+{
+	isAnimationPlaying = false;
+	emit animationPlayerToggled();
+	emit displayDataUpdated(sprite->currentFrame().getDisplayData());
+}
+
+void Editor::setBrushSize(int size)
+{
+	brushSize = size;
 }
 
 void Editor::setIsSpriteSaved(bool state)

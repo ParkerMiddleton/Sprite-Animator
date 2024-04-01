@@ -1,7 +1,7 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include "previewwindow.h"
+#include "previewpanel.h"
 #include "viewport.h"
 #include "timelinepanel.h"
 #include "layerspanel.h"
@@ -50,7 +50,7 @@ private:
     Editor *editor;
 
     Viewport *vp;
-    PreviewWindow *pw;
+	PreviewPanel *pw;
 	TimelinePanel *ft;
 	LayersPanel *lt;
 

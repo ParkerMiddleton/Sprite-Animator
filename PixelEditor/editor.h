@@ -32,11 +32,17 @@ public slots:
 	void addNewLayer();
 	void removeLayer();
 
+	void playAnimation();
+	void stopAnimation();
+
+	void setBrushSize(int size);
+
 signals:
 	void newSprite(int framesCount);
 	void newSpriteSize(int width, int height);
 	void newFrameSelection(int layersCount);
 	void displayDataUpdated(const QPixmap &displayData);
+	void animationDisplayDataUpdated(const QPixmap &displayData);
 
 	void spriteSaveStatusChanged(const QString &spriteName, bool isModified);
 
@@ -44,16 +50,24 @@ signals:
 	void readyOpenSprite(bool askUserToSave);
 	void needSaveFilenameToSerialize();
 
-    void sendSpriteData(Sprite* s);
+	void animationPlayerToggled();
 
 private:
-	static const int SPRITE_WIDTH_DEFAULT = 32;
-	static const int SPRITE_HEIGHT_DEFAULT = 64;
+	static const int SPRITE_WIDTH_DEFAULT = 70;
+	static const int SPRITE_HEIGHT_DEFAULT = 50;
+
+	std::function<void(Editor*,
+					   QList<std::reference_wrapper<const QPixmap>>,
+					   int,
+					   int)> animationTimerLambda;
 
 	Sprite *sprite;
 	QString currentSavePath;
 	QString currentSaveName;
 	bool isSpriteSaved;
+
+	bool isAnimationPlaying;
+	int brushSize;
 
 	void setIsSpriteSaved(bool state);
 	void splitFilename(const QString &filename, QString &path, QString &name);

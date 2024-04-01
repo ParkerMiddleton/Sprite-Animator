@@ -18,11 +18,6 @@ Viewport::Viewport(QWidget *parent)
 	this->setScene(&gScene);
 }
 
-Viewport::~Viewport()
-{
-
-}
-
 void Viewport::setupNewSpriteDisplay(int spriteWidth, int spriteHeight)
 {
 	this->setupTransparencyBackground(spriteWidth, spriteHeight);
@@ -43,27 +38,8 @@ void Viewport::setupNewSpriteDisplay(int spriteWidth, int spriteHeight)
 
 void Viewport::updateSpriteDisplay(const QPixmap &sprite)
 {
-	//pSprite->fill(Qt::transparent);
-	//pSprite->convertFromImage(image, Qt::NoFormatConversion);
-
 	gSprite.setPixmap(sprite);
-    emit sendPixmapData(new QPixmap(sprite)); // old code was slightly easier to emit this, feel free to refractor but the logic is needed.
-
-	//this->repaint();
 }
-
-/*void Viewport::paintEvent(QPaintEvent *)
-{
-	//QTextStream(stdout) << "fsdf";
-	if (transparencyPixmap && spritePixmap)
-	{
-		QPainter painter(this);
-		painter.drawPixmap(0, 0, *transparencyPixmap);
-		painter.drawPixmap(offsetX, offsetY, *spritePixmap);
-
-		emit sendPixmapData(spritePixmap);
-	}
-}*/
 
 void Viewport::mousePressEvent(QMouseEvent *event)
 {

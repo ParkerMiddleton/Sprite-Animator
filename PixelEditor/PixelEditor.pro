@@ -16,7 +16,7 @@ SOURCES += \
     layerspanel.cpp \
     main.cpp \
     mainwindow.cpp \
-    previewwindow.cpp \
+    previewpanel.cpp \
     spritemodel.cpp \
     timelinepanel.cpp \
     viewport.cpp
@@ -27,7 +27,7 @@ HEADERS += \
     editor.h \
     layerspanel.h \
     mainwindow.h \
-    previewwindow.h \
+    previewpanel.h \
     spritemodel.h \
     timelinepanel.h \
     viewport.h

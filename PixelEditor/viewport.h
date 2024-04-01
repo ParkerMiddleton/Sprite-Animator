@@ -7,7 +7,6 @@ class Viewport : public QGraphicsView
 
 public:
 	explicit Viewport(QWidget *parent = 0);
-	~Viewport();
 
 public slots:
 	void setupNewSpriteDisplay(int spriteWidth, int spriteHeight);
@@ -20,13 +19,11 @@ public slots:
 signals:
 	void colorPainted(int x, int y, QColor color);
 	void informViewOfPencilEnabled(bool);
-	void sendPixmapData(QPixmap *p);
 
 	void mouseMoved(QPoint pos);
 	void spriteSizeChanged(QPoint size);
 
 protected:
-	//void paintEvent(QPaintEvent *event) override;
 	void mousePressEvent(QMouseEvent *event) override;
 	void mouseReleaseEvent(QMouseEvent *event) override;
 	void mouseMoveEvent(QMouseEvent *event) override;

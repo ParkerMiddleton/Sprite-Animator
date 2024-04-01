@@ -34,7 +34,7 @@ class Frame
 public:
 	Frame(Sprite *parentSprite);
 
-	void paintAt(int x, int y, QColor color, int brushSize = 1);
+	void paintAt(int x, int y, QColor color, int brushSize);
 
 	/// @brief addLayer Adds a new Layer to the frame.
 	void addLayer();
@@ -93,6 +93,11 @@ public:
 
 	int getFrameCount();
 	int getCurrentFrameIndex();
+
+	int getFPS();
+	void setFPS(int fps);
+
+	Frame& getFrame(int index);
 
 	static Sprite* fromJson(const QJsonObject &json);
 	QJsonObject toJson() const;

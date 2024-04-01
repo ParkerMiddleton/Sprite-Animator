@@ -295,7 +295,7 @@ Sprite::Sprite(int width, int height)
 	: width{width}
 	, height{height}
 	, currentFrameIndex{-1}
-	, fps{0}
+	, fps{24}
 {
 	this->addFrame();
 }
@@ -367,12 +367,28 @@ int Sprite::getCurrentFrameIndex()
 	return currentFrameIndex;
 }
 
+int Sprite::getFPS()
+{
+	return fps;
+}
+
+void Sprite::setFPS(int fps)
+{
+	this->fps = fps;
+}
+
+Frame &Sprite::getFrame(int index)
+{
+	return frames[index];
+}
+
 Sprite* Sprite::fromJson(const QJsonObject &json)
 {
 	Sprite *sprite = nullptr;
 
 	const QJsonValue &jsonWidth = json["width"];
 	const QJsonValue &jsonHeight = json["height"];
+	const QJsonValue &jsonFPS = json["fps"];
 
 	if (jsonWidth.isDouble() &&
 		jsonHeight.isDouble())
@@ -381,6 +397,9 @@ Sprite* Sprite::fromJson(const QJsonObject &json)
 
 		sprite->width = jsonWidth.toInt();
 		sprite->height = jsonHeight.toInt();
+
+		if (jsonFPS.isDouble())
+			sprite->fps = jsonFPS.toInt();
 
 		if (const QJsonValue jsonFramesVal = json["frames"]; jsonFramesVal.isArray())
 		{
@@ -400,6 +419,7 @@ QJsonObject Sprite::toJson() const
 	QJsonObject json;
 	json["width"] = width;
 	json["height"] = height;
+	json["fps"] = fps;
 
 	QJsonArray jsonFrames;
 
@@ -415,6 +435,7 @@ QJsonObject Sprite::toJson() const
 
 Sprite::Sprite()
 	: currentFrameIndex{0}
+	, fps{24}
 {
 
 }
