@@ -19,12 +19,17 @@ public slots:
 
 	void setupLayerButtons(int layersCount);
 
+    void highlightLayerIcon(int id);
+
 signals:
 	void layerButtonSelected(int layerButtonIndex);
 
 private:
 	QLayout *layout;
 	QMap<int, LayerIcon*> *layerButtons;
+    int currentID;
+    QString highlightIconStylehseet;
+    QString regularIconStylesheet;
 
 };
 

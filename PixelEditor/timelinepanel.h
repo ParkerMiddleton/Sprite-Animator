@@ -8,6 +8,8 @@ class TimelinePanel : public QScrollArea
 {
 	Q_OBJECT
 
+
+
 public:
 	/// \brief TimelinePanel Constructs a TimelinePanel Object
 	/// \param parent
@@ -37,6 +39,13 @@ public slots:
 
 	void setupFrameButtons(int framesCount);
 
+    ///
+    /// \brief highlightFrameIcon Highlights a frame thats been clicked on
+    /// so the user knows whcih frame is currently being worked on.
+    /// \param id
+    ///
+    void highlightFrameIcon(int id);
+
 signals:
 	void frameButtonSelected(int frameButtonIndex);
 
@@ -45,6 +54,9 @@ private:
 	QMap<int, FrameIcon*> *frameButtons;
 	QLayout *layout;
 	FrameIcon *activeFrame;
+    int currentID;
+    QString highlightIconStylehseet;
+    QString regularIconStylesheet;
 
 };
 

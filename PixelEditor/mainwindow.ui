@@ -153,8 +153,11 @@ background-color:rgb(37, 37, 37)</string>
      <property name="styleSheet">
       <string notr="true">border:none;</string>
      </property>
+     <property name="minimum">
+      <number>1</number>
+     </property>
      <property name="maximum">
-      <number>50</number>
+      <number>10</number>
      </property>
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
@@ -173,7 +176,7 @@ background-color:rgb(37, 37, 37)</string>
       <string notr="true">border:none;</string>
      </property>
      <property name="maximum">
-      <number>50</number>
+      <number>10</number>
      </property>
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
@@ -188,12 +191,17 @@ background-color:rgb(37, 37, 37)</string>
        <height>16</height>
       </rect>
      </property>
+     <property name="font">
+      <font>
+       <pointsize>7</pointsize>
+      </font>
+     </property>
      <property name="styleSheet">
       <string notr="true">border:none;
 color: rgb(255, 255, 255);</string>
      </property>
      <property name="text">
-      <string>Pencil Size</string>
+      <string>Pencil Size: 1 </string>
      </property>
     </widget>
     <widget class="QLabel" name="EraserSizeText">
@@ -205,12 +213,17 @@ color: rgb(255, 255, 255);</string>
        <height>16</height>
       </rect>
      </property>
+     <property name="font">
+      <font>
+       <pointsize>7</pointsize>
+      </font>
+     </property>
      <property name="styleSheet">
       <string notr="true">border:none;
 color: rgb(255, 255, 255);</string>
      </property>
      <property name="text">
-      <string>Eraser Size</string>
+      <string>Eraser Size: 1</string>
      </property>
     </widget>
     <widget class="QLabel" name="currentColorText">
@@ -218,35 +231,36 @@ color: rgb(255, 255, 255);</string>
       <rect>
        <x>20</x>
        <y>180</y>
-       <width>31</width>
+       <width>41</width>
        <height>20</height>
       </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>8</pointsize>
+      </font>
      </property>
      <property name="styleSheet">
       <string notr="true">border:none;</string>
      </property>
      <property name="text">
-      <string>Color</string>
+      <string>  Color</string>
      </property>
     </widget>
-    <widget class="QLineEdit" name="eraserSizeTextBox">
+    <widget class="QLabel" name="currentColorLabel">
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>410</y>
+       <y>200</y>
        <width>61</width>
-       <height>20</height>
+       <height>61</height>
       </rect>
      </property>
-    </widget>
-    <widget class="QLineEdit" name="pencilSizeTextBox">
-     <property name="geometry">
-      <rect>
-       <x>10</x>
-       <y>330</y>
-       <width>61</width>
-       <height>20</height>
-      </rect>
+     <property name="styleSheet">
+      <string notr="true">background-color:Black;</string>
+     </property>
+     <property name="text">
+      <string/>
      </property>
     </widget>
    </widget>
@@ -291,6 +305,9 @@ color: rgb(255, 255, 255);</string>
        <widget class="PreviewPanel" name="previewView">
         <property name="enabled">
          <bool>false</bool>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">background-color:#7a7a7a;</string>
         </property>
        </widget>
       </item>
@@ -633,10 +650,10 @@ border: none;</string>
     <widget class="TimelinePanel" name="frameTimeline">
      <property name="geometry">
       <rect>
-       <x>90</x>
-       <y>0</y>
-       <width>611</width>
-       <height>80</height>
+       <x>100</x>
+       <y>9</y>
+       <width>601</width>
+       <height>71</height>
       </rect>
      </property>
      <property name="widgetResizable">
@@ -647,8 +664,8 @@ border: none;</string>
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>607</width>
-        <height>76</height>
+        <width>597</width>
+        <height>67</height>
        </rect>
       </property>
      </widget>
@@ -786,7 +803,7 @@ text-align: center;</string>
      <x>0</x>
      <y>0</y>
      <width>968</width>
-     <height>17</height>
+     <height>21</height>
     </rect>
    </property>
    <property name="styleSheet">

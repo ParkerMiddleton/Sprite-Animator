@@ -65,8 +65,8 @@ signals:
 private:
 	enum class Tool { None, Brush, Eraser };
 
-	static const int SPRITE_WIDTH_DEFAULT = 70;
-	static const int SPRITE_HEIGHT_DEFAULT = 50;
+    static const int SPRITE_WIDTH_DEFAULT = 35;
+    static const int SPRITE_HEIGHT_DEFAULT = 25;
 
 	std::function<void(Editor*, int)> animationTimerLambda;
 

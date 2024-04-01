@@ -22,7 +22,7 @@ void PreviewPanel::setupNewSpriteDisplay(int spriteWidth, int spriteHeight)
 	gSprite.setTransform(QTransform().translate(spritePosOffset.x(), spritePosOffset.y()));
 
 	this->resetTransform();
-	//this->scale(6.f, 6.f);
+    this->scale(4.5f, 4.5f);
 }
 
 void PreviewPanel::updateSpriteDisplay(const QPixmap &sprite)

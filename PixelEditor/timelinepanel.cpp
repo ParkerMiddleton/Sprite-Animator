@@ -8,6 +8,17 @@ TimelinePanel::TimelinePanel(QWidget *parent)
 	layout = new QHBoxLayout();
 	layout->setAlignment(Qt::AlignLeft);
 	this->setLayout(layout);
+
+    //stylesheet data
+    highlightIconStylehseet = "background-color: #f5f5f5;color: #000000;padding: 4px;border: 2px solid #5cc7d1";
+    regularIconStylesheet = "background-color: #f5f5f5;color: #000000;padding: 4px;border: 1px solid #444444";
+
+    //gets first button to represent the starting frame
+    currentID = 0;
+
+    //highlightFrameIcon(currentID);
+    addFrame();
+
 }
 
 
@@ -18,15 +29,17 @@ TimelinePanel::~TimelinePanel()
 
 void TimelinePanel::addFrame()
 {
-	FrameIcon *icon = new FrameIcon();
 
-	int index = frameButtons->size();
+    int index = frameButtons->size();
+    FrameIcon *icon = new FrameIcon(index + 1);
+
 	frameButtons->insert(index, icon);
 
 	connect(icon, &QPushButton::clicked, this, [this, index]() {
-		emit frameButtonSelected(index);
+        emit frameButtonSelected(index);
 	});
 
+    highlightFrameIcon(index);
 	layout->addWidget(icon);
 }
 
@@ -39,7 +52,6 @@ void TimelinePanel::removeFrame()
 
 	// Get the key corresponding to the last index
 	int lastKey = frameButtons->keys().at(lastIndex);
-
 	if (lastKey > 0)
 	{
 		// Remove the last element from the map and get the associated FrameIcon pointer
@@ -55,14 +67,18 @@ void TimelinePanel::removeFrame()
 
 void TimelinePanel::moveLeft()
 {
-	//TODO: Move an active frame over one poisiton left
-	// dont move it left if it's first in the sequence
+    if(currentID > 0){
+        highlightFrameIcon(currentID-1);
+    }
 }
 
 void TimelinePanel::moveRight()
 {
-	//TODO: Move an active frame over one poisiton Right
-	// dont move it right if it's at the end of the sequence
+
+    if(currentID < frameButtons->size() -1){
+        highlightFrameIcon(currentID + 1);
+    }
+
 }
 
 void TimelinePanel::setupFrameButtons(int framesCount)
@@ -80,3 +96,22 @@ void TimelinePanel::setupFrameButtons(int framesCount)
 		this->addFrame();
 	}
 }
+
+void TimelinePanel::highlightFrameIcon(int id){
+
+    QMap<int, FrameIcon*>::iterator it;
+    for(it = frameButtons->begin(); it !=frameButtons->end(); ++it){
+
+        int key = it.key();
+        FrameIcon* value = it.value();
+
+        if (key != id) {
+            value->setStyleSheet(regularIconStylesheet);
+        } else {
+            value->setStyleSheet(highlightIconStylehseet);
+            currentID = id;
+        }
+
+    }
+}
+

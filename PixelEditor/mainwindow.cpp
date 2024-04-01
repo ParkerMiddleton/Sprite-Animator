@@ -13,7 +13,7 @@ MainWindow::MainWindow(Editor *editor, QWidget *parent)
     // Add tool buttons to the buttonStylesheets map
     buttonStylesheets.insert(ui->PencilButton, ui->PencilButton->styleSheet());
     buttonStylesheets.insert(ui->EraserButton, ui->EraserButton->styleSheet());
-    buttonStylesheets.insert(ui->ColorPaletteButton, ui->ColorPaletteButton->styleSheet());
+
 
     duplicateFrame = false;
 
@@ -228,6 +228,47 @@ MainWindow::MainWindow(Editor *editor, QWidget *parent)
 
     connect(ui->fpsSlider, &QSlider::sliderMoved
             , this, &MainWindow::getFPS);
+
+    connect(ui->pencilSlider,
+            &QSlider::sliderMoved,
+            this,
+            &MainWindow::setPencilText);
+
+    connect(ui->eraserSlider,
+            &QSlider::sliderMoved,
+            this,
+            &MainWindow::setEraserText);
+
+    //FRAMETIMELINEPANEL
+    connect(ft,
+            &TimelinePanel::frameButtonSelected,
+            this,
+            &MainWindow::setActiveFrameID);
+
+    connect(lt,
+            &LayersPanel::layerButtonSelected,
+            this,
+            &MainWindow::setActiveLayerID);
+
+    connect(this,
+            &MainWindow::highlightIcon,
+            ft,
+            &TimelinePanel::highlightFrameIcon);
+
+    connect(ui->moveFrameLeftButton,
+            &QPushButton::clicked,
+            ft,
+            &TimelinePanel::moveLeft);
+
+    connect(ui->moveFrameRightButton,
+            &QPushButton::clicked,
+            ft,
+            &TimelinePanel::moveRight);
+
+    connect(this,
+            &MainWindow::highlightLayer,
+            lt,
+            &LayersPanel::highlightLayerIcon);
 }
 
 MainWindow::~MainWindow()
@@ -243,12 +284,14 @@ void MainWindow::changeColor()
 {
     highlightButton(ui->ColorPaletteButton);
 	// Store the current color
-	QColor previousColor = currentColor;
-    // Open the color picker dialog with the previous color selected
-    QColor newColor = QColorDialog::getColor(previousColor, this, tr("Select Color"), QColorDialog::ShowAlphaChannel);
 
+    // Open the color picker dialog with the previous color selected
+    QColor newColor = QColorDialog::getColor(currentColor, this, tr("Select Color"), QColorDialog::ShowAlphaChannel);
+    currentColor = newColor;
     // Emit the signal with the new color
     emit colorChanged(newColor);
+    QString updatedstylesheet = "background-color:" + newColor.name() + ";";
+    ui->currentColorLabel->setStyleSheet(updatedstylesheet);
 }
 
 void MainWindow::updateTitle(const QString &spriteName, bool showStar)
@@ -407,4 +450,22 @@ void MainWindow::onAddFrameButtonClicked() {
     // Send bool to editor to handle logic
     emit duplicateFrameRequested(duplicateFrame);
 }
+
+void MainWindow::setActiveFrameID(int id){
+    activeFrame = id;
+    emit highlightIcon(id);
+}
+
+void MainWindow::setActiveLayerID(int id){
+    emit highlightLayer(id);
+}
+
+void MainWindow::setPencilText(int size){
+    ui->pencilSizeText->setText("Pencil Size: " +  QString::number(size));
+}
+
+void MainWindow::setEraserText(int size){
+    ui->EraserSizeText->setText("Eraser Size: " + QString::number(size));
+}
+
 
