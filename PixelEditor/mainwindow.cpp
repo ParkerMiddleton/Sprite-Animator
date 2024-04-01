@@ -374,14 +374,10 @@ void MainWindow::highlightButton(QPushButton *button)
         }
     }
     else {
-        // Store the original style sheet of the button
         QString originalStyleSheet = button->styleSheet();
-
-        // Highlight the button by changing its style temporarily
         button->setStyleSheet("background-color: white;");
 
-        // Create a QTimer to restore the original style after a short duration
-        QTimer::singleShot(100, this, [button, originalStyleSheet]() {
+        QTimer::singleShot(50, this, [button, originalStyleSheet]() {
             // Restore the original style sheet of the button
             button->setStyleSheet(originalStyleSheet);
         });
