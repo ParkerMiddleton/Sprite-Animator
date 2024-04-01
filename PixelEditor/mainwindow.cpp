@@ -152,6 +152,12 @@ MainWindow::MainWindow(Editor *editor, QWidget *parent)
 	connect(ui->EraserButton, &QPushButton::clicked
 			, editor, &Editor::setEraserEnabled);
 
+    connect(ui->pencilSlider, &QSlider::sliderMoved
+            , editor, &Editor::setBrushSize);
+
+    connect(ui->eraserSlider, &QSlider::sliderMoved
+            , editor, &Editor::setEraserSize);
+
 	// frame window tells main that penicl button is to be disabled or enabled.
 	/*
 	connect(vp, &Viewport::informViewOfPencilEnabled

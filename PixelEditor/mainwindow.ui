@@ -153,6 +153,9 @@ background-color:rgb(37, 37, 37)</string>
      <property name="styleSheet">
       <string notr="true">border:none;</string>
      </property>
+     <property name="maximum">
+      <number>50</number>
+     </property>
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
      </property>
@@ -168,6 +171,9 @@ background-color:rgb(37, 37, 37)</string>
      </property>
      <property name="styleSheet">
       <string notr="true">border:none;</string>
+     </property>
+     <property name="maximum">
+      <number>50</number>
      </property>
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
@@ -335,6 +341,9 @@ border: none;</string>
        <height>16</height>
       </rect>
      </property>
+     <property name="styleSheet">
+      <string notr="true">border: none;</string>
+     </property>
      <property name="minimum">
       <number>1</number>
      </property>
@@ -355,7 +364,7 @@ border: none;</string>
       </rect>
      </property>
      <property name="styleSheet">
-      <string notr="true"/>
+      <string notr="true">border: none;</string>
      </property>
      <property name="text">
       <string>FPS: 1</string>
