@@ -1,13 +1,10 @@
 #ifndef SPRITEMODEL_H
 #define SPRITEMODEL_H
 
-class QJsonObject;
 class Sprite;
 
 class Layer
 {
-	friend class Frame;
-
 public:
 	Layer(Sprite *parentSprite);
 
@@ -42,8 +39,6 @@ public:
 	void removeCurrentLayer();
 
 	void selectLayer(int layerIndex);
-
-	Layer& currentLayer();
 
 	const QPixmap& getDisplayData();
 

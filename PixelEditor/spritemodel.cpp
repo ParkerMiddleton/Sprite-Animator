@@ -44,7 +44,6 @@ Layer Layer::fromJson(const QJsonObject &json, Sprite *parentSprite)
 	{
 		const QJsonArray &jsonPixels = jsonVal.toArray();
 		layer.pixels.resize(jsonPixels.size() * 4);
-		//layer.pixels = new int[jsonPixels.size() * 4];
 
 		int pixelIndex = 0;
 		for (const QJsonValue &jsonPixelVal : jsonPixels)
@@ -117,16 +116,41 @@ Frame::Frame(Sprite *parentSprite)
 
 void Frame::paintAt(int x, int y, QColor color, int brushSize)
 {
-	layers[currentLayerIndex].setPixel(x, y, color);
+	// Check if brush size is odd.
+	if (!(brushSize % 2))
+		return;
 
+	int brushHalf = (brushSize - 1) / 2;
+	int spriteWidth = parentSprite->getWidth();
+	int spriteHeight = parentSprite->getHeight();
+
+	// Find Brush rect
+	int lt_x = x - brushHalf; int lt_y = y - brushHalf; // lt is Left Top
+	int rb_x = x + brushHalf; int rb_y = y + brushHalf; // rb is Right Bottom
+
+	// Check bounds
+	if (lt_x < 0) lt_x = 0;
+	if (lt_y < 0) lt_y = 0;
+	if (rb_x >= spriteWidth) rb_x = spriteWidth - 1;
+	if (rb_y >= spriteHeight) rb_y = spriteHeight - 1;
+
+	// Draw pixels
 	QPen pen;
 	pen.setWidth(1);
-
 	QPainter painter(&displayData);
 	painter.setCompositionMode(QPainter::CompositionMode_Source);
-	pen.setColor(this->getMergedPixel(x, y));
-	painter.setPen(pen);
-	painter.drawPoint(x, y);
+
+	for (int row = lt_y; row <= rb_y; row++)
+	{
+		for (int col = lt_x; col <= rb_x; col++)
+		{
+			layers[currentLayerIndex].setPixel(col, row, color);
+			pen.setColor(this->getMergedPixel(col, row));
+			painter.setPen(pen);
+			painter.drawPoint(col, row);
+		}
+	}
+
 	painter.end();
 }
 
@@ -154,11 +178,6 @@ void Frame::removeCurrentLayer()
 
 		this->mergeLayersIntoDisplayData();
 	}
-}
-
-Layer& Frame::currentLayer()
-{
-	return layers[currentLayerIndex];
 }
 
 const QPixmap& Frame::getDisplayData()
@@ -240,20 +259,6 @@ void Frame::mergeLayersIntoDisplayData()
 	}
 
 	painter.end();
-
-	// TODO: Rewrite using QPainter and without QImage.
-	// TODO: DONE DONE DONE
-	/*QImage image(parentSprite->getWidth(), parentSprite->getHeight(), QImage::Format_RGBA8888);
-
-	for (int row = 0; row < image.height(); row++)
-	{
-		for (int col = 0; col < image.width(); col++)
-		{
-			image.setPixelColor(col, row, this->getMergedPixel(col, row));
-		}
-	}
-
-	displayData.convertFromImage(image, Qt::NoFormatConversion);*/
 }
 
 QColor Frame::getMergedPixel(int x, int y)
@@ -272,6 +277,7 @@ QColor Frame::getMergedPixel(int x, int y)
 QColor Frame::colorsBlendAlpha(QColor bgc, QColor fgc)
 {
 	// Taken from: https://stackoverflow.com/a/727339
+	// Extremely suboptimal implementation.
 	struct DClr { double r = 0.0; double g = 0.0; double b = 0.0; double a = 0.0; };
 	DClr result;
 	DClr bg{(double)bgc.red() / 255.0, (double)bgc.green() / 255.0, (double)bgc.blue() / 255.0, (double)bgc.alpha() / 255.0};
