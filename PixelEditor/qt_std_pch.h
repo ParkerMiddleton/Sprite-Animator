@@ -38,4 +38,9 @@
 #include <QScrollArea>
 #include <QVector>
 
+#include <QLabel>
+#include <QLineEdit>
+#include <QDialogButtonBox>
+#include <QFormLayout>
+
 #endif // QT_STD_PCH_H

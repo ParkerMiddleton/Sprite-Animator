@@ -15,7 +15,7 @@ public slots:
 	void updateSpriteDisplay(const QPixmap &sprite);
 	void updateSpriteAnimationDisplay(const QPixmap &sprite);
 
-	void toggleAnimationPlayer();
+	void setAnimationPlayerEnabled(bool state);
 
 private:
 	static const int SCENE_WIDTH = 1024;

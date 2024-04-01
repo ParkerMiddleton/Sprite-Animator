@@ -5,6 +5,7 @@
 #include "viewport.h"
 #include "timelinepanel.h"
 #include "layerspanel.h"
+#include "createnewspritedialog.h"
 
 class Editor;
 
@@ -43,7 +44,7 @@ signals:
     void colorChanged(const QColor &color);
     void BrushSizeChanged(int brushSize);
 
-    void newSpriteRequested();
+	void newSpriteRequested(int width, int height);
     void loadRequested(const QString &filename);
     void saveRequested(const QString &filename);
 
@@ -67,6 +68,9 @@ private:
 
     QColor currentColor;
     QMap<QPushButton*, QString> buttonStylesheets;
+
+	int prevNewWidth;
+	int prevNewHeight;
 
     void createActions();
     void createMenus();

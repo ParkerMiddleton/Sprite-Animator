@@ -4,9 +4,11 @@
 #include "editor.h"
 
 MainWindow::MainWindow(Editor *editor, QWidget *parent)
-	: QMainWindow(parent)
-	, ui(new Ui::MainWindow)
-	, editor(editor)
+	: QMainWindow{parent}
+	, ui{new Ui::MainWindow}
+	, editor{editor}
+	, prevNewWidth{70}
+	, prevNewHeight{50}
 {
 	ui->setupUi(this);
 
@@ -134,6 +136,9 @@ MainWindow::MainWindow(Editor *editor, QWidget *parent)
     connect(ui->fpsSlider, &QSlider::sliderMoved
             , editor, &Editor::setAnimationFramerate);
 
+	connect(editor, &Editor::newSpriteFramerate
+			, ui->fpsSlider, &QSlider::setSliderPosition);
+
 	/* VIEW <--> VIEW */
 
 	//On color palette button clicked, choose a color
@@ -200,8 +205,8 @@ MainWindow::MainWindow(Editor *editor, QWidget *parent)
 
 	// PREVIEW
 
-	connect(editor, &Editor::animationPlayerToggled
-			, pw, &PreviewPanel::toggleAnimationPlayer);
+	connect(editor, &Editor::animationPlayerSetEnabled
+			, pw, &PreviewPanel::setAnimationPlayerEnabled);
 
 	connect(editor, &Editor::displayDataUpdated
 			, pw, &PreviewPanel::updateSpriteDisplay);
@@ -219,7 +224,10 @@ MainWindow::MainWindow(Editor *editor, QWidget *parent)
 			, editor, &Editor::stopAnimation);
 
     connect(ui->fpsSlider, &QSlider::sliderMoved
-            , this, &MainWindow::getFPS);
+			, this, &MainWindow::getFPS);
+
+	connect(editor, &Editor::newSpriteFramerate
+			, this, &MainWindow::getFPS);
 }
 
 MainWindow::~MainWindow()
@@ -269,7 +277,15 @@ void MainWindow::handleCreateNewSprite(bool askUserToSave)
 		}
 	}
 
-	emit newSpriteRequested();
+	bool ok;
+	QList<int> list = CreateNewSpriteDialog::getSize(this, prevNewWidth, prevNewHeight, ok);
+
+	if (ok)
+	{
+		prevNewWidth = list[0];
+		prevNewHeight = list[1];
+		emit newSpriteRequested(list[0], list[1]);
+	}
 }
 
 void MainWindow::handleOpenSprite(bool askUserToSave)
@@ -361,7 +377,7 @@ void MainWindow::openHelpWindow()
     QMessageBox helpBox;
     helpBox.setWindowTitle(tr("Help"));
     helpBox.setText(tr("This is some help text."));
-    helpBox.addButton(QMessageBox::Ok);
+	helpBox.addButton(QMessageBox::Ok);
     helpBox.exec();
 }
 

@@ -43,7 +43,7 @@ void PreviewPanel::updateSpriteAnimationDisplay(const QPixmap &sprite)
 	}
 }
 
-void PreviewPanel::toggleAnimationPlayer()
+void PreviewPanel::setAnimationPlayerEnabled(bool state)
 {
-	isPlayingAnimation = !isPlayingAnimation;
+	isPlayingAnimation = state;
 }

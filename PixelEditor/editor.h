@@ -16,7 +16,7 @@ public:
 public slots:
 	void paintAt(int x, int y);
 
-	void createNewSprite();
+	void createNewSprite(int width, int height);
 	void serializeSprite(const QString &filename);
 	void deserializeSprite(const QString &filename);
 
@@ -48,6 +48,7 @@ public slots:
 signals:
 	void newSprite(int framesCount);
 	void newSpriteSize(int width, int height);
+	void newSpriteFramerate(int fps);
 	void newFrameSelection(int layersCount);
 	void displayDataUpdated(const QPixmap &displayData);
 	void animationDisplayDataUpdated(const QPixmap &displayData);
@@ -58,13 +59,10 @@ signals:
 	void readyOpenSprite(bool askUserToSave);
 	void needSaveFilenameToSerialize();
 
-	void animationPlayerToggled();
+	void animationPlayerSetEnabled(bool state);
 
 private:
 	enum class Tool { None, Brush, Eraser };
-
-	static const int SPRITE_WIDTH_DEFAULT = 70;
-	static const int SPRITE_HEIGHT_DEFAULT = 50;
 
 	std::function<void(Editor*, int)> animationTimerLambda;
 
@@ -83,6 +81,8 @@ private:
 	int eraserSize;
 
 	void setIsSpriteSaved(bool state);
+	void setIsAnimationPlaying(bool state);
+
 	void splitFilename(const QString &filename, QString &path, QString &name);
 	void emitNewSpriteSignals();
 
