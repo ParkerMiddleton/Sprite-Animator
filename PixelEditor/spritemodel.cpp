@@ -116,11 +116,7 @@ Frame::Frame(Sprite *parentSprite)
 
 void Frame::paintAt(int x, int y, QColor color, int brushSize)
 {
-	// Check if brush size is odd.
-	if (!(brushSize % 2))
-		return;
-
-	int brushHalf = (brushSize - 1) / 2;
+	int brushHalf = brushSize / 2;
 	int spriteWidth = parentSprite->getWidth();
 	int spriteHeight = parentSprite->getHeight();
 

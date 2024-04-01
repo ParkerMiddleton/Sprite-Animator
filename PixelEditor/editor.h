@@ -42,7 +42,7 @@ public slots:
 	void setBrushEnabled();
 	void setEraserEnabled();
 
-	void setBrushSize(int size);
+	void setBrushSize(int size); // Operates only in odd numbers.
 	void setEraserSize(int size);
 
 signals:
