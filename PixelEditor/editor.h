@@ -45,6 +45,8 @@ public slots:
 	void setBrushSize(int size); // Operates only in odd numbers.
 	void setEraserSize(int size);
 
+    void setDuplicateFrame(bool duplicate);
+
 signals:
 	void newSprite(int framesCount);
 	void newSpriteSize(int width, int height);
@@ -71,7 +73,8 @@ private:
 	Sprite *sprite;
 	QString currentSavePath;
 	QString currentSaveName;
-	bool isSpriteSaved;
+	bool isSpriteSaved;    
+    bool duplicateFrame;
 
 	bool isAnimationPlaying;
 	int frameDuration;
@@ -85,6 +88,7 @@ private:
 	void setIsSpriteSaved(bool state);
 	void splitFilename(const QString &filename, QString &path, QString &name);
 	void emitNewSpriteSignals();
+
 
 };
 

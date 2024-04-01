@@ -46,6 +46,7 @@ signals:
     void newSpriteRequested();
     void loadRequested(const QString &filename);
     void saveRequested(const QString &filename);
+    void duplicateFrameRequested(bool duplicate);
 
 private:
     Ui::MainWindow *ui;
@@ -67,11 +68,13 @@ private:
 
     QColor currentColor;
     QMap<QPushButton*, QString> buttonStylesheets;
+    bool duplicateFrame;
 
     void createActions();
     void createMenus();
     void openHelpWindow();
     void resetButtonStyles(QPushButton *button);
+    void onAddFrameButtonClicked();
 
 };
 #endif // MAINWINDOW_H

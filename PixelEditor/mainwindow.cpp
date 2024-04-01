@@ -15,6 +15,8 @@ MainWindow::MainWindow(Editor *editor, QWidget *parent)
     buttonStylesheets.insert(ui->EraserButton, ui->EraserButton->styleSheet());
     buttonStylesheets.insert(ui->ColorPaletteButton, ui->ColorPaletteButton->styleSheet());
 
+    duplicateFrame = false;
+
 	vp = ui->viewportView;
 	pw = ui->previewView;
 	ft = ui->frameTimeline;
@@ -52,7 +54,47 @@ MainWindow::MainWindow(Editor *editor, QWidget *parent)
 		ui->sizeInfoText->setText(QString::number(size.x()) + "x" + QString::number(size.y()));
     });
 
+    /* HIGHLIGHT BUTTON CLICKED */
+
+    connect(ui->PencilButton, &QPushButton::clicked, this, [this]() {
+        highlightButton(ui->PencilButton);
+    });
+
+    connect(ui->EraserButton, &QPushButton::clicked, this, [this]() {
+        highlightButton(ui->EraserButton);
+    });
+
+    connect(ui->addFrameButton, &QPushButton::clicked, this, [this]() {
+        highlightButton(ui->addFrameButton);
+    });
+
+    connect(ui->deleteFrameButton, &QPushButton::clicked, this, [this]() {
+        highlightButton(ui->deleteFrameButton);
+    });
+
+    connect(ui->addLayerButton, &QPushButton::clicked, this, [this]() {
+        highlightButton(ui->addLayerButton);
+    });
+
+    connect(ui->removeLayerButton, &QPushButton::clicked, this, [this]() {
+        highlightButton(ui->removeLayerButton);
+    });
+
+    connect(ui->playAnimationButton, &QPushButton::clicked, this, [this]() {
+        highlightButton(ui->playAnimationButton);
+    });
+
+    connect(ui->stopAnimationButton, &QPushButton::clicked, this, [this]() {
+        highlightButton(ui->stopAnimationButton);
+    });
+
     /*== TIMELINE PANEL ==*/
+
+    connect(this, &MainWindow::duplicateFrameRequested
+            , editor, &Editor::setDuplicateFrame);
+
+    // Connect the addNewFrameButton to a slot in MainWindow
+    connect(ui->addFrameButton, &QPushButton::clicked, this, &MainWindow::onAddFrameButtonClicked);
 
 	connect(ui->addFrameButton, &QPushButton::clicked
 			, ft, &TimelinePanel::addFrame);
@@ -163,40 +205,6 @@ MainWindow::MainWindow(Editor *editor, QWidget *parent)
 	connect(vp, &Viewport::informViewOfPencilEnabled
 			, ui->PencilButton, &QPushButton::setEnabled); // TODO: May be useful for buttons UI?
 	*/
-
-    /* HIGHLIGHT BUTTON CLICKED */
-
-    connect(ui->PencilButton, &QPushButton::clicked, this, [this]() {
-        highlightButton(ui->PencilButton);
-    });
-
-    connect(ui->EraserButton, &QPushButton::clicked, this, [this]() {
-        highlightButton(ui->EraserButton);
-    });
-
-    connect(ui->addFrameButton, &QPushButton::clicked, this, [this]() {
-        highlightButton(ui->addFrameButton);
-    });
-
-    connect(ui->deleteFrameButton, &QPushButton::clicked, this, [this]() {
-        highlightButton(ui->deleteFrameButton);
-    });
-
-    connect(ui->addLayerButton, &QPushButton::clicked, this, [this]() {
-        highlightButton(ui->addLayerButton);
-    });
-
-    connect(ui->removeLayerButton, &QPushButton::clicked, this, [this]() {
-        highlightButton(ui->removeLayerButton);
-    });
-
-    connect(ui->playAnimationButton, &QPushButton::clicked, this, [this]() {
-        highlightButton(ui->playAnimationButton);
-    });
-
-    connect(ui->stopAnimationButton, &QPushButton::clicked, this, [this]() {
-        highlightButton(ui->stopAnimationButton);
-    });
 
 	// PREVIEW
 
@@ -335,7 +343,6 @@ void MainWindow::createActions()
 	connect(saveAsAct, &QAction::triggered
 			, this, &MainWindow::initializeSaveProcessWithDialogue);
 
-    // Add action to open the help dialog
     helpAct = new QAction(tr("&Help"), this);
     helpAct->setStatusTip(tr("Open help window"));
     connect(helpAct, &QAction::triggered, this, &MainWindow::openHelpWindow);
@@ -388,5 +395,16 @@ void MainWindow::highlightButton(QPushButton *button)
             button->setStyleSheet(originalStyleSheet);
         });
     }
+}
+
+void MainWindow::onAddFrameButtonClicked() {
+    // Ask the user if they want to duplicate the previous frame
+    QMessageBox::StandardButton reply = QMessageBox::question(this, "Duplicate Frame", "Do you want to duplicate the previous frame?", QMessageBox::Yes|QMessageBox::No);
+
+    // Check the user's response
+    duplicateFrame = (reply == QMessageBox::Yes);
+
+    // Send bool to editor to handle logic
+    emit duplicateFrameRequested(duplicateFrame);
 }
 
