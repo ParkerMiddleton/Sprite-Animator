@@ -218,6 +218,7 @@ void Editor::removeLayer()
 
 void Editor::setAnimationFramerate(int fps)
 {
+    qDebug() << fps;
 	frameDuration = 1000 / fps;
 	sprite->setFPS(fps);
 
@@ -226,6 +227,7 @@ void Editor::setAnimationFramerate(int fps)
 
 void Editor::playAnimation()
 {
+    qDebug() << sprite->getFPS();
 	isAnimationPlaying = true;
 	emit animationPlayerToggled();
 

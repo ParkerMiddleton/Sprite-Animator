@@ -250,7 +250,7 @@ color: rgb(255, 255, 255);</string>
       <x>730</x>
       <y>30</y>
       <width>221</width>
-      <height>191</height>
+      <height>231</height>
      </rect>
     </property>
     <property name="styleSheet">
@@ -294,8 +294,8 @@ color: rgb(255, 255, 255);</string>
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>160</y>
-       <width>71</width>
+       <y>200</y>
+       <width>70</width>
        <height>18</height>
       </rect>
      </property>
@@ -311,9 +311,9 @@ border: none;</string>
     <widget class="QPushButton" name="stopAnimationButton">
      <property name="geometry">
       <rect>
-       <x>130</x>
-       <y>160</y>
-       <width>80</width>
+       <x>140</x>
+       <y>200</y>
+       <width>70</width>
        <height>18</height>
       </rect>
      </property>
@@ -324,6 +324,44 @@ border: none;</string>
      </property>
      <property name="text">
       <string>Stop</string>
+     </property>
+    </widget>
+    <widget class="QSlider" name="fpsSlider">
+     <property name="geometry">
+      <rect>
+       <x>60</x>
+       <y>170</y>
+       <width>141</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="minimum">
+      <number>1</number>
+     </property>
+     <property name="maximum">
+      <number>30</number>
+     </property>
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+    </widget>
+    <widget class="QLabel" name="fpsLabel">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>170</y>
+       <width>41</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true"/>
+     </property>
+     <property name="text">
+      <string>FPS: 1</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
      </property>
     </widget>
    </widget>
@@ -363,9 +401,9 @@ border: none;</string>
     <property name="geometry">
      <rect>
       <x>730</x>
-      <y>250</y>
+      <y>290</y>
       <width>221</width>
-      <height>231</height>
+      <height>221</height>
      </rect>
     </property>
     <property name="styleSheet">
@@ -436,7 +474,7 @@ border: none;</string>
        <x>10</x>
        <y>170</y>
        <width>201</width>
-       <height>51</height>
+       <height>41</height>
       </rect>
      </property>
      <property name="widgetResizable">
@@ -448,7 +486,7 @@ border: none;</string>
         <x>0</x>
         <y>0</y>
         <width>197</width>
-        <height>47</height>
+        <height>37</height>
        </rect>
       </property>
      </widget>
@@ -458,7 +496,7 @@ border: none;</string>
     <property name="geometry">
      <rect>
       <x>730</x>
-      <y>230</y>
+      <y>270</y>
       <width>71</width>
       <height>16</height>
      </rect>
@@ -611,9 +649,9 @@ border: none;</string>
     <property name="geometry">
      <rect>
       <x>730</x>
-      <y>500</y>
+      <y>520</y>
       <width>221</width>
-      <height>91</height>
+      <height>71</height>
      </rect>
     </property>
     <property name="styleSheet">
@@ -739,7 +777,7 @@ text-align: center;</string>
      <x>0</x>
      <y>0</y>
      <width>968</width>
-     <height>21</height>
+     <height>17</height>
     </rect>
    </property>
    <property name="styleSheet">

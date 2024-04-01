@@ -10,6 +10,11 @@ MainWindow::MainWindow(Editor *editor, QWidget *parent)
 {
 	ui->setupUi(this);
 
+    // Add tool buttons to the buttonStylesheets map
+    buttonStylesheets.insert(ui->PencilButton, ui->PencilButton->styleSheet());
+    buttonStylesheets.insert(ui->EraserButton, ui->EraserButton->styleSheet());
+    buttonStylesheets.insert(ui->ColorPaletteButton, ui->ColorPaletteButton->styleSheet());
+
 	vp = ui->viewportView;
 	pw = ui->previewView;
 	ft = ui->frameTimeline;
@@ -45,9 +50,9 @@ MainWindow::MainWindow(Editor *editor, QWidget *parent)
 
 	connect(vp, &Viewport::spriteSizeChanged, this, [this](QPoint size) {
 		ui->sizeInfoText->setText(QString::number(size.x()) + "x" + QString::number(size.y()));
-	});
+    });
 
-	/*== TIMELINE PANEL ==*/
+    /*== TIMELINE PANEL ==*/
 
 	connect(ui->addFrameButton, &QPushButton::clicked
 			, ft, &TimelinePanel::addFrame);
@@ -126,6 +131,9 @@ MainWindow::MainWindow(Editor *editor, QWidget *parent)
 	connect(vp, &Viewport::pixelClicked
 			, editor, &Editor::paintAt);
 
+    connect(ui->fpsSlider, &QSlider::sliderMoved
+            , editor, &Editor::setAnimationFramerate);
+
 	/* VIEW <--> VIEW */
 
 	//On color palette button clicked, choose a color
@@ -150,39 +158,39 @@ MainWindow::MainWindow(Editor *editor, QWidget *parent)
 			, ui->PencilButton, &QPushButton::setEnabled); // TODO: May be useful for buttons UI?
 	*/
 
-	/* HIGHLIGHT BUTTON CLICKED */
+    /* HIGHLIGHT BUTTON CLICKED */
 
-	connect(ui->PencilButton, &QPushButton::clicked, this, [this]() {
-		highlightButton(ui->PencilButton);
-	});
+    connect(ui->PencilButton, &QPushButton::clicked, this, [this]() {
+        highlightButton(ui->PencilButton);
+    });
 
-	connect(ui->EraserButton, &QPushButton::clicked, this, [this]() {
-		highlightButton(ui->EraserButton);
-	});
+    connect(ui->EraserButton, &QPushButton::clicked, this, [this]() {
+        highlightButton(ui->EraserButton);
+    });
 
-	connect(ui->addFrameButton, &QPushButton::clicked, this, [this]() {
-		highlightButton(ui->addFrameButton);
-	});
+    connect(ui->addFrameButton, &QPushButton::clicked, this, [this]() {
+        highlightButton(ui->addFrameButton);
+    });
 
-	connect(ui->deleteFrameButton, &QPushButton::clicked, this, [this]() {
-		highlightButton(ui->deleteFrameButton);
-	});
+    connect(ui->deleteFrameButton, &QPushButton::clicked, this, [this]() {
+        highlightButton(ui->deleteFrameButton);
+    });
 
-	connect(ui->addLayerButton, &QPushButton::clicked, this, [this]() {
-		highlightButton(ui->addLayerButton);
-	});
+    connect(ui->addLayerButton, &QPushButton::clicked, this, [this]() {
+        highlightButton(ui->addLayerButton);
+    });
 
-	connect(ui->removeLayerButton, &QPushButton::clicked, this, [this]() {
-		highlightButton(ui->removeLayerButton);
-	});
+    connect(ui->removeLayerButton, &QPushButton::clicked, this, [this]() {
+        highlightButton(ui->removeLayerButton);
+    });
 
-	connect(ui->playAnimationButton, &QPushButton::clicked, this, [this]() {
-		highlightButton(ui->playAnimationButton);
-	});
+    connect(ui->playAnimationButton, &QPushButton::clicked, this, [this]() {
+        highlightButton(ui->playAnimationButton);
+    });
 
-	connect(ui->stopAnimationButton, &QPushButton::clicked, this, [this]() {
-		highlightButton(ui->stopAnimationButton);
-	});
+    connect(ui->stopAnimationButton, &QPushButton::clicked, this, [this]() {
+        highlightButton(ui->stopAnimationButton);
+    });
 
 	// PREVIEW
 
@@ -203,6 +211,9 @@ MainWindow::MainWindow(Editor *editor, QWidget *parent)
 
 	connect(ui->stopAnimationButton, &QPushButton::clicked
 			, editor, &Editor::stopAnimation);
+
+    connect(ui->fpsSlider, &QSlider::sliderMoved
+            , this, &MainWindow::getFPS);
 }
 
 MainWindow::~MainWindow()
@@ -210,25 +221,20 @@ MainWindow::~MainWindow()
 	delete ui;
 }
 
+void MainWindow::getFPS(int fps) {
+    ui->fpsLabel->setText("FPS: " + QString::number(fps));
+}
+
 void MainWindow::changeColor()
 {
+    highlightButton(ui->ColorPaletteButton);
 	// Store the current color
 	QColor previousColor = currentColor;
+    // Open the color picker dialog with the previous color selected
+    QColor newColor = QColorDialog::getColor(previousColor, this, tr("Select Color"), QColorDialog::ShowAlphaChannel);
 
-	// Show the color change (for example, by temporarily changing the palette button's background color)
-	ui->ColorPaletteButton->setStyleSheet("background-color: white;");
-
-	// Create a QTimer to open the color picker after a short delay
-	QTimer::singleShot(200, this, [this, previousColor]() {
-		// Restore the original color of the palette button
-		ui->ColorPaletteButton->setStyleSheet("");
-
-		// Open the color picker dialog with the previous color selected
-		QColor newColor = QColorDialog::getColor(previousColor, this, tr("Select Color"), QColorDialog::ShowAlphaChannel);
-
-		// Emit the signal with the new color
-		emit colorChanged(newColor);
-	});
+    // Emit the signal with the new color
+    emit colorChanged(newColor);
 }
 
 void MainWindow::updateTitle(const QString &spriteName, bool showStar)
@@ -322,29 +328,63 @@ void MainWindow::createActions()
 	saveAsAct->setStatusTip(tr("Specify directory and save an opened sprite"));
 	connect(saveAsAct, &QAction::triggered
 			, this, &MainWindow::initializeSaveProcessWithDialogue);
+
+    // Add action to open the help dialog
+    helpAct = new QAction(tr("&Help"), this);
+    helpAct->setStatusTip(tr("Open help window"));
+    connect(helpAct, &QAction::triggered, this, &MainWindow::openHelpWindow);
 }
 
 void MainWindow::createMenus()
 {
+    // file menu
 	fileMenu = menuBar()->addMenu(tr("&File"));
 	fileMenu->addAction(newAct);
 	fileMenu->addAction(openAct);
 	fileMenu->addSeparator();
 	fileMenu->addAction(saveAct);
 	fileMenu->addAction(saveAsAct);
+
+    // help menu
+    helpMenu = menuBar()->addMenu(tr("&Help"));
+    helpMenu->addAction(helpAct);
+}
+
+void MainWindow::openHelpWindow()
+{
+    QMessageBox helpBox;
+    helpBox.setWindowTitle(tr("Help"));
+    helpBox.setText(tr("This is some help text."));
+    helpBox.addButton(QMessageBox::Ok);
+    helpBox.exec();
 }
 
 void MainWindow::highlightButton(QPushButton *button)
 {
-	// Store the original style sheet of the button
-	QString originalStyleSheet = button->styleSheet();
+    if (buttonStylesheets.contains(button)) {
+        // Unhighlight all buttons
+        for (auto it = buttonStylesheets.begin(); it != buttonStylesheets.end(); ++it) {
+            QPushButton *btn = it.key();
+            if (btn == button) {
+                btn->setStyleSheet("background-color: white"); // Highlight the selected button
+            } else {
+                // Restore the original stylesheet
+                btn->setStyleSheet(it.value());
+            }
+        }
+    }
+    else {
+        // Store the original style sheet of the button
+        QString originalStyleSheet = button->styleSheet();
 
-	// Highlight the button by changing its style temporarily
-	button->setStyleSheet("background-color: white;"); // You can customize the highlighting style here
+        // Highlight the button by changing its style temporarily
+        button->setStyleSheet("background-color: white;");
 
-	// Create a QTimer to restore the original style after a short duration
-	QTimer::singleShot(200, this, [button, originalStyleSheet]() {
-		// Restore the original style sheet of the button
-		button->setStyleSheet(originalStyleSheet);
-	});
+        // Create a QTimer to restore the original style after a short duration
+        QTimer::singleShot(100, this, [button, originalStyleSheet]() {
+            // Restore the original style sheet of the button
+            button->setStyleSheet(originalStyleSheet);
+        });
+    }
 }
+

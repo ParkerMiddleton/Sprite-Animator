@@ -37,9 +37,11 @@ public slots:
 	void initializeSaveProcessWithDialogue();
 
     void highlightButton(QPushButton *button);
+    void getFPS(int fps);
 
 signals:
     void colorChanged(const QColor &color);
+    void BrushSizeChanged(int brushSize);
 
     void newSpriteRequested();
     void loadRequested(const QString &filename);
@@ -55,16 +57,21 @@ private:
 	LayersPanel *lt;
 
     QMenu *fileMenu;
+    QMenu *helpMenu;
     QActionGroup *alignmentGroup;
     QAction *newAct;
     QAction *openAct;
     QAction *saveAct;
     QAction *saveAsAct;
+    QAction *helpAct;
 
     QColor currentColor;
+    QMap<QPushButton*, QString> buttonStylesheets;
 
     void createActions();
     void createMenus();
+    void openHelpWindow();
+    void resetButtonStyles(QPushButton *button);
 
 };
 #endif // MAINWINDOW_H

@@ -295,7 +295,7 @@ Sprite::Sprite(int width, int height)
 	: width{width}
 	, height{height}
 	, currentFrameIndex{-1}
-	, fps{24}
+    , fps{1}
 {
 	this->addFrame();
 }
@@ -435,7 +435,7 @@ QJsonObject Sprite::toJson() const
 
 Sprite::Sprite()
 	: currentFrameIndex{0}
-	, fps{24}
+    , fps{1}
 {
 
 }
