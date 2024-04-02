@@ -66,7 +66,7 @@ protected:
 
 private:
 	QHBoxLayout *contentsLayout;
-	QMap<int, LayerIcon*> *layerButtons;
+	QMap<int, LayerIcon*> layerButtons;
 
     int currentID;
     QString highlightIconStylehseet;

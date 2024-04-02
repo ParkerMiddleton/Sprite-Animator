@@ -25,30 +25,7 @@ public:
 	///
 	explicit FrameIcon(int frameNum, QWidget *parent = nullptr);
 
-	///
-	/// \brief Destructor.
-	///
-	~FrameIcon();
-
-	///
-	/// \brief Getter for Frame ID.
-	/// \return
-	///
-	int getID();
-
-	///
-	/// \brief Setter for FrameID.
-	/// \param id
-	///
-	void setID(int id);
-
-signals:
-	/// \brief Sends frame data.
-	void sendActiveFrameID(int id);
-
 private:
-	QPixmap *pixmap;
-	int frameID;
 	QString highlightIconStylehseet;
 	QString regularIconStylesheet;
 

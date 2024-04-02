@@ -8,8 +8,6 @@ TimelinePanel::TimelinePanel(QWidget *parent)
 
 	this->verticalScrollBar()->setEnabled(false);
 
-	frameButtons = new QMap<int, FrameIcon*>();
-
     //stylesheet data
     highlightIconStylehseet = "background-color: #f5f5f5;color: #000000;padding: 4px;border: 2px solid #5cc7d1";
     regularIconStylesheet = "background-color: #f5f5f5;color: #000000;padding: 4px;border: 1px solid #444444";
@@ -20,13 +18,11 @@ TimelinePanel::TimelinePanel(QWidget *parent)
 
 TimelinePanel::~TimelinePanel()
 {
-	for (auto [key, value] : frameButtons->asKeyValueRange())
+	for (auto [key, value] : frameButtons.asKeyValueRange())
 	{
 		contentsLayout->removeWidget(value);
 		delete value;
 	}
-
-	delete frameButtons;
 }
 
 void TimelinePanel::setupLayout(QWidget *contents)
@@ -41,32 +37,31 @@ void TimelinePanel::setupLayout(QWidget *contents)
 
 void TimelinePanel::addFrame()
 {
-	int index = frameButtons->size();
-    FrameIcon *icon = new FrameIcon(index + 1);
+	int index = frameButtons.size();
+	FrameIcon *icon = new FrameIcon(index + 1);
 
-	frameButtons->insert(index, icon);
+	frameButtons.insert(index, icon);
 
 	connect(icon, &QPushButton::clicked, this, [this, index]() {
         emit frameButtonSelected(index);
 	});
 
-    highlightFrameIcon(index);
+	this->highlightFrameIcon(index);
 	contentsLayout->addWidget(icon);
 }
 
 void TimelinePanel::removeFrame()
 {
-	if (frameButtons->isEmpty())
+	if (frameButtons.isEmpty())
 		return;
 
-	int lastIndex = frameButtons->size() - 1;
-
 	// Get the key corresponding to the last index
-	int lastKey = frameButtons->keys().at(lastIndex);
+	int lastKey = frameButtons.lastKey();
+
 	if (lastKey > 0)
 	{
 		// Remove the last element from the map and get the associated FrameIcon pointer
-		FrameIcon *iconToRemove = frameButtons->take(lastKey);
+		FrameIcon *iconToRemove = frameButtons.take(lastKey);
 
 		// Remove the widget from the layout
 		contentsLayout->removeWidget(iconToRemove);
@@ -74,33 +69,38 @@ void TimelinePanel::removeFrame()
 		// Optionally, delete the FrameIcon object to free up memory
 		delete iconToRemove;
 	}
+
+	if (currentID != 0 && currentID == lastKey)
+	{
+		this->highlightFrameIcon(currentID - 1);
+	}
 }
 
 void TimelinePanel::moveLeft()
 {
-    if(currentID > 0){
-        highlightFrameIcon(currentID-1);
+	if (currentID > 0)
+	{
+		highlightFrameIcon(currentID - 1);
     }
 }
 
 void TimelinePanel::moveRight()
 {
-
-	if(currentID < frameButtons->size() -1){
+	if (currentID < frameButtons.size() -1)
+	{
         highlightFrameIcon(currentID + 1);
     }
-
 }
 
 void TimelinePanel::setupFrameButtons(int framesCount)
 {
-	for (auto [key, value] : frameButtons->asKeyValueRange())
+	for (auto [key, value] : frameButtons.asKeyValueRange())
 	{
 		contentsLayout->removeWidget(value);
 		delete value;
 	}
 
-	frameButtons->clear();
+	frameButtons.clear();
 
 	for (int index = 0; index < framesCount; index++)
 	{
@@ -108,22 +108,20 @@ void TimelinePanel::setupFrameButtons(int framesCount)
 	}
 }
 
-void TimelinePanel::highlightFrameIcon(int id){
-
-    QMap<int, FrameIcon*>::iterator it;
-	for(it = frameButtons->begin(); it !=frameButtons->end(); ++it){
-
-        int key = it.key();
-        FrameIcon* value = it.value();
-
-        if (key != id) {
-            value->setStyleSheet(regularIconStylesheet);
-        } else {
-            value->setStyleSheet(highlightIconStylehseet);
-            currentID = id;
-        }
-
-    }
+void TimelinePanel::highlightFrameIcon(int id)
+{
+	for (auto [key, value] : frameButtons.asKeyValueRange())
+	{
+		if (key != id)
+		{
+			value->setStyleSheet(regularIconStylesheet);
+		}
+		else
+		{
+			value->setStyleSheet(highlightIconStylehseet);
+			currentID = id;
+		}
+	}
 }
 
 void TimelinePanel::wheelEvent(QWheelEvent *event)

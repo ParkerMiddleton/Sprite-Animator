@@ -74,7 +74,6 @@ public slots:
     void setDuplicateFrame(bool duplicate);
 
 signals:
-
     /// new sprite
 	void newSprite(int framesCount);
 

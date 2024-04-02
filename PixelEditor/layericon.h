@@ -21,7 +21,7 @@ public:
 	/// \param numLayer index of layer.
 	/// \param parent parent of this widget.
 	///
-	explicit LayerIcon(int numLayer, QWidget *parent = nullptr);
+	explicit LayerIcon(int layerNum, QWidget *parent = nullptr);
 
 private:
 	QString highlightIconStylehseet;

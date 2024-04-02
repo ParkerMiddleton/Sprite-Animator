@@ -76,9 +76,8 @@ protected:
 
 private:
 	QHBoxLayout *contentsLayout;
-	QMap<int, FrameIcon*> *frameButtons;
+	QMap<int, FrameIcon*> frameButtons;
 
-	FrameIcon *activeFrame;
     int currentID;
     QString highlightIconStylehseet;
     QString regularIconStylesheet;

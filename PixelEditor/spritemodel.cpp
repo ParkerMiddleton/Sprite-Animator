@@ -108,7 +108,7 @@ Layer::Layer()
 Frame::Frame(Sprite *parentSprite)
 	: parentSprite{parentSprite}
 	, displayData(parentSprite->getWidth(), parentSprite->getHeight())
-	, currentLayerIndex{0}
+	, currentLayerIndex{-1}
 {
 	displayData.fill(Qt::transparent);
 	this->addLayer();
@@ -153,7 +153,7 @@ void Frame::paintAt(int x, int y, QColor color, int brushSize)
 void Frame::addLayer()
 {
 	layers.push_back(Layer(parentSprite));
-	//currentLayerIndex = layers.size() - 1;
+	currentLayerIndex = layers.size() - 1;
 }
 
 void Frame::selectLayer(int layerIndex)
