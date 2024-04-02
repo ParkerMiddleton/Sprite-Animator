@@ -48,6 +48,8 @@ void TimelinePanel::addFrame()
 
 	this->highlightFrameIcon(index);
 	contentsLayout->addWidget(icon);
+
+	this->horizontalScrollBar()->triggerAction(QAbstractSlider::SliderAction::SliderPageStepAdd);
 }
 
 void TimelinePanel::removeFrame()
