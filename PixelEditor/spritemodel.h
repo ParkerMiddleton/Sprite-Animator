@@ -1,13 +1,11 @@
 #ifndef SPRITEMODEL_H
 #define SPRITEMODEL_H
 /**
- * Tommy Heimer, Egor Chesnokov, Kobe Dato, Parker Middleton, Aditya Mukerjee, Charles WolfGramm.
+ * Tommy Heimer, Egor Chesnokov, Koby Dato, Parker Middleton, Aditya Mukerjee, Charles WolfGramm.
  * Last update: 4/1/2024
  *
  *
  */
-
-
 
 class Sprite;
 

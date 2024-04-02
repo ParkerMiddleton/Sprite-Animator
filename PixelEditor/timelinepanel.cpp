@@ -18,16 +18,6 @@ TimelinePanel::TimelinePanel(QWidget *parent)
 	currentID = 0;
 }
 
-void TimelinePanel::setupLayout(QWidget *contents)
-{
-	contentsLayout = new QHBoxLayout(contents);
-	this->setWidget(contents);
-	contentsLayout->setAlignment(Qt::AlignLeft);
-	contentsLayout->setSizeConstraint(QLayout::SetMinimumSize);
-
-	this->addFrame();
-}
-
 TimelinePanel::~TimelinePanel()
 {
 	for (auto [key, value] : frameButtons->asKeyValueRange())
@@ -37,6 +27,16 @@ TimelinePanel::~TimelinePanel()
 	}
 
 	delete frameButtons;
+}
+
+void TimelinePanel::setupLayout(QWidget *contents)
+{
+	contentsLayout = new QHBoxLayout(contents);
+	this->setWidget(contents);
+	contentsLayout->setAlignment(Qt::AlignLeft);
+	contentsLayout->setSizeConstraint(QLayout::SetMinimumSize);
+
+	this->addFrame();
 }
 
 void TimelinePanel::addFrame()

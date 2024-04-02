@@ -2,6 +2,7 @@
 #include "ui_mainwindow.h"
 
 #include "editor.h"
+#include "createnewspritedialog.h"
 
 MainWindow::MainWindow(Editor *editor, QWidget *parent)
 	: QMainWindow{parent}
@@ -204,9 +205,9 @@ void MainWindow::createActions()
 	connect(saveAsAct, &QAction::triggered
 			, this, &MainWindow::initializeSaveProcessWithDialogue);
 
-    helpAct = new QAction(tr("&Help"), this);
-    helpAct->setStatusTip(tr("Open help window"));
-    connect(helpAct, &QAction::triggered, this, &MainWindow::openHelpWindow);
+	helpAct = new QAction(tr("&Help"), this);
+	helpAct->setStatusTip(tr("Open help window"));
+	connect(helpAct, &QAction::triggered, this, &MainWindow::openHelpWindow);
 }
 
 void MainWindow::createMenus()
@@ -220,8 +221,8 @@ void MainWindow::createMenus()
 	fileMenu->addAction(saveAsAct);
 
     // help menu
-    helpMenu = menuBar()->addMenu(tr("&Help"));
-    helpMenu->addAction(helpAct);
+	//helpMenu = menuBar()->addMenu(tr("&Help"));
+	//helpMenu->addAction(helpAct);
 }
 
 void MainWindow::openHelpWindow()

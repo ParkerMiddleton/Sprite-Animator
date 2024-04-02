@@ -4,12 +4,11 @@
 #include "spritemodel.h"
 #include <functional>
 /**
- * @authors Tommy Heimer, Egor Chesnokov, Kobe Dato, Parker Middleton, Aditya Mukerjee, Charles WolfGramm.
+ * @authors Tommy Heimer, Egor Chesnokov, Koby Dato, Parker Middleton, Aditya Mukerjee, Charles WolfGramm.
  *
  * @version 1.0
  * @date 4/1/2024
  */
-
 
 ///
 /// \brief The Editor class Acts as the main canvas for editing frames.

@@ -1,31 +1,32 @@
 #ifndef LAYERICON_H
 #define LAYERICON_H
 
-#include <QWidget>
-#include <QPushButton>
 /**
- * @authors Tommy Heimer, Egor Chesnokov, Kobe Dato, Parker Middleton, Aditya Mukerjee, Charles WolfGramm.
+ * @authors Tommy Heimer, Egor Chesnokov, Koby Dato, Parker Middleton, Aditya Mukerjee, Charles WolfGramm.
  *
  * @version 1.0
  * @date 4/1/2024
  */
-
-
 
 ///
 /// \brief The LayerIcon class Represents the clickable icon a layer within a frame
 ///
 class LayerIcon : public QPushButton
 {
-    Q_OBJECT
-
-    QString highlightIconStylehseet;
-    QString regularIconStylesheet;
+	Q_OBJECT
 
 public:
-    explicit LayerIcon(int numLayer, QWidget *parent = nullptr);
+	///
+	/// \brief Constructor.
+	/// \param numLayer index of layer.
+	/// \param parent parent of this widget.
+	///
+	explicit LayerIcon(int numLayer, QWidget *parent = nullptr);
 
-signals:
+private:
+	QString highlightIconStylehseet;
+	QString regularIconStylesheet;
+
 };
 
 #endif // LAYERICON_H

@@ -3,41 +3,62 @@
 
 #include "layericon.h"
 /**
- * @authors Tommy Heimer, Egor Chesnokov, Kobe Dato, Parker Middleton, Aditya Mukerjee, Charles WolfGramm.
+ * @authors Tommy Heimer, Egor Chesnokov, Koby Dato, Parker Middleton, Aditya Mukerjee, Charles WolfGramm.
  *
  * @version 1.0
  * @date 4/1/2024
  */
 
-
-
 ///
-/// \brief The LayersPanel class Represents layer editing
+/// \brief Represents layer editing.
 ///
 class LayersPanel : public QScrollArea
 {
 	Q_OBJECT
 
 public:
+	///
+	/// \brief Contructor.
+	/// \param parent parent of this widget.
+	///
 	explicit LayersPanel(QWidget *parent = nullptr);
+
+	///
+	/// \brief Destructor.
+	///
 	~LayersPanel();
 
+	///
+	/// \brief Setups the layout of this widget. Must be called after the contructor.
+	/// \param contents content of the QScrollArea
+	///
 	void setupLayout(QWidget *contents);
 
 public slots:
-	/// \brief addLayer adds a layer to an active frame
+	///
+	/// \brief Adds the current layer button to the timeline.
+	///
 	void addLayer();
 
-	/// \brief removeLayer removes from the end of a sequence.
+	///
+	/// \brief Removes the current layer button from the timeline.
+	///
 	void removeLayer();
 
-    /// sets up layer buttons
+	///
+	/// \brief Adds a specified number of layer buttons to the layers panel.
+	/// \param layersCount How many buttons to add.
+	///
 	void setupLayerButtons(int layersCount);
 
-    ///highlights Icons
+	///
+	/// \brief Highlights a layer that have been clicked on so the user knows which layer is currently being worked on.
+	/// \param id id of the layer button.
+	///
     void highlightLayerIcon(int id);
 
 signals:
+	/// \brief On layer button selected.
 	void layerButtonSelected(int layerButtonIndex);
 
 protected:

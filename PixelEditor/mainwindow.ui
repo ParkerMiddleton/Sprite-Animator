@@ -175,6 +175,9 @@ background-color:rgb(37, 37, 37)</string>
      <property name="styleSheet">
       <string notr="true">border:none;</string>
      </property>
+     <property name="minimum">
+      <number>1</number>
+     </property>
      <property name="maximum">
       <number>10</number>
      </property>
@@ -429,7 +432,7 @@ border: none;</string>
       <x>730</x>
       <y>290</y>
       <width>221</width>
-      <height>221</height>
+      <height>91</height>
      </rect>
     </property>
     <property name="styleSheet">
@@ -447,22 +450,11 @@ border: none;</string>
     <property name="lineWidth">
      <number>3</number>
     </property>
-    <widget class="QWidget" name="gridLayoutWidget_3">
-     <property name="geometry">
-      <rect>
-       <x>10</x>
-       <y>10</y>
-       <width>201</width>
-       <height>131</height>
-      </rect>
-     </property>
-     <layout class="QGridLayout" name="layerViewGrid"/>
-    </widget>
     <widget class="QPushButton" name="addLayerButton">
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>150</y>
+       <y>10</y>
        <width>80</width>
        <height>18</height>
       </rect>
@@ -480,7 +472,7 @@ border: none;</string>
      <property name="geometry">
       <rect>
        <x>130</x>
-       <y>150</y>
+       <y>10</y>
        <width>80</width>
        <height>18</height>
       </rect>
@@ -498,7 +490,7 @@ border: none;</string>
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>170</y>
+       <y>30</y>
        <width>201</width>
        <height>41</height>
       </rect>
@@ -675,9 +667,9 @@ border: none;</string>
     <property name="geometry">
      <rect>
       <x>730</x>
-      <y>520</y>
+      <y>390</y>
       <width>221</width>
-      <height>71</height>
+      <height>201</height>
      </rect>
     </property>
     <property name="styleSheet">
@@ -696,7 +688,7 @@ border: none;</string>
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>30</y>
+       <y>40</y>
        <width>31</width>
        <height>16</height>
       </rect>
@@ -713,7 +705,7 @@ border: none;</string>
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>50</y>
+       <y>70</y>
        <width>31</width>
        <height>16</height>
       </rect>
@@ -747,7 +739,7 @@ text-align: center;</string>
      <property name="geometry">
       <rect>
        <x>50</x>
-       <y>30</y>
+       <y>40</y>
        <width>71</width>
        <height>16</height>
       </rect>
@@ -764,7 +756,7 @@ text-align: center;</string>
      <property name="geometry">
       <rect>
        <x>50</x>
-       <y>50</y>
+       <y>70</y>
        <width>71</width>
        <height>16</height>
       </rect>

@@ -1,33 +1,51 @@
 #ifndef PREVIEWPANEL_H
 #define PREVIEWPANEL_H
 /**
- * @authors Tommy Heimer, Egor Chesnokov, Kobe Dato, Parker Middleton, Aditya Mukerjee, Charles WolfGramm.
+ * @authors Tommy Heimer, Egor Chesnokov, Koby Dato, Parker Middleton, Aditya Mukerjee, Charles WolfGramm.
  *
  * @version 1.0
  * @date 4/1/2024
  */
 
-
-
+///
 /// \brief This class will always mirror the currently edited frame from the canvas window
 /// It will also allow for "playing" annimations between all the current frames.
+///
 class PreviewPanel : public QGraphicsView
 {
 	Q_OBJECT
 
 public:
+	///
+	/// \brief PreviewPanel Contructor.
+	/// \param parent parent of this widget.
+	///
 	explicit PreviewPanel(QWidget *parent = 0);
 
 public slots:
-
-    ///sprite display
+	///
+	/// \brief Updates the preview panel for the new size of the sprite.
+	/// \param spriteWidth width of the new sprite.
+	/// \param spriteHeight height of the new sprite.
+	///
 	void setupNewSpriteDisplay(int spriteWidth, int spriteHeight);
+
+	///
+	/// \brief Updates the display data.
+	/// \param sprite display data.
+	///
 	void updateSpriteDisplay(const QPixmap &sprite);
 
-    ///sprite animation
+	///
+	/// \brief Update the display data when the animation playback is active.
+	/// \param sprite display data.
+	///
 	void updateSpriteAnimationDisplay(const QPixmap &sprite);
 
-    ///animation player
+	///
+	/// \brief Enabled and disables the animation playback.
+	/// \param state enable or disable
+	///
 	void setAnimationPlayerEnabled(bool state);
 
 private:
