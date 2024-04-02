@@ -38,13 +38,16 @@ Editor::~Editor()
 
 void Editor::paintAt(int x, int y)
 {
-	if (currentTool == Tool::Brush)
-		sprite->currentFrame().paintAt(x, y, drawingColor, brushSize);
-	else if (currentTool == Tool::Eraser)
-		sprite->currentFrame().paintAt(x, y, Qt::transparent, eraserSize);
+	if (currentTool != Tool::None)
+	{
+		if (currentTool == Tool::Brush)
+			sprite->currentFrame().paintAt(x, y, drawingColor, brushSize);
+		else if (currentTool == Tool::Eraser)
+			sprite->currentFrame().paintAt(x, y, Qt::transparent, eraserSize);
 
-	this->setIsSpriteSaved(false);
-	emit displayDataUpdated(sprite->currentFrame().getDisplayData());
+		this->setIsSpriteSaved(false);
+		emit displayDataUpdated(sprite->currentFrame().getDisplayData());
+	}
 }
 
 void Editor::createNewSprite(int width, int height)
@@ -153,7 +156,6 @@ void Editor::setupOpenSprite()
 void Editor::selectFrame(int frameIndex)
 {
 	sprite->selectFrame(frameIndex);
-	QTextStream(stdout) << "\nCurrent Frame Index: " << sprite->getCurrentFrameIndex();
 
 	emit newFrameSelection(sprite->currentFrame().getLayerCount());
 	emit displayDataUpdated(sprite->currentFrame().getDisplayData());
@@ -162,7 +164,6 @@ void Editor::selectFrame(int frameIndex)
 void Editor::addNewFrame()
 {
     sprite->addFrame(duplicateFrame);
-	QTextStream(stdout) << "\nCurrent Frame Index: " << sprite->getCurrentFrameIndex();
 
 	this->setIsSpriteSaved(false);
 	emit newFrameSelection(sprite->currentFrame().getLayerCount());
@@ -172,7 +173,6 @@ void Editor::addNewFrame()
 void Editor::removeFrame()
 {
 	sprite->removeCurrentFrame();
-	QTextStream(stdout) << "\nCurrent Frame Index: " << sprite->getCurrentFrameIndex();
 
 	this->setIsSpriteSaved(false);
 	emit newFrameSelection(sprite->currentFrame().getLayerCount());
@@ -182,7 +182,6 @@ void Editor::removeFrame()
 void Editor::moveFrameLeft()
 {
 	sprite->moveCurrentFrameLeft();
-	QTextStream(stdout) << "\nCurrent Frame Index: " << sprite->getCurrentFrameIndex();
 
 	this->setIsSpriteSaved(false);
 	emit displayDataUpdated(sprite->currentFrame().getDisplayData());
@@ -191,7 +190,6 @@ void Editor::moveFrameLeft()
 void Editor::moveFrameRight()
 {
 	sprite->moveCurrentFrameRight();
-	QTextStream(stdout) << "\nCurrent Frame Index: " << sprite->getCurrentFrameIndex();
 
 	this->setIsSpriteSaved(false);
 	emit displayDataUpdated(sprite->currentFrame().getDisplayData());
@@ -200,7 +198,6 @@ void Editor::moveFrameRight()
 void Editor::selectLayer(int layerIndex)
 {
 	sprite->currentFrame().selectLayer(layerIndex);
-	QTextStream(stdout) << "\nCurrent Layer Index: " << sprite->currentFrame().getCurrentLayerIndex();
 
 	emit displayDataUpdated(sprite->currentFrame().getDisplayData());
 }
@@ -208,7 +205,6 @@ void Editor::selectLayer(int layerIndex)
 void Editor::addNewLayer()
 {
 	sprite->currentFrame().addLayer();
-	QTextStream(stdout) << "\nCurrent Layer Index: " << sprite->currentFrame().getCurrentLayerIndex();
 
 	this->setIsSpriteSaved(false);
 	emit displayDataUpdated(sprite->currentFrame().getDisplayData());
@@ -217,7 +213,6 @@ void Editor::addNewLayer()
 void Editor::removeLayer()
 {
 	sprite->currentFrame().removeCurrentLayer();
-	QTextStream(stdout) << "\nCurrent Layer Index: " << sprite->currentFrame().getCurrentLayerIndex();
 
 	this->setIsSpriteSaved(false);
 	emit displayDataUpdated(sprite->currentFrame().getDisplayData());
@@ -237,7 +232,8 @@ void Editor::playAnimation()
 	{
 		this->setIsAnimationPlaying(true);
 
-		QTimer::singleShot(frameDuration, this, std::bind(animationTimerLambda, this, -1));
+		emit animationDisplayDataUpdated(sprite->getFrame(0).getDisplayData());
+		QTimer::singleShot(frameDuration, this, std::bind(animationTimerLambda, this, 0));
 	}
 }
 

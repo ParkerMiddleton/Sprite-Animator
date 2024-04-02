@@ -11,6 +11,7 @@ MainWindow::MainWindow(Editor *editor, QWidget *parent)
 	, prevNewHeight{50}
 {
 	ui->setupUi(this);
+	this->setFixedSize(968, 652);
 
     // Add tool buttons to the buttonStylesheets map
     buttonStylesheets.insert(ui->PencilButton, ui->PencilButton->styleSheet());

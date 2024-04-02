@@ -26,7 +26,7 @@ protected:
 	void wheelEvent(QWheelEvent *event) override;
 
 private:
-    static const int SCENE_WIDTH = 1024;
+	static const int SCENE_WIDTH = 1024;
 	static const int SCENE_HEIGHT = 1024;
 
 	QGraphicsScene gScene;

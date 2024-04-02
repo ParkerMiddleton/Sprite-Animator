@@ -29,7 +29,12 @@ void Viewport::setupNewSpriteDisplay(int spriteWidth, int spriteHeight)
 	gSprite.setTransform(QTransform().translate(spritePosOffset.x(), spritePosOffset.y()));
 
 	this->resetTransform();
-	this->scale(6.f, 6.f);
+
+	// Match scale to the size.
+	qreal scaleFactor = std::min((qreal)this->width() / (qreal)spriteWidth, (qreal)this->height() / (qreal)spriteHeight);
+	scaleFactor -= scaleFactor * 0.2;
+	this->scale(scaleFactor, scaleFactor);
+
 	this->centerOn(&gBackground);
 
 	emit spriteSizeChanged(QPoint{spriteWidth, spriteHeight});

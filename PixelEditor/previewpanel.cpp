@@ -21,8 +21,11 @@ void PreviewPanel::setupNewSpriteDisplay(int spriteWidth, int spriteHeight)
 
 	gSprite.setTransform(QTransform().translate(spritePosOffset.x(), spritePosOffset.y()));
 
+	// Match scale to the size.
 	this->resetTransform();
-    this->scale(4.5f, 4.5f);
+	qreal scaleFactor = std::min((qreal)this->width() / (qreal)spriteWidth, (qreal)this->height() / (qreal)spriteHeight);
+	scaleFactor -= scaleFactor * 0.1;
+	this->scale(scaleFactor, scaleFactor);
 }
 
 void PreviewPanel::updateSpriteDisplay(const QPixmap &sprite)

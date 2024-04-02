@@ -4,23 +4,23 @@ CreateNewSpriteDialog::CreateNewSpriteDialog(QWidget *parent, int defaultWidth, 
 	: QDialog(parent)
 {
 	this->setWindowTitle(tr("Create New Sprite"));
-	this->setWindowFlags(Qt::Popup);
+	//this->setWindowFlags(Qt::Popup);
 
 	// Setup layout
 	QFormLayout *layout = new QFormLayout(this);
 
-	QLabel *title = new QLabel(tr("Pixel Size (from 1 to 1024)"));
+	QLabel *title = new QLabel(tr("Pixel Size (from 1 to 512)"));
 	layout->addRow(title);
 
 	QLabel *widthLabel = new QLabel(tr("Width:"));
 	QSpinBox *widthSpinBox = new QSpinBox;
-	widthSpinBox->setRange(1, 1024);
+	widthSpinBox->setRange(1, 512);
 	widthSpinBox->setSingleStep(1);
 	widthSpinBox->setValue(defaultWidth);
 
 	QLabel *heightLabel = new QLabel(tr("Height:"));
 	QSpinBox *heightSpinBox = new QSpinBox;
-	heightSpinBox->setRange(1, 1024);
+	heightSpinBox->setRange(1, 512);
 	heightSpinBox->setSingleStep(1);
 	heightSpinBox->setValue(defaultHeight);
 
@@ -48,10 +48,10 @@ QList<int> CreateNewSpriteDialog::getSize(QWidget *parent, int defaultWidth, int
 {
 	CreateNewSpriteDialog *dialog = new CreateNewSpriteDialog(parent, defaultWidth, defaultHeight);
 	QList<int> list;
-	const int ret = dialog->exec();
-	ok = !!ret;
+	const int returnCode = dialog->exec();
+	ok = !!returnCode;
 
-	if (ret)
+	if (returnCode)
 	{
 		foreach (auto field, dialog->fields)
 		{
