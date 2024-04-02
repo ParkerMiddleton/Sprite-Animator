@@ -2,6 +2,12 @@
 #define TIMELINEPANEL_H
 
 #include "frameicon.h"
+/**
+ * @authors Tommy Heimer, Egor Chesnokov, Kobe Dato, Parker Middleton, Aditya Mukerjee, Charles WolfGramm.
+ *
+ * @version 1.0
+ * @date 4/1/2024
+ */
 
 // this class houses frame icons and controls adding, removing and moving frames in the view, not the model
 class TimelinePanel : public QScrollArea
@@ -37,6 +43,8 @@ public slots:
 	/// frame to move right on the timeline.
 	void moveRight();
 
+
+    ///frame startups
 	void setupFrameButtons(int framesCount);
 
     ///
@@ -47,6 +55,8 @@ public slots:
     void highlightFrameIcon(int id);
 
 signals:
+
+    ///on selection
 	void frameButtonSelected(int frameButtonIndex);
 
 private:

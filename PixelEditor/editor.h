@@ -2,9 +2,18 @@
 #define EDITOR_H
 
 #include "spritemodel.h"
-
 #include <functional>
+/**
+ * @authors Tommy Heimer, Egor Chesnokov, Kobe Dato, Parker Middleton, Aditya Mukerjee, Charles WolfGramm.
+ *
+ * @version 1.0
+ * @date 4/1/2024
+ */
 
+
+///
+/// \brief The Editor class Acts as the main canvas for editing frames.
+///
 class Editor : public QObject
 {
 	Q_OBJECT
@@ -14,59 +23,86 @@ public:
 	~Editor();
 
 public slots:
+
 	void paintAt(int x, int y);
 
+    ///sprite serialization
 	void createNewSprite();
 	void serializeSprite(const QString &filename);
 	void deserializeSprite(const QString &filename);
 
+    ///sprite createion and loading
 	void setupCreateNewSprite();
 	void setupOpenSprite();
 
+    ///frame selection
 	void selectFrame(int frameIndex);
+
+    /// rame removal and adding
 	void addNewFrame();
 	void removeFrame();
 
+
+    ///Handles frame order manipulation
 	void moveFrameLeft();
 	void moveFrameRight();
 
+    ///Handles layer manipulaiton
 	void selectLayer(int layerIndex);
 	void addNewLayer();
 	void removeLayer();
 
+    /// sets frame rate
 	void setAnimationFramerate(int fps);
+
+    /// starts start and stop for animations
 	void playAnimation();
 	void stopAnimation();
 
+    /// setting a color
 	void setDrawingColor(QColor color);
+
+    /// brush/eraser selection
 	void setBrushEnabled();
 	void setEraserEnabled();
 
-	void setBrushSize(int size); // Operates only in odd numbers.
+    /// brush/eraser size manipulation
+    void setBrushSize(int size);
 	void setEraserSize(int size);
 
+    /// duplicates frame
     void setDuplicateFrame(bool duplicate);
 
 signals:
+
+    /// new sprite
 	void newSprite(int framesCount);
+
+    /// set size of sprite
 	void newSpriteSize(int width, int height);
+
+    /// frame selection
 	void newFrameSelection(int layersCount);
+
+    /// display data
 	void displayDataUpdated(const QPixmap &displayData);
 	void animationDisplayDataUpdated(const QPixmap &displayData);
 
+    /// save sprite
 	void spriteSaveStatusChanged(const QString &spriteName, bool isModified);
 
+
+    /// ready sprites
 	void readyCreateNewSprite(bool askUserToSave);
 	void readyOpenSprite(bool askUserToSave);
 	void needSaveFilenameToSerialize();
-
 	void animationPlayerToggled();
 
 private:
 	enum class Tool { None, Brush, Eraser };
 
-    static const int SPRITE_WIDTH_DEFAULT = 35;
-    static const int SPRITE_HEIGHT_DEFAULT = 25;
+    static const int SPRITE_WIDTH_DEFAULT = 40;
+    static const int SPRITE_HEIGHT_DEFAULT = 40;
 
 	std::function<void(Editor*, int)> animationTimerLambda;
 
@@ -84,7 +120,6 @@ private:
 
 	int brushSize;
 	int eraserSize;
-
 	void setIsSpriteSaved(bool state);
 	void splitFilename(const QString &filename, QString &path, QString &name);
 	void emitNewSpriteSignals();

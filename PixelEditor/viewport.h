@@ -1,5 +1,14 @@
 #ifndef VIEWPORT_H
 #define VIEWPORT_H
+/**
+ * @authors Tommy Heimer, Egor Chesnokov, Kobe Dato, Parker Middleton, Aditya Mukerjee, Charles WolfGramm.
+ *
+ * @version 1.0
+ * @date 4/1/2024
+ */
+
+
+
 
 class Viewport : public QGraphicsView
 {
@@ -9,6 +18,7 @@ public:
 	explicit Viewport(QWidget *parent = 0);
 
 public slots:
+
 	void setupNewSpriteDisplay(int spriteWidth, int spriteHeight);
 	void updateSpriteDisplay(const QPixmap &sprite);
 

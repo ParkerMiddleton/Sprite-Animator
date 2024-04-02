@@ -5,6 +5,12 @@
 #include "viewport.h"
 #include "timelinepanel.h"
 #include "layerspanel.h"
+/**
+ * @authors Tommy Heimer, Egor Chesnokov, Kobe Dato, Parker Middleton, Aditya Mukerjee, Charles WolfGramm.
+ *
+ * @version 1.0
+ * @date 4/1/2024
+ */
 
 class Editor;
 
@@ -25,9 +31,14 @@ public:
     ~MainWindow();
 
 public slots:
+
+    ///
+    /// \brief changeColor changes the current color
+    ///
     void changeColor();
 
     void updateTitle(const QString &spriteName, bool showStar);
+
 
     void handleCreateNewSprite(bool askUserToSave);
     void handleOpenSprite(bool askUserToSave);
@@ -55,19 +66,26 @@ public slots:
     ///
     void setActiveLayerID(int id);
 
+    /// updates the text of the pencil to reflect size changes
     void setPencilText(int id);
 
+    /// updates the text of the eraser to reflect size changes
     void setEraserText(int id);
 
 
 signals:
+    /// color changes
     void colorChanged(const QColor &color);
     void BrushSizeChanged(int brushSize);
 
+    /// new sprite requests, save/load
     void newSpriteRequested();
     void loadRequested(const QString &filename);
     void saveRequested(const QString &filename);
+
+    /// frame duplication
     void duplicateFrameRequested(bool duplicate);
+    ///Icon highlights
     void highlightIcon(int id);
     void highlightLayer(int id);
 
@@ -95,6 +113,8 @@ private:
     QMap<QPushButton*, QString> buttonStylesheets;
     bool duplicateFrame;
 
+
+    ///starting creations
     void createActions();
     void createMenus();
     void openHelpWindow();

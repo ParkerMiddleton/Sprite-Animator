@@ -1,10 +1,14 @@
 #ifndef SPRITEMODEL_H
 #define SPRITEMODEL_H
 /**
- * Tommy Heimer, Egor Chesnokov, Kobe Dato, Parker Middleton, Aditya, Charles.
- *  Last update: 4/1/2024
+ * Tommy Heimer, Egor Chesnokov, Kobe Dato, Parker Middleton, Aditya Mukerjee, Charles WolfGramm.
+ * Last update: 4/1/2024
+ *
  *
  */
+
+
+
 class Sprite;
 
 /**
@@ -98,6 +102,7 @@ public:
     ///
 	int getCurrentLayerIndex();
 
+    ///JSON data
 	static Frame fromJson(const QJsonObject &json, Sprite *parentSprite);
 	QJsonObject toJson() const;
 
@@ -157,50 +162,60 @@ public:
     ///
 	/// @brief removeFrame Removes the current frame.
 	void removeCurrentFrame();
+
     /// @brief returns the address in memory for the current frame the sprite is representing
 	Frame& currentFrame();
+
     ///
     /// \brief getWidth
     /// \return returns the width of the sprite.
     ///
 	int getWidth();
+
     ///
     /// \brief getHeight
     /// \return returns the height of the sprite.
     ///
 	int getHeight();
+
     ///
     /// \brief getFrameCount
     /// \return returns the amount of frames in the sprite
     ///
 	int getFrameCount();
+
     ///
     /// \brief getCurrentFrameIndex
     /// \return returns the index that the sprite is currently on.
     ///
 	int getCurrentFrameIndex();
+
     ///
     /// \brief getFPS
     /// \return returns the current fps the preview animation will run at.
     ///
 	int getFPS();
+
     ///
     /// \brief setFPS sets the fps the preview animation will run at.
     /// \param fps
     ///
 	void setFPS(int fps);
+
     ///
     /// \brief getFrame
     /// \param index
     /// \return returns any given frame from an inputed index.
     ///
 	Frame& getFrame(int index);
+
     ///
     /// \brief FromJson Loads a saved sprite form a json file
     /// \param json A json save file.
     /// \return returns a pointer to a new sprite loaded from the json.
     ///
 	static Sprite* fromJson(const QJsonObject &json);
+
     ///
     /// \brief toJson Serilizes this sprite object to a json object.
     /// \return returns that JsonObject.
@@ -210,10 +225,8 @@ public:
 private:
 	int width;
 	int height;
-
 	QList<Frame> frames;
 	int currentFrameIndex;
-
 	int fps;
 
 	Sprite();
