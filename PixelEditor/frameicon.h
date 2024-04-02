@@ -3,14 +3,12 @@
 
 #include <QWidget>
 #include <QPushButton>
-/*
-Authors: Parker Middleton,
-        Chareles Wolfgramm,
-
-
-Date: April 1st, 2024
-*/
-
+/**
+ * @authors Tommy Heimer, Egor Chesnokov, Kobe Dato, Parker Middleton, Aditya Mukerjee, Charles WolfGramm.
+ *
+ * @version 1.0
+ * @date 4/1/2024
+ */
 
 
 
@@ -26,7 +24,6 @@ class FrameIcon : public QPushButton
 
     QPixmap *pixmap;
     int frameID;
-
     QString highlightIconStylehseet;
     QString regularIconStylesheet;
 
@@ -50,12 +47,8 @@ public:
 
 
 signals:
-
+    /// Sends frame data
     void sendActiveFrameID(int id);
-public slots:
-    // this could not be necessary
-   // void recievePixmapData(QPixmap sentPixmap);
-
 };
 
 #endif // FRAMEICON_H
