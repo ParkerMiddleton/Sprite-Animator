@@ -7,6 +7,7 @@ Editor::Editor(QObject *parent)
 	, currentSavePath{""}
 	, currentSaveName{""}
 	, isSpriteSaved{true}
+    , duplicateFrame{false}
 
 	, isAnimationPlaying{false}
 	, frameDuration{0}
@@ -160,7 +161,7 @@ void Editor::selectFrame(int frameIndex)
 
 void Editor::addNewFrame()
 {
-	sprite->addFrame();
+    sprite->addFrame(duplicateFrame);
 	QTextStream(stdout) << "\nCurrent Frame Index: " << sprite->getCurrentFrameIndex();
 
 	this->setIsSpriteSaved(false);
@@ -310,4 +311,8 @@ void Editor::emitNewSpriteSignals()
 	emit newFrameSelection(sprite->currentFrame().getLayerCount());
 	emit displayDataUpdated(sprite->currentFrame().getDisplayData());
 	emit spriteSaveStatusChanged(currentSaveName, false);
+}
+
+void Editor::setDuplicateFrame(bool duplicate) {
+    duplicateFrame = duplicate;
 }

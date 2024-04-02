@@ -27,6 +27,9 @@ class FrameIcon : public QPushButton
     QPixmap *pixmap;
     int frameID;
 
+    QString highlightIconStylehseet;
+    QString regularIconStylesheet;
+
 
 public:
     ///
@@ -34,7 +37,7 @@ public:
     /// \param parent All parent classes with a has a relationship to this object
     /// \param id ID of the frame in the sprite, identifying it position in the sprite
     ///
-    explicit FrameIcon(QWidget *parent = nullptr);
+    explicit FrameIcon(int frameNum, QWidget *parent = nullptr);
 
     /// Destructor for FrameIcon
     ~FrameIcon();
@@ -45,8 +48,10 @@ public:
     ///setter for FrameID
     void setID(int id);
 
+
 signals:
 
+    void sendActiveFrameID(int id);
 public slots:
     // this could not be necessary
    // void recievePixmapData(QPixmap sentPixmap);

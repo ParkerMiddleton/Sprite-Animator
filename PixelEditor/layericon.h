@@ -7,8 +7,12 @@
 class LayerIcon : public QPushButton
 {
     Q_OBJECT
+
+    QString highlightIconStylehseet;
+    QString regularIconStylesheet;
+
 public:
-    explicit LayerIcon(QWidget *parent = nullptr);
+    explicit LayerIcon(int numLayer, QWidget *parent = nullptr);
 
 signals:
 };

@@ -144,7 +144,7 @@ public:
 	Sprite(int width, int height);
     ///
 	/// @brief addFrame Adds a new frame to the sprite.
-	void addFrame();
+    void addFrame(bool duplicate);
     ///
     /// \brief selectFrame Selects frame from a list of frames using an
     /// \param frameIndex

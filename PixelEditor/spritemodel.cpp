@@ -297,14 +297,21 @@ Sprite::Sprite(int width, int height)
 	, currentFrameIndex{-1}
     , fps{1}
 {
-	this->addFrame();
+    this->addFrame(false);
 }
 
-void Sprite::addFrame()
+void Sprite::addFrame(bool duplicate)
 {
-	frames.push_back(Frame(this));
-	currentFrameIndex = frames.size() - 1;
+    if (duplicate && frames.size() > 0) {
+        Frame previousFrame = frames.back(); // Get the previous frame
+        frames.push_back(previousFrame); // Push a copy of the previous frame
+        currentFrameIndex = frames.size() - 1;
+    } else {
+        frames.push_back(Frame(this));
+        currentFrameIndex = frames.size() - 1;
+    }
 }
+
 
 void Sprite::selectFrame(int frameIndex)
 {

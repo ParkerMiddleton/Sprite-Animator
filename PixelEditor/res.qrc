@@ -7,5 +7,6 @@
         <file>pal.png</file>
         <file>pal2.png</file>
         <file>transparent.png</file>
+        <file>grey.png</file>
     </qresource>
 </RCC>

@@ -40,6 +40,27 @@ public slots:
     void highlightButton(QPushButton *button);
     void getFPS(int fps);
 
+    ///
+    /// \brief setActiveFrameID Listens for an id to be sent
+    /// from a Frame Button to update the view with a highlight
+    /// indicating the frame is active.
+    /// \param id ID of the frame button
+    ///
+    void setActiveFrameID(int id);
+
+    ///
+    /// \brief setActiveLayerID Listens for an id to be sent from a
+    /// Layer Button to update the view with a highlight indicating
+    /// the frame is active.
+    /// \param id ID of the Layer
+    ///
+    void setActiveLayerID(int id);
+
+    void setPencilText(int id);
+
+    void setEraserText(int id);
+
+
 signals:
     void colorChanged(const QColor &color);
     void BrushSizeChanged(int brushSize);
@@ -47,6 +68,10 @@ signals:
 	void newSpriteRequested(int width, int height);
     void loadRequested(const QString &filename);
     void saveRequested(const QString &filename);
+    void duplicateFrameRequested(bool duplicate);
+    void highlightIcon(int id);
+    void highlightLayer(int id);
+
 
 private:
     Ui::MainWindow *ui;
@@ -56,6 +81,7 @@ private:
 	PreviewPanel *pw;
 	TimelinePanel *ft;
 	LayersPanel *lt;
+    int activeFrame;
 
     QMenu *fileMenu;
     QMenu *helpMenu;
@@ -68,6 +94,7 @@ private:
 
     QColor currentColor;
     QMap<QPushButton*, QString> buttonStylesheets;
+    bool duplicateFrame;
 
 	int prevNewWidth;
 	int prevNewHeight;
@@ -76,6 +103,7 @@ private:
     void createMenus();
     void openHelpWindow();
     void resetButtonStyles(QPushButton *button);
+    void onAddFrameButtonClicked();
 
 };
 #endif // MAINWINDOW_H
