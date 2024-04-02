@@ -8,12 +8,12 @@ class TimelinePanel : public QScrollArea
 {
 	Q_OBJECT
 
-
-
 public:
 	/// \brief TimelinePanel Constructs a TimelinePanel Object
 	/// \param parent
 	explicit TimelinePanel(QWidget *parent = nullptr);
+
+	void setupLayout(QWidget *contents);
 
 	/// \brief Destructor
 	~TimelinePanel();
@@ -49,10 +49,13 @@ public slots:
 signals:
 	void frameButtonSelected(int frameButtonIndex);
 
+protected:
+	void wheelEvent(QWheelEvent *event) override;
+
 private:
-	QWidget *par;
+	QHBoxLayout *contentsLayout;
 	QMap<int, FrameIcon*> *frameButtons;
-	QLayout *layout;
+
 	FrameIcon *activeFrame;
     int currentID;
     QString highlightIconStylehseet;

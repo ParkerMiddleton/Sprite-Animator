@@ -19,10 +19,12 @@ MainWindow::MainWindow(Editor *editor, QWidget *parent)
 
     duplicateFrame = false;
 
-	vp = ui->viewportView;
-	pw = ui->previewView;
-	ft = ui->frameTimeline;
-	lt = ui->layerPlacer;
+	viewport = ui->viewportView;
+	previewPanel = ui->previewView;
+	timelinePanel = ui->timeline;
+	timelinePanel->setupLayout(ui->timelineContents);
+	layersPanel = ui->layers;
+	layersPanel->setupLayout(ui->layersContents);
 
 	//Window title
 	this->setWindowTitle("Pixel Editor");
@@ -258,10 +260,10 @@ void MainWindow::highlightButton(QPushButton *button)
 
 void MainWindow::onAddFrameButtonClicked() {
     // Ask the user if they want to duplicate the previous frame
-    QMessageBox::StandardButton reply = QMessageBox::question(this, "Duplicate Frame", "Do you want to duplicate the previous frame?", QMessageBox::Yes|QMessageBox::No);
+	QMessageBox::StandardButton reply = QMessageBox::question(this, "Duplicate Frame", "Do you want to duplicate the previous frame?", QMessageBox::Yes|QMessageBox::No);
 
     // Check the user's response
-    duplicateFrame = (reply == QMessageBox::Yes);
+	duplicateFrame = (reply == QMessageBox::Yes);
 
     // Send bool to editor to handle logic
     emit duplicateFrameRequested(duplicateFrame);
@@ -357,19 +359,19 @@ void MainWindow::setupToolsPanelConnections()
 void MainWindow::setupViewportConnections()
 {
 	connect(editor, &Editor::newSpriteSize
-			, vp, &Viewport::setupNewSpriteDisplay);
+			, viewport, &Viewport::setupNewSpriteDisplay);
 
 	connect(editor, &Editor::displayDataUpdated
-			, vp, &Viewport::updateSpriteDisplay);
+			, viewport, &Viewport::updateSpriteDisplay);
 
-	connect(vp, &Viewport::pixelClicked
+	connect(viewport, &Viewport::pixelClicked
 			, editor, &Editor::paintAt);
 
-	connect(vp, &Viewport::mouseMoved, this, [this](QPoint pos) {
+	connect(viewport, &Viewport::mouseMoved, this, [this](QPoint pos) {
 		ui->coordInfoText->setText(QString::number(pos.x()) + ", " + QString::number(pos.y()));
 	});
 
-	connect(vp, &Viewport::spriteSizeChanged, this, [this](QPoint size) {
+	connect(viewport, &Viewport::spriteSizeChanged, this, [this](QPoint size) {
 		ui->sizeInfoText->setText(QString::number(size.x()) + "x" + QString::number(size.y()));
 	});
 }
@@ -383,12 +385,12 @@ void MainWindow::setupTimelinePanelConnections()
 	connect(ui->addFrameButton, &QPushButton::clicked, this, &MainWindow::onAddFrameButtonClicked);
 
 	connect(ui->addFrameButton, &QPushButton::clicked
-			, ft, &TimelinePanel::addFrame);
+			, timelinePanel, &TimelinePanel::addFrame);
 
 	connect(ui->deleteFrameButton, &QPushButton::clicked
-			, ft, &TimelinePanel::removeFrame);
+			, timelinePanel, &TimelinePanel::removeFrame);
 
-	connect(ft, &TimelinePanel::frameButtonSelected
+	connect(timelinePanel, &TimelinePanel::frameButtonSelected
 			, editor, &Editor::selectFrame);
 
 	connect(ui->addFrameButton, &QPushButton::clicked
@@ -398,7 +400,7 @@ void MainWindow::setupTimelinePanelConnections()
 			, editor, &Editor::removeFrame);
 
 	connect(editor, &Editor::newSprite
-			, ft, &TimelinePanel::setupFrameButtons);
+			, timelinePanel, &TimelinePanel::setupFrameButtons);
 
 	connect(ui->moveFrameLeftButton, &QPushButton::clicked
 			, editor, &Editor::moveFrameLeft);
@@ -406,36 +408,36 @@ void MainWindow::setupTimelinePanelConnections()
 	connect(ui->moveFrameRightButton, &QPushButton::clicked
 			, editor, &Editor::moveFrameRight);
 
-	connect(ft,
+	connect(timelinePanel,
 			&TimelinePanel::frameButtonSelected,
 			this,
 			&MainWindow::setActiveFrameID);
 
 	connect(this,
 			&MainWindow::highlightIcon,
-			ft,
+			timelinePanel,
 			&TimelinePanel::highlightFrameIcon);
 
 	connect(ui->moveFrameLeftButton,
 			&QPushButton::clicked,
-			ft,
+			timelinePanel,
 			&TimelinePanel::moveLeft);
 
 	connect(ui->moveFrameRightButton,
 			&QPushButton::clicked,
-			ft,
+			timelinePanel,
 			&TimelinePanel::moveRight);
 }
 
 void MainWindow::setupLayersPanelConnections()
 {
 	connect(ui->addLayerButton, &QPushButton::clicked
-			, lt, &LayersPanel::addLayer);
+			, layersPanel, &LayersPanel::addLayer);
 
 	connect(ui->removeLayerButton, &QPushButton::clicked
-			, lt, &LayersPanel::removeLayer);
+			, layersPanel, &LayersPanel::removeLayer);
 
-	connect(lt, &LayersPanel::layerButtonSelected
+	connect(layersPanel, &LayersPanel::layerButtonSelected
 			, editor, &Editor::selectLayer);
 
 	connect(ui->addLayerButton, &QPushButton::clicked
@@ -445,32 +447,32 @@ void MainWindow::setupLayersPanelConnections()
 			, editor, &Editor::removeLayer);
 
 	connect(editor, &Editor::newFrameSelection
-			, lt, &LayersPanel::setupLayerButtons);
+			, layersPanel, &LayersPanel::setupLayerButtons);
 
-	connect(lt,
+	connect(layersPanel,
 			&LayersPanel::layerButtonSelected,
 			this,
 			&MainWindow::setActiveLayerID);
 
 	connect(this,
 			&MainWindow::highlightLayer,
-			lt,
+			layersPanel,
 			&LayersPanel::highlightLayerIcon);
 }
 
 void MainWindow::setupPreviewPanelConnections()
 {
 	connect(editor, &Editor::animationPlayerSetEnabled
-			, pw, &PreviewPanel::setAnimationPlayerEnabled);
+			, previewPanel, &PreviewPanel::setAnimationPlayerEnabled);
 
 	connect(editor, &Editor::displayDataUpdated
-			, pw, &PreviewPanel::updateSpriteDisplay);
+			, previewPanel, &PreviewPanel::updateSpriteDisplay);
 
 	connect(editor, &Editor::animationDisplayDataUpdated
-			, pw, &PreviewPanel::updateSpriteAnimationDisplay);
+			, previewPanel, &PreviewPanel::updateSpriteAnimationDisplay);
 
 	connect(editor, &Editor::newSpriteSize
-			, pw, &PreviewPanel::setupNewSpriteDisplay);
+			, previewPanel, &PreviewPanel::setupNewSpriteDisplay);
 
 	connect(ui->playAnimationButton, &QPushButton::clicked
 			, editor, &Editor::playAnimation);

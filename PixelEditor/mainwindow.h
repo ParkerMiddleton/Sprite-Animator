@@ -77,10 +77,10 @@ private:
     Ui::MainWindow *ui;
     Editor *editor;
 
-    Viewport *vp;
-	PreviewPanel *pw;
-	TimelinePanel *ft;
-	LayersPanel *lt;
+	Viewport *viewport;
+	PreviewPanel *previewPanel;
+	TimelinePanel *timelinePanel;
+	LayersPanel *layersPanel;
     int activeFrame;
 
     QMenu *fileMenu;

@@ -9,6 +9,9 @@ class LayersPanel : public QScrollArea
 
 public:
 	explicit LayersPanel(QWidget *parent = nullptr);
+	~LayersPanel();
+
+	void setupLayout(QWidget *contents);
 
 public slots:
 	/// \brief addLayer adds a layer to an active frame
@@ -24,9 +27,13 @@ public slots:
 signals:
 	void layerButtonSelected(int layerButtonIndex);
 
+protected:
+	void wheelEvent(QWheelEvent *event) override;
+
 private:
-	QLayout *layout;
+	QHBoxLayout *contentsLayout;
 	QMap<int, LayerIcon*> *layerButtons;
+
     int currentID;
     QString highlightIconStylehseet;
     QString regularIconStylesheet;

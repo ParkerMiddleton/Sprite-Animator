@@ -3,24 +3,43 @@
 LayersPanel::LayersPanel(QWidget *parent)
 	: QScrollArea{parent}
 {
+	this->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+	this->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+
+	this->verticalScrollBar()->setEnabled(false);
+
 	layerButtons = new QMap<int, LayerIcon*>();
-	layout = new QHBoxLayout();
-	layout->setAlignment(Qt::AlignLeft); // all new buttons start from left
-	this->setLayout(layout);
 
     //stylesheet data
     highlightIconStylehseet = "background-color: #f5f5f5;color: #000000;padding: 4px;border: 2px solid #5cc7d1";
     regularIconStylesheet = "background-color: #f5f5f5;color: #000000;padding: 4px;border: 1px solid #444444";
 
-    currentID= 0;
+	currentID= 0;
+}
 
+LayersPanel::~LayersPanel()
+{
+	for (auto [key, value] : layerButtons->asKeyValueRange())
+	{
+		contentsLayout->removeWidget(value);
+		delete value;
+	}
 
-    addLayer();
+	delete layerButtons;
+}
+
+void LayersPanel::setupLayout(QWidget *contents)
+{
+	contentsLayout = new QHBoxLayout(contents);
+	this->setWidget(contents);
+	contentsLayout->setAlignment(Qt::AlignLeft);
+	contentsLayout->setSizeConstraint(QLayout::SetMinimumSize);
+
+	this->addLayer();
 }
 
 void LayersPanel::addLayer()
 {
-
     int index = layerButtons->size();
     LayerIcon *icon = new LayerIcon(index+1);
 
@@ -31,7 +50,7 @@ void LayersPanel::addLayer()
 		emit layerButtonSelected(index);
 	});
 
-	layout->addWidget(icon);
+	contentsLayout->addWidget(icon);
 }
 
 void LayersPanel::removeLayer()
@@ -54,7 +73,7 @@ void LayersPanel::removeLayer()
 		LayerIcon *iconToRemove = layerButtons->take(lastKey);
 
 		// Remove the widget from the layout
-		layout->removeWidget(iconToRemove);
+		contentsLayout->removeWidget(iconToRemove);
 
 		// Optionally, delete the FrameIcon object to free up memory
 		delete iconToRemove;
@@ -65,7 +84,7 @@ void LayersPanel::setupLayerButtons(int layersCount)
 {
 	for (auto [key, value] : layerButtons->asKeyValueRange())
 	{
-		layout->removeWidget(value);
+		contentsLayout->removeWidget(value);
 		delete value;
 	}
 
@@ -95,7 +114,14 @@ void LayersPanel::highlightLayerIcon(int id){
     }
 }
 
-
-
-
-
+void LayersPanel::wheelEvent(QWheelEvent *event)
+{
+	if (event->angleDelta().y() < 0)
+	{
+		this->horizontalScrollBar()->triggerAction(QAbstractSlider::SliderAction::SliderPageStepSub);
+	}
+	else if (event->angleDelta().y() > 0)
+	{
+		this->horizontalScrollBar()->triggerAction(QAbstractSlider::SliderAction::SliderPageStepAdd);
+	}
+}

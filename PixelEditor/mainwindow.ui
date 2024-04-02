@@ -494,7 +494,7 @@ border: none;</string>
       <string>Remove Layer</string>
      </property>
     </widget>
-    <widget class="LayersPanel" name="layerPlacer">
+    <widget class="LayersPanel" name="layers">
      <property name="geometry">
       <rect>
        <x>10</x>
@@ -506,7 +506,7 @@ border: none;</string>
      <property name="widgetResizable">
       <bool>true</bool>
      </property>
-     <widget class="QWidget" name="layerPlacementContents">
+     <widget class="QWidget" name="layersContents">
       <property name="geometry">
        <rect>
         <x>0</x>
@@ -647,11 +647,11 @@ border: none;</string>
       <string>&gt;</string>
      </property>
     </widget>
-    <widget class="TimelinePanel" name="frameTimeline">
+    <widget class="TimelinePanel" name="timeline">
      <property name="geometry">
       <rect>
        <x>100</x>
-       <y>9</y>
+       <y>10</y>
        <width>601</width>
        <height>71</height>
       </rect>
@@ -659,7 +659,7 @@ border: none;</string>
      <property name="widgetResizable">
       <bool>true</bool>
      </property>
-     <widget class="QWidget" name="frameTimelineContents">
+     <widget class="QWidget" name="timelineContents">
       <property name="geometry">
        <rect>
         <x>0</x>
@@ -826,15 +826,15 @@ color: rgb(2, 2, 2);</string>
    <header>viewport.h</header>
   </customwidget>
   <customwidget>
+   <class>PreviewPanel</class>
+   <extends>QGraphicsView</extends>
+   <header location="global">previewpanel.h</header>
+  </customwidget>
+  <customwidget>
    <class>TimelinePanel</class>
    <extends>QScrollArea</extends>
    <header location="global">timelinepanel.h</header>
    <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>PreviewPanel</class>
-   <extends>QGraphicsView</extends>
-   <header location="global">previewpanel.h</header>
   </customwidget>
  </customwidgets>
  <resources/>
