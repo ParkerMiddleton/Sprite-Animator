@@ -99,6 +99,13 @@ private:
 	int prevNewWidth;
 	int prevNewHeight;
 
+	void setupHighlightButtonsConnections();
+	void setupToolsPanelConnections();
+	void setupViewportConnections();
+	void setupTimelinePanelConnections();
+	void setupLayersPanelConnections();
+	void setupPreviewPanelConnections();
+
     void createActions();
     void createMenus();
     void openHelpWindow();
