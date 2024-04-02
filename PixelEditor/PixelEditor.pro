@@ -10,6 +10,7 @@ CONFIG += c++17
 PRECOMPILED_HEADER = qt_std_pch.h
 
 SOURCES += \
+    createnewspritedialog.cpp \
     frameicon.cpp \
     layericon.cpp \
     editor.cpp \
@@ -22,6 +23,7 @@ SOURCES += \
     viewport.cpp
 
 HEADERS += \
+    createnewspritedialog.h \
     frameicon.h \
     layericon.h \
     editor.h \

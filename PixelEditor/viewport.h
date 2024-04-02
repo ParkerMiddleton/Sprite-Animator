@@ -32,11 +32,10 @@ protected:
 	void mousePressEvent(QMouseEvent *event) override;
 	void mouseReleaseEvent(QMouseEvent *event) override;
 	void mouseMoveEvent(QMouseEvent *event) override;
-	//void resizeEvent(QResizeEvent *event)override;
 	void wheelEvent(QWheelEvent *event) override;
 
 private:
-    static const int SCENE_WIDTH = 1024;
+	static const int SCENE_WIDTH = 1024;
 	static const int SCENE_HEIGHT = 1024;
 
 	QGraphicsScene gScene;

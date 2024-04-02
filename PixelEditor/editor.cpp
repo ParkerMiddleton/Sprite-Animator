@@ -20,13 +20,14 @@ Editor::Editor(QObject *parent)
 {
 	animationTimerLambda = [](Editor *editor, int currentPlayedFrame)
 	{
-		if (currentPlayedFrame == editor->sprite->getFrameCount() - 1)
-			currentPlayedFrame = -1;
-
-		emit editor->animationDisplayDataUpdated(editor->sprite->getFrame(++currentPlayedFrame).getDisplayData());
-
 		if (editor->isAnimationPlaying)
+		{
+			if (currentPlayedFrame == editor->sprite->getFrameCount() - 1)
+				currentPlayedFrame = -1;
+
+			emit editor->animationDisplayDataUpdated(editor->sprite->getFrame(++currentPlayedFrame).getDisplayData());
 			QTimer::singleShot(editor->frameDuration, editor, std::bind(editor->animationTimerLambda, editor, currentPlayedFrame));
+		}
 	};
 }
 
@@ -37,18 +38,24 @@ Editor::~Editor()
 
 void Editor::paintAt(int x, int y)
 {
-	if (currentTool == Tool::Brush)
-		sprite->currentFrame().paintAt(x, y, drawingColor, brushSize);
-	else if (currentTool == Tool::Eraser)
-		sprite->currentFrame().paintAt(x, y, Qt::transparent, eraserSize);
+	if (currentTool != Tool::None)
+	{
+		if (currentTool == Tool::Brush)
+			sprite->currentFrame().paintAt(x, y, drawingColor, brushSize);
+		else if (currentTool == Tool::Eraser)
+			sprite->currentFrame().paintAt(x, y, Qt::transparent, eraserSize);
 
-	this->setIsSpriteSaved(false);
-	emit displayDataUpdated(sprite->currentFrame().getDisplayData());
+		this->setIsSpriteSaved(false);
+		emit displayDataUpdated(sprite->currentFrame().getDisplayData());
+	}
 }
 
-void Editor::createNewSprite()
+void Editor::createNewSprite(int width, int height)
 {
-	sprite = new Sprite(SPRITE_WIDTH_DEFAULT, SPRITE_HEIGHT_DEFAULT);
+	this->setIsAnimationPlaying(false);
+
+	delete sprite;
+	sprite = new Sprite(width, height);
 	currentSavePath = "";
 	currentSaveName = "UNTITLED";
 	frameDuration = 1000 / sprite->getFPS();
@@ -101,6 +108,8 @@ void Editor::serializeSprite(const QString &filename)
 
 void Editor::deserializeSprite(const QString &filename)
 {
+	this->setIsAnimationPlaying(false);
+
 	QString saveFilepath, saveName;
 	this->splitFilename(filename, saveFilepath, saveName);
 
@@ -147,7 +156,6 @@ void Editor::setupOpenSprite()
 void Editor::selectFrame(int frameIndex)
 {
 	sprite->selectFrame(frameIndex);
-	QTextStream(stdout) << "\nCurrent Frame Index: " << sprite->getCurrentFrameIndex();
 
 	emit newFrameSelection(sprite->currentFrame().getLayerCount());
 	emit displayDataUpdated(sprite->currentFrame().getDisplayData());
@@ -156,7 +164,6 @@ void Editor::selectFrame(int frameIndex)
 void Editor::addNewFrame()
 {
     sprite->addFrame(duplicateFrame);
-	QTextStream(stdout) << "\nCurrent Frame Index: " << sprite->getCurrentFrameIndex();
 
 	this->setIsSpriteSaved(false);
 	emit newFrameSelection(sprite->currentFrame().getLayerCount());
@@ -166,7 +173,6 @@ void Editor::addNewFrame()
 void Editor::removeFrame()
 {
 	sprite->removeCurrentFrame();
-	QTextStream(stdout) << "\nCurrent Frame Index: " << sprite->getCurrentFrameIndex();
 
 	this->setIsSpriteSaved(false);
 	emit newFrameSelection(sprite->currentFrame().getLayerCount());
@@ -176,7 +182,6 @@ void Editor::removeFrame()
 void Editor::moveFrameLeft()
 {
 	sprite->moveCurrentFrameLeft();
-	QTextStream(stdout) << "\nCurrent Frame Index: " << sprite->getCurrentFrameIndex();
 
 	this->setIsSpriteSaved(false);
 	emit displayDataUpdated(sprite->currentFrame().getDisplayData());
@@ -185,7 +190,6 @@ void Editor::moveFrameLeft()
 void Editor::moveFrameRight()
 {
 	sprite->moveCurrentFrameRight();
-	QTextStream(stdout) << "\nCurrent Frame Index: " << sprite->getCurrentFrameIndex();
 
 	this->setIsSpriteSaved(false);
 	emit displayDataUpdated(sprite->currentFrame().getDisplayData());
@@ -194,7 +198,6 @@ void Editor::moveFrameRight()
 void Editor::selectLayer(int layerIndex)
 {
 	sprite->currentFrame().selectLayer(layerIndex);
-	QTextStream(stdout) << "\nCurrent Layer Index: " << sprite->currentFrame().getCurrentLayerIndex();
 
 	emit displayDataUpdated(sprite->currentFrame().getDisplayData());
 }
@@ -202,7 +205,6 @@ void Editor::selectLayer(int layerIndex)
 void Editor::addNewLayer()
 {
 	sprite->currentFrame().addLayer();
-	QTextStream(stdout) << "\nCurrent Layer Index: " << sprite->currentFrame().getCurrentLayerIndex();
 
 	this->setIsSpriteSaved(false);
 	emit displayDataUpdated(sprite->currentFrame().getDisplayData());
@@ -211,7 +213,6 @@ void Editor::addNewLayer()
 void Editor::removeLayer()
 {
 	sprite->currentFrame().removeCurrentLayer();
-	QTextStream(stdout) << "\nCurrent Layer Index: " << sprite->currentFrame().getCurrentLayerIndex();
 
 	this->setIsSpriteSaved(false);
 	emit displayDataUpdated(sprite->currentFrame().getDisplayData());
@@ -219,7 +220,6 @@ void Editor::removeLayer()
 
 void Editor::setAnimationFramerate(int fps)
 {
-    qDebug() << fps;
 	frameDuration = 1000 / fps;
 	sprite->setFPS(fps);
 
@@ -228,19 +228,22 @@ void Editor::setAnimationFramerate(int fps)
 
 void Editor::playAnimation()
 {
-    qDebug() << sprite->getFPS();
-	isAnimationPlaying = true;
-	emit animationPlayerToggled();
+	if (!isAnimationPlaying)
+	{
+		this->setIsAnimationPlaying(true);
 
-	QTimer::singleShot(frameDuration, this, std::bind(animationTimerLambda, this, -1));
+		emit animationDisplayDataUpdated(sprite->getFrame(0).getDisplayData());
+		QTimer::singleShot(frameDuration, this, std::bind(animationTimerLambda, this, 0));
+	}
 }
 
 void Editor::stopAnimation()
 {
-	isAnimationPlaying = false;
-
-	emit animationPlayerToggled();
-	emit displayDataUpdated(sprite->currentFrame().getDisplayData());
+	if (isAnimationPlaying)
+	{
+		this->setIsAnimationPlaying(false);
+		emit displayDataUpdated(sprite->currentFrame().getDisplayData());
+	}
 }
 
 void Editor::setBrushEnabled()
@@ -282,6 +285,12 @@ void Editor::setIsSpriteSaved(bool state)
 	}
 }
 
+void Editor::setIsAnimationPlaying(bool state)
+{
+	isAnimationPlaying = state;
+	emit animationPlayerSetEnabled(state);
+}
+
 void Editor::splitFilename(const QString &filename, QString &path, QString &name)
 {
 	QFileInfo info(filename);
@@ -293,6 +302,8 @@ void Editor::emitNewSpriteSignals()
 {
 	emit newSprite(sprite->getFrameCount());
 	emit newSpriteSize(sprite->getWidth(), sprite->getHeight());
+	emit newSpriteFramerate(sprite->getFPS());
+
 	emit newFrameSelection(sprite->currentFrame().getLayerCount());
 	emit displayDataUpdated(sprite->currentFrame().getDisplayData());
 	emit spriteSaveStatusChanged(currentSaveName, false);

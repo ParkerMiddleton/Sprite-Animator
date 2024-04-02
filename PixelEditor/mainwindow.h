@@ -5,12 +5,14 @@
 #include "viewport.h"
 #include "timelinepanel.h"
 #include "layerspanel.h"
+#include "createnewspritedialog.h"
 /**
- * @authors Tommy Heimer, Egor Chesnokov, Kobe Dato, Parker Middleton, Aditya Mukerjee, Charles WolfGramm.
+ * @authors Tommy Heimer, Egor Chesnokov, Koby Dato, Parker Middleton, Aditya Mukerjee, Charles WolfGramm.
  *
  * @version 1.0
  * @date 4/1/2024
  */
+
 
 class Editor;
 
@@ -79,7 +81,7 @@ signals:
     void BrushSizeChanged(int brushSize);
 
     /// new sprite requests, save/load
-    void newSpriteRequested();
+	void newSpriteRequested(int width, int height);
     void loadRequested(const QString &filename);
     void saveRequested(const QString &filename);
 
@@ -113,8 +115,16 @@ private:
     QMap<QPushButton*, QString> buttonStylesheets;
     bool duplicateFrame;
 
+	int prevNewWidth;
+	int prevNewHeight;
 
-    ///starting creations
+	void setupHighlightButtonsConnections();
+	void setupToolsPanelConnections();
+	void setupViewportConnections();
+	void setupTimelinePanelConnections();
+	void setupLayersPanelConnections();
+	void setupPreviewPanelConnections();
+
     void createActions();
     void createMenus();
     void openHelpWindow();

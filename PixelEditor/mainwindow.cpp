@@ -4,16 +4,18 @@
 #include "editor.h"
 
 MainWindow::MainWindow(Editor *editor, QWidget *parent)
-	: QMainWindow(parent)
-	, ui(new Ui::MainWindow)
-	, editor(editor)
+	: QMainWindow{parent}
+	, ui{new Ui::MainWindow}
+	, editor{editor}
+	, prevNewWidth{70}
+	, prevNewHeight{50}
 {
 	ui->setupUi(this);
+	this->setFixedSize(968, 652);
 
     // Add tool buttons to the buttonStylesheets map
     buttonStylesheets.insert(ui->PencilButton, ui->PencilButton->styleSheet());
     buttonStylesheets.insert(ui->EraserButton, ui->EraserButton->styleSheet());
-
 
     duplicateFrame = false;
 
@@ -46,103 +48,7 @@ MainWindow::MainWindow(Editor *editor, QWidget *parent)
 	this->createActions();
 	this->createMenus();
 
-	connect(vp, &Viewport::mouseMoved, this, [this](QPoint pos) {
-		ui->coordInfoText->setText(QString::number(pos.x()) + ", " + QString::number(pos.y()));
-	});
-
-	connect(vp, &Viewport::spriteSizeChanged, this, [this](QPoint size) {
-		ui->sizeInfoText->setText(QString::number(size.x()) + "x" + QString::number(size.y()));
-    });
-
-    /* HIGHLIGHT BUTTON CLICKED */
-
-    connect(ui->PencilButton, &QPushButton::clicked, this, [this]() {
-        highlightButton(ui->PencilButton);
-    });
-
-    connect(ui->EraserButton, &QPushButton::clicked, this, [this]() {
-        highlightButton(ui->EraserButton);
-    });
-
-    connect(ui->addFrameButton, &QPushButton::clicked, this, [this]() {
-        highlightButton(ui->addFrameButton);
-    });
-
-    connect(ui->deleteFrameButton, &QPushButton::clicked, this, [this]() {
-        highlightButton(ui->deleteFrameButton);
-    });
-
-    connect(ui->addLayerButton, &QPushButton::clicked, this, [this]() {
-        highlightButton(ui->addLayerButton);
-    });
-
-    connect(ui->removeLayerButton, &QPushButton::clicked, this, [this]() {
-        highlightButton(ui->removeLayerButton);
-    });
-
-    connect(ui->playAnimationButton, &QPushButton::clicked, this, [this]() {
-        highlightButton(ui->playAnimationButton);
-    });
-
-    connect(ui->stopAnimationButton, &QPushButton::clicked, this, [this]() {
-        highlightButton(ui->stopAnimationButton);
-    });
-
-    /*== TIMELINE PANEL ==*/
-
-    connect(this, &MainWindow::duplicateFrameRequested
-            , editor, &Editor::setDuplicateFrame);
-
-    // Connect the addNewFrameButton to a slot in MainWindow
-    connect(ui->addFrameButton, &QPushButton::clicked, this, &MainWindow::onAddFrameButtonClicked);
-
-	connect(ui->addFrameButton, &QPushButton::clicked
-			, ft, &TimelinePanel::addFrame);
-
-	connect(ui->deleteFrameButton, &QPushButton::clicked
-			, ft, &TimelinePanel::removeFrame);
-
-	connect(ft, &TimelinePanel::frameButtonSelected
-			, editor, &Editor::selectFrame);
-
-	connect(ui->addFrameButton, &QPushButton::clicked
-			, editor, &Editor::addNewFrame);
-
-	connect(ui->deleteFrameButton, &QPushButton::clicked
-			, editor, &Editor::removeFrame);
-
-	connect(editor, &Editor::newSprite
-			, ft, &TimelinePanel::setupFrameButtons);
-
-	connect(ui->moveFrameLeftButton, &QPushButton::clicked
-			, editor, &Editor::moveFrameLeft);
-
-	connect(ui->moveFrameRightButton, &QPushButton::clicked
-			, editor, &Editor::moveFrameRight);
-
-	/*== LAYERS PANEL ==*/
-
-	connect(ui->addLayerButton, &QPushButton::clicked
-			, lt, &LayersPanel::addLayer);
-
-	connect(ui->removeLayerButton, &QPushButton::clicked
-			, lt, &LayersPanel::removeLayer);
-
-	connect(lt, &LayersPanel::layerButtonSelected
-			, editor, &Editor::selectLayer);
-
-	connect(ui->addLayerButton, &QPushButton::clicked
-			, editor, &Editor::addNewLayer);
-
-	connect(ui->removeLayerButton, &QPushButton::clicked
-			, editor, &Editor::removeLayer);
-
-	connect(editor, &Editor::newFrameSelection
-			, lt, &LayersPanel::setupLayerButtons);
-
-	/*====== MODEL <--> VIEW ======*/
-
-	// this <--> Editor
+	// Connections
 	connect(this, &MainWindow::newSpriteRequested
 			, editor, &Editor::createNewSprite);
 
@@ -164,111 +70,12 @@ MainWindow::MainWindow(Editor *editor, QWidget *parent)
 	connect(editor, &Editor::readyOpenSprite
 			, this, &MainWindow::handleOpenSprite);
 
-	connect(editor, &Editor::newSpriteSize
-			, vp, &Viewport::setupNewSpriteDisplay);
-
-	connect(editor, &Editor::displayDataUpdated
-			, vp, &Viewport::updateSpriteDisplay);
-	
-	connect(vp, &Viewport::pixelClicked
-			, editor, &Editor::paintAt);
-
-    connect(ui->fpsSlider, &QSlider::sliderMoved
-            , editor, &Editor::setAnimationFramerate);
-
-	/* VIEW <--> VIEW */
-
-	//On color palette button clicked, choose a color
-	connect(ui->ColorPaletteButton, &QPushButton::clicked
-			, this, &MainWindow::changeColor);
-
-	// Send chosen color to the frame window to be used
-	connect(this, &MainWindow::colorChanged
-			, editor, &Editor::setDrawingColor);
-
-	// enable and disable brush
-	connect(ui->PencilButton, &QPushButton::clicked
-			, editor, &Editor::setBrushEnabled);
-
-	// enable and disable eraser
-	connect(ui->EraserButton, &QPushButton::clicked
-			, editor, &Editor::setEraserEnabled);
-
-    connect(ui->pencilSlider, &QSlider::sliderMoved
-            , editor, &Editor::setBrushSize);
-
-    connect(ui->eraserSlider, &QSlider::sliderMoved
-            , editor, &Editor::setEraserSize);
-
-	// frame window tells main that penicl button is to be disabled or enabled.
-	/*
-	connect(vp, &Viewport::informViewOfPencilEnabled
-			, ui->PencilButton, &QPushButton::setEnabled); // TODO: May be useful for buttons UI?
-	*/
-
-	// PREVIEW
-
-	connect(editor, &Editor::animationPlayerToggled
-			, pw, &PreviewPanel::toggleAnimationPlayer);
-
-	connect(editor, &Editor::displayDataUpdated
-			, pw, &PreviewPanel::updateSpriteDisplay);
-
-	connect(editor, &Editor::animationDisplayDataUpdated
-			, pw, &PreviewPanel::updateSpriteAnimationDisplay);
-
-	connect(editor, &Editor::newSpriteSize
-			, pw, &PreviewPanel::setupNewSpriteDisplay);
-
-	connect(ui->playAnimationButton, &QPushButton::clicked
-			, editor, &Editor::playAnimation);
-
-	connect(ui->stopAnimationButton, &QPushButton::clicked
-			, editor, &Editor::stopAnimation);
-
-    connect(ui->fpsSlider, &QSlider::sliderMoved
-            , this, &MainWindow::getFPS);
-
-    connect(ui->pencilSlider,
-            &QSlider::sliderMoved,
-            this,
-            &MainWindow::setPencilText);
-
-    connect(ui->eraserSlider,
-            &QSlider::sliderMoved,
-            this,
-            &MainWindow::setEraserText);
-
-    //FRAMETIMELINEPANEL
-    connect(ft,
-            &TimelinePanel::frameButtonSelected,
-            this,
-            &MainWindow::setActiveFrameID);
-
-    connect(lt,
-            &LayersPanel::layerButtonSelected,
-            this,
-            &MainWindow::setActiveLayerID);
-
-    connect(this,
-            &MainWindow::highlightIcon,
-            ft,
-            &TimelinePanel::highlightFrameIcon);
-
-    connect(ui->moveFrameLeftButton,
-            &QPushButton::clicked,
-            ft,
-            &TimelinePanel::moveLeft);
-
-    connect(ui->moveFrameRightButton,
-            &QPushButton::clicked,
-            ft,
-            &TimelinePanel::moveRight);
-
-    connect(this,
-            &MainWindow::highlightLayer,
-            lt,
-            &LayersPanel::highlightLayerIcon);
+	this->setupHighlightButtonsConnections();
+	this->setupToolsPanelConnections();
+	this->setupViewportConnections();
+	this->setupTimelinePanelConnections();
+	this->setupLayersPanelConnections();
+	this->setupPreviewPanelConnections();
 }
 
 MainWindow::~MainWindow()
@@ -276,7 +83,8 @@ MainWindow::~MainWindow()
 	delete ui;
 }
 
-void MainWindow::getFPS(int fps) {
+void MainWindow::getFPS(int fps)
+{
     ui->fpsLabel->setText("FPS: " + QString::number(fps));
 }
 
@@ -320,7 +128,15 @@ void MainWindow::handleCreateNewSprite(bool askUserToSave)
 		}
 	}
 
-	emit newSpriteRequested();
+	bool ok;
+	QList<int> list = CreateNewSpriteDialog::getSize(this, prevNewWidth, prevNewHeight, ok);
+
+	if (ok)
+	{
+		prevNewWidth = list[0];
+		prevNewHeight = list[1];
+		emit newSpriteRequested(list[0], list[1]);
+	}
 }
 
 void MainWindow::handleOpenSprite(bool askUserToSave)
@@ -411,7 +227,7 @@ void MainWindow::openHelpWindow()
     QMessageBox helpBox;
     helpBox.setWindowTitle(tr("Help"));
     helpBox.setText(tr("This is some help text."));
-    helpBox.addButton(QMessageBox::Ok);
+	helpBox.addButton(QMessageBox::Ok);
     helpBox.exec();
 }
 
@@ -465,7 +281,212 @@ void MainWindow::setPencilText(int size){
 }
 
 void MainWindow::setEraserText(int size){
-    ui->EraserSizeText->setText("Eraser Size: " + QString::number(size));
+	ui->EraserSizeText->setText("Eraser Size: " + QString::number(size));
 }
 
+void MainWindow::setupHighlightButtonsConnections()
+{
+	connect(ui->PencilButton, &QPushButton::clicked, this, [this]() {
+		highlightButton(ui->PencilButton);
+	});
 
+	connect(ui->EraserButton, &QPushButton::clicked, this, [this]() {
+		highlightButton(ui->EraserButton);
+	});
+
+	connect(ui->addFrameButton, &QPushButton::clicked, this, [this]() {
+		highlightButton(ui->addFrameButton);
+	});
+
+	connect(ui->deleteFrameButton, &QPushButton::clicked, this, [this]() {
+		highlightButton(ui->deleteFrameButton);
+	});
+
+	connect(ui->addLayerButton, &QPushButton::clicked, this, [this]() {
+		highlightButton(ui->addLayerButton);
+	});
+
+	connect(ui->removeLayerButton, &QPushButton::clicked, this, [this]() {
+		highlightButton(ui->removeLayerButton);
+	});
+
+	connect(ui->playAnimationButton, &QPushButton::clicked, this, [this]() {
+		highlightButton(ui->playAnimationButton);
+	});
+
+	connect(ui->stopAnimationButton, &QPushButton::clicked, this, [this]() {
+		highlightButton(ui->stopAnimationButton);
+	});
+}
+
+void MainWindow::setupToolsPanelConnections()
+{
+	//On color palette button clicked, choose a color
+	connect(ui->ColorPaletteButton, &QPushButton::clicked
+			, this, &MainWindow::changeColor);
+
+	// Send chosen color to the frame window to be used
+	connect(this, &MainWindow::colorChanged
+			, editor, &Editor::setDrawingColor);
+
+	// enable and disable brush
+	connect(ui->PencilButton, &QPushButton::clicked
+			, editor, &Editor::setBrushEnabled);
+
+	// enable and disable eraser
+	connect(ui->EraserButton, &QPushButton::clicked
+			, editor, &Editor::setEraserEnabled);
+
+	connect(ui->pencilSlider, &QSlider::sliderMoved
+			, editor, &Editor::setBrushSize);
+
+	connect(ui->eraserSlider, &QSlider::sliderMoved
+			, editor, &Editor::setEraserSize);
+
+	connect(ui->pencilSlider,
+			&QSlider::sliderMoved,
+			this,
+			&MainWindow::setPencilText);
+
+	connect(ui->eraserSlider,
+			&QSlider::sliderMoved,
+			this,
+			&MainWindow::setEraserText);
+}
+
+void MainWindow::setupViewportConnections()
+{
+	connect(editor, &Editor::newSpriteSize
+			, vp, &Viewport::setupNewSpriteDisplay);
+
+	connect(editor, &Editor::displayDataUpdated
+			, vp, &Viewport::updateSpriteDisplay);
+
+	connect(vp, &Viewport::pixelClicked
+			, editor, &Editor::paintAt);
+
+	connect(vp, &Viewport::mouseMoved, this, [this](QPoint pos) {
+		ui->coordInfoText->setText(QString::number(pos.x()) + ", " + QString::number(pos.y()));
+	});
+
+	connect(vp, &Viewport::spriteSizeChanged, this, [this](QPoint size) {
+		ui->sizeInfoText->setText(QString::number(size.x()) + "x" + QString::number(size.y()));
+	});
+}
+
+void MainWindow::setupTimelinePanelConnections()
+{
+	connect(this, &MainWindow::duplicateFrameRequested
+			, editor, &Editor::setDuplicateFrame);
+
+	// Connect the addNewFrameButton to a slot in MainWindow
+	connect(ui->addFrameButton, &QPushButton::clicked, this, &MainWindow::onAddFrameButtonClicked);
+
+	connect(ui->addFrameButton, &QPushButton::clicked
+			, ft, &TimelinePanel::addFrame);
+
+	connect(ui->deleteFrameButton, &QPushButton::clicked
+			, ft, &TimelinePanel::removeFrame);
+
+	connect(ft, &TimelinePanel::frameButtonSelected
+			, editor, &Editor::selectFrame);
+
+	connect(ui->addFrameButton, &QPushButton::clicked
+			, editor, &Editor::addNewFrame);
+
+	connect(ui->deleteFrameButton, &QPushButton::clicked
+			, editor, &Editor::removeFrame);
+
+	connect(editor, &Editor::newSprite
+			, ft, &TimelinePanel::setupFrameButtons);
+
+	connect(ui->moveFrameLeftButton, &QPushButton::clicked
+			, editor, &Editor::moveFrameLeft);
+
+	connect(ui->moveFrameRightButton, &QPushButton::clicked
+			, editor, &Editor::moveFrameRight);
+
+	connect(ft,
+			&TimelinePanel::frameButtonSelected,
+			this,
+			&MainWindow::setActiveFrameID);
+
+	connect(this,
+			&MainWindow::highlightIcon,
+			ft,
+			&TimelinePanel::highlightFrameIcon);
+
+	connect(ui->moveFrameLeftButton,
+			&QPushButton::clicked,
+			ft,
+			&TimelinePanel::moveLeft);
+
+	connect(ui->moveFrameRightButton,
+			&QPushButton::clicked,
+			ft,
+			&TimelinePanel::moveRight);
+}
+
+void MainWindow::setupLayersPanelConnections()
+{
+	connect(ui->addLayerButton, &QPushButton::clicked
+			, lt, &LayersPanel::addLayer);
+
+	connect(ui->removeLayerButton, &QPushButton::clicked
+			, lt, &LayersPanel::removeLayer);
+
+	connect(lt, &LayersPanel::layerButtonSelected
+			, editor, &Editor::selectLayer);
+
+	connect(ui->addLayerButton, &QPushButton::clicked
+			, editor, &Editor::addNewLayer);
+
+	connect(ui->removeLayerButton, &QPushButton::clicked
+			, editor, &Editor::removeLayer);
+
+	connect(editor, &Editor::newFrameSelection
+			, lt, &LayersPanel::setupLayerButtons);
+
+	connect(lt,
+			&LayersPanel::layerButtonSelected,
+			this,
+			&MainWindow::setActiveLayerID);
+
+	connect(this,
+			&MainWindow::highlightLayer,
+			lt,
+			&LayersPanel::highlightLayerIcon);
+}
+
+void MainWindow::setupPreviewPanelConnections()
+{
+	connect(editor, &Editor::animationPlayerSetEnabled
+			, pw, &PreviewPanel::setAnimationPlayerEnabled);
+
+	connect(editor, &Editor::displayDataUpdated
+			, pw, &PreviewPanel::updateSpriteDisplay);
+
+	connect(editor, &Editor::animationDisplayDataUpdated
+			, pw, &PreviewPanel::updateSpriteAnimationDisplay);
+
+	connect(editor, &Editor::newSpriteSize
+			, pw, &PreviewPanel::setupNewSpriteDisplay);
+
+	connect(ui->playAnimationButton, &QPushButton::clicked
+			, editor, &Editor::playAnimation);
+
+	connect(ui->stopAnimationButton, &QPushButton::clicked
+			, editor, &Editor::stopAnimation);
+
+	connect(ui->fpsSlider, &QSlider::sliderMoved
+			, this, &MainWindow::getFPS);
+
+	connect(editor, &Editor::newSpriteFramerate
+			, this, &MainWindow::getFPS);
+
+	connect(ui->fpsSlider, &QSlider::sliderMoved
+			, editor, &Editor::setAnimationFramerate);
+
+	connect(editor, &Editor::newSpriteFramerate
+			, ui->fpsSlider, &QSlider::setSliderPosition);
+}
